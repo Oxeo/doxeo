@@ -1,0 +1,11 @@
+debug
+release
+doxeo-monitor.pro.user
+Makefile
+Makefile.Debug
+Makefile.Release
+sync.ffs_db
+doxeo-monitor
+nbproject/*
+/views/nbproject/*
+object_script.*

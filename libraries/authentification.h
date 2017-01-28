@@ -1,0 +1,32 @@
+#ifndef AUTHENTIFICATION_H
+#define AUTHENTIFICATION_H
+
+#include <core/httpheader.h>
+#include <QHash>
+#include <QString>
+
+class Authentification
+{
+public:
+    bool connection(QString &login, QString &password, QString &cookie, QString &error);
+    void disconnection(HttpHeader *header, QString &cookie);
+    bool isConnected(HttpHeader *header, QString &cookie);
+
+    static Authentification& auth();
+
+protected:
+    struct Remember {
+        QString login;
+        QString code;
+    };
+
+    Authentification();
+    ~Authentification();
+    void clearCookies(QString &cookie);
+    void insertRememberCode(QString id, Remember remember);
+    void removeRememberCode(QString id);
+
+    QHash<QString,Remember> rememberList;
+};
+
+#endif // AUTHENTIFICATION_H
