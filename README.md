@@ -1,6 +1,10 @@
 # doxeo-monitor
 Web connected thermostat with a Raspberry Pi
 
+Compile with Qt
+--------------
+1. Generate a MakeFile : qmake
+2. Compile the application : make
 
 Install Mysql driver on windows
 -------------------------------
