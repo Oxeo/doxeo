@@ -82,9 +82,12 @@ function update() {
                 if (create) {
                     if (key != 0) {
                         $('#heater_nav_tabs li:last-child').clone().insertAfter('#heater_nav_tabs li:last-child');
-                        $('#heater_nav_tabs li:last-child').removeClass("active");
                         $('#heater_tab_panes div.tab-pane:last-child').clone().insertAfter('#heater_tab_panes div.tab-pane:last-child');
-                        $('#heater_tab_panes div.tab-pane:last-child').removeClass("active");
+                        
+                        if (heater.id === 1) {
+                          $('#heater_nav_tabs li:last-child').addClass("active");
+                          $('#heater_tab_panes div.tab-pane:last-child').addClass("active");
+                        }
                     }
                     
                     $('#heater_nav_tabs li:last-child').find("a").text(heater.name);
