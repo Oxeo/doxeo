@@ -72,7 +72,7 @@ $(function () {
             tooltip: {
                 formatter: function() {
                     return Highcharts.dateFormat('%d %B', new Date(this.x)) + '<br />Heat: <b>' + 
-                            Highcharts.dateFormat('%Hh%M %Ss', new Date(this.y)) + '</b>';
+                            Highcharts.dateFormat('%Hh%M', new Date(this.y)) + '</b>';
                 }
             },
 
@@ -80,6 +80,7 @@ $(function () {
                 type: 'column',
                 name : 'Heat',
                 data : data,
+                color: '#eb6d00',
                 dataGrouping: {
                     forced: true,
                     units: [[
