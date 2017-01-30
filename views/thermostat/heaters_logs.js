@@ -23,13 +23,9 @@ $(function () {
         });
     
         // Create the chart
-        $('#container').highcharts('StockChart', {
+        $('#graph_container').highcharts('StockChart', {
             chart : {
                 alignTicks: false
-            },
-
-            title : {
-                text : 'Heating Time'
             },
 
             yAxis: {

@@ -28,7 +28,7 @@ $(function () {
         });
     
         // Create the chart
-        $('#container').highcharts('StockChart', {
+        $('#graph_container').highcharts('StockChart', {
             chart : {
                 events : {
                     load : function () {
@@ -104,10 +104,6 @@ $(function () {
                     millisecond: '%A, %B %e, %H:%M',
                     second: '%A, %B %e, %H:%M'
                 }
-            },
-
-            title : {
-                text : 'Room Temperature'
             },
             
             exporting: {
