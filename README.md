@@ -4,6 +4,11 @@
 ![Temperature](/pictures/web_temperature.png)
 ![Heating time](/pictures/web_heating_time.png)
 
+## Requirements
+
+* Qt
+* Mysql
+
 ## Installation
 
 1. Generate a MakeFile : qmake
