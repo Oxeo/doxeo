@@ -148,17 +148,6 @@ $('#FormEditEvent').on('submit', function(e) {
     var event = $( "#FormEditEvent" ).data("event");
     var remove = $('input[name=radioRemove]:checked', '#FormEditEvent').val();
 
-    if (remove === "link" && event.isRecurrent && event.occurrenceId != 0) {
-        // Update time to break the reccurrent status
-        updateEvent(event.eventId, event.occurrenceId, event.start, event.end, false, null);
-
-        event._id = "oc" + event.occurrenceId;
-        event.isRecurrent = false;
-        event.title = event.title.substring(4);
-        $('#calendar').fullCalendar('updateEvent', event);
-        $( "#modalEventEdit" ).modal('hide');
-    }
-
     if (remove === "event" && event.occurrenceId != 0) {
         deleteEvent(event.occurrenceId, false);
 
