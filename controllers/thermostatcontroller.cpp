@@ -394,10 +394,12 @@ void ThermostatController::jsonSetEventTime()
     bool success = true;
     QJsonObject result;
 
-    int id = query->getItem("id").toInt();
-    QTime start = QTime::fromString(query->getItem("start"), "hh:mm:ss");
-    QTime end = QTime::fromString(query->getItem("end"), "hh:mm:ss");
+    int event_id = query->getItem("event_id").toInt();
+    int occurrence_id = query->getItem("occurrence_id").toInt();
+    QDateTime startDate = QDateTime::fromString(query->getItem("start_date"), "yyyy-MM-dd HH:mm:ss");
+    QDateTime endDate = QDateTime::fromString(query->getItem("end_date"), "yyyy-MM-dd HH:mm:ss");
     bool changeAllOccurrences = (query->getItem("all_occurrences")=="true") ? true : false;
+    HeaterEvent event;
 
     if (!Authentification::auth().isConnected(header, cookie)) {
         result.insert("msg", "You are not logged.");
@@ -409,28 +411,58 @@ void ThermostatController::jsonSetEventTime()
         success = false;
     }
 
-    if (success && id < 1) {
+    if (success && !startDate.isValid()) {
+        result.insert("msg", "Start date format incorrect");
+        success = false;
+    }
+
+    if (success && !endDate.isValid()) {
+        result.insert("msg", "End date format incorrect");
+        success = false;
+    }
+
+    if (success && startDate >= endDate) {
+        result.insert("msg", "The start date can't be after the end date");
+        success = false;
+    }
+
+    if (success && startDate.daysTo(endDate) != 0) {
+        result.insert("msg", "The day of the start time end the end time shall the same");
+        success = false;
+    }
+
+    if (success && occurrence_id < 1) {
+        result.insert("msg", "Occurence id format incorrect");
+        success = false;
+    }
+
+    if (success && changeAllOccurrences && event_id < 1) {
         result.insert("msg", "Event id format incorrect");
         success = false;
     }
 
-    if (success && !start.isValid()) {
-        result.insert("msg", "Start time format incorrect");
+    if (success) {
+        event = HeaterEvent::getEvent(occurrence_id);
+    }
+
+    if (success && !event.isValid()) {
+        result.insert("msg", "Occurence id invalid");
         success = false;
     }
 
-    if (success && !end.isValid()) {
-        result.insert("msg", "End time format incorrect");
-        success = false;
-    }
-
-    if (success && start >= end) {
-        result.insert("msg", "The start time can't be after the end time");
+    if(success && event.getStartDate().daysTo(startDate) != 0) {
+        result.insert("msg", "The day shall be same. Only the time can be changed");
         success = false;
     }
 
     if (success) {
-        success = HeaterEvent::changeEventTime(id, start, end, changeAllOccurrences);
+        int id = occurrence_id;
+
+        if (changeAllOccurrences) {
+            id = event_id;
+        }
+
+        success = HeaterEvent::changeEventTime(id, startDate.time(), endDate.time(), changeAllOccurrences);
 
         if (!success) {
             result.insert("msg", "Error with mysql update");

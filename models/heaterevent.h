@@ -28,6 +28,7 @@ public:
     QJsonObject toJson() const;
     bool create(int occurrenceNumber = 1);
 
+    static HeaterEvent getEvent(int occurrenceId);
     static QHash<int,HeaterEvent> getEvents(QDateTime start, QDateTime end);
     static QList<Action> convertToAction(const QHash<int, HeaterEvent> &eventList);
     static bool changeEventTime(int id, QTime start, QTime end, bool forAllOccurrences);
@@ -35,13 +36,11 @@ public:
     static bool removeAll(int eventId);
 
     void setHeaterId(int value);
-
     QString getSetpoint() const;
     void setSetpoint(const QString &value);
-
     void setStartDate(const QDateTime &value);
-
     void setEndDate(const QDateTime &value);
+    bool isValid();
 
 protected:
     int eventId;

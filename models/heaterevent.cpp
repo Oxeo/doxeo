@@ -7,7 +7,8 @@
 
 HeaterEvent::HeaterEvent()
 {
-
+    occurrenceId = 0;
+    eventId = 0;
 }
 
 QHash<int, HeaterEvent> HeaterEvent::getEvents(QDateTime start, QDateTime end)
@@ -114,9 +115,10 @@ void HeaterEvent::setEndDate(const QDateTime &value)
     endDate = value;
 }
 
-
-
-
+bool HeaterEvent::isValid()
+{
+    return eventId > 0 && occurrenceId > 0;
+}
 
 QDateTime HeaterEvent::getStartDate() const
 {
@@ -192,6 +194,35 @@ bool HeaterEvent::create(int occurrenceNumber)
     Database::release();
 
     return success;
+}
+
+HeaterEvent HeaterEvent::getEvent(int occurrenceId)
+{
+    HeaterEvent result;
+    QSqlQuery query = Database::getQuery();
+
+    query.prepare("SELECT o.id as id, event_id, start_date, end_date, recurrent_date, heater_id, setpoint "
+                  "FROM schedule_event e "
+                  "INNER JOIN schedule_occurrence o "
+                  "ON  o.event_id = e.id "
+                  "WHERE o.id = ?");
+    query.addBindValue(occurrenceId);
+
+    if (Database::exec(query)) {
+        if (query.next())
+        {
+            result.occurrenceId = query.value("id").toInt();
+            result.eventId = query.value("event_id").toInt();
+            result.startDate = query.value("start_date").toDateTime();
+            result.endDate = query.value("end_date").toDateTime();
+            result.recurrentDate = query.value("recurrent_date").toBool();
+            result.heaterId = query.value("heater_id").toInt();
+            result.setpoint = query.value("setpoint").toString();
+        }
+    }
+
+    Database::release();
+    return result;
 }
 
 bool HeaterEvent::removeOne(int occurrenceId)

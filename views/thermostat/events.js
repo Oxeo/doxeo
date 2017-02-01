@@ -83,23 +83,6 @@ var CompCalendar = function() {
                     
                     var endDate = moment(date);
                     endDate.add(2, 'hours');
-
-                    // assign it the date that was reported
-                    copiedEventObject.start = date;
-                    copiedEventObject.end = endDate;
-                    
-                    copiedEventObject.id = "new";
-                    copiedEventObject.occurrenceId = 0;
-                    
-                    if (copiedEventObject.occurrenceNumber > 1) {
-                        copiedEventObject.isRecurrent = true;
-                    } else {
-                        copiedEventObject.isRecurrent = false;
-                    }
-
-                    // render the event on the calendar
-                    // the last `true` argument determines if the event "sticks" (http://arshaw.com/fullcalendar/docs/event_rendering/renderEvent/)
-                    $('#calendar').fullCalendar('renderEvent', copiedEventObject, true);
                     
                     addEvent(copiedEventObject.heater_id, date, endDate, copiedEventObject.occurrenceNumber);
                 },
@@ -109,18 +92,10 @@ var CompCalendar = function() {
                     $( "#modalEventEdit" ).modal();
                 },
                 eventResize: function(event, delta, revertFunc) {
-                    if (event.isRecurrent) {
-                        updateEvent(event.id, event.start, event.end, true, revertFunc);
-                    } else {
-                        updateEvent(event.occurrenceId, event.start, event.end, false, revertFunc);
-                    }
+                    updateEvent(event.eventId, event.occurrenceId, event.start, event.end, event.isRecurrent, revertFunc);
                 },
                 eventDrop: function(event, delta, revertFunc) {
-                    if (event.isRecurrent) {
-                        updateEvent(event.id, event.start, event.end, true, revertFunc);
-                    } else {
-                        updateEvent(event.occurrenceId, event.start, event.end, false, revertFunc);
-                    }
+                    updateEvent(event.eventId, event.occurrenceId, event.start, event.end, event.isRecurrent, revertFunc);
                 },
                 events: function(start, end, timezone, callback) {                  
                     var param = {
@@ -134,15 +109,16 @@ var CompCalendar = function() {
                             $.each(result.records, function(key, event) {
                                 var object = {};
                                 
-                                if (event.recurrente_date) {
+                                if (event.recurrent_date) {
                                     object.id = event.event_id;
                                     object.isRecurrent = true;
                                 } else {
                                     object.isRecurrent = false;
                                 }
                                 
+                                object.eventId = event.event_id;
                                 object.occurrenceId = event.occurrence_id;
-                                object.title = ((event.recurrente_date)?"(R) ":"") + event.heater_id;
+                                object.title = ((event.recurrent_date)?"(R) ":"") + event.heater_id;
                                 object.start = new Date(event.start_date);
                                 object.end = new Date(event.end_date);
                                 object.allDay = false;
@@ -174,7 +150,7 @@ $('#FormEditEvent').on('submit', function(e) {
 
     if (remove === "link" && event.isRecurrent && event.occurrenceId != 0) {
         // Update time to break the reccurrent status
-        updateEvent(event.occurrenceId, event.start, event.end, false, null);
+        updateEvent(event.eventId, event.occurrenceId, event.start, event.end, false, null);
 
         event._id = "oc" + event.occurrenceId;
         event.isRecurrent = false;
@@ -208,26 +184,14 @@ function addEvent(heaterId, startDate, endDate, occurrence_number) {
         start_date: startDate.format('YYYY-MM-DD%20HH:mm:ss'),
         end_date: endDate.format('YYYY-MM-DD%20HH:mm:ss'),
         setpoint: 'heat',
-        occurrence_number: occurrence_number,
+        occurrence_number: occurrence_number
     };
 
     $.getJSON('add_event', param)
         .done(function(result) {
-            if (result.success) {
-                var event = $('#calendar').fullCalendar('clientEvents', "new")[0];
-                
-                if (event.isRecurrent) {
-                    event.id = result.event_id;
-                    event.occurrenceId = 0;
-                } else {
-                    event.id = "n" + result.occurrence_id;
-                    event.occurrenceId = result.occurrence_id;
-                }
-                
-                event._id = event.id;
-                
-                $('#calendar').fullCalendar('updateEvent', event);
-                
+            if (result.success) {    
+                $('#calendar').fullCalendar('refetchEvents');
+        
                 $.bootstrapGrowl('<h4>Success!</h4> <p>' + startDate.format('HH:mm') + ' to ' + endDate.format('HH:mm') + '</p>', {
                     type: "success",
                     delay: 2500,
@@ -249,12 +213,13 @@ function addEvent(heaterId, startDate, endDate, occurrence_number) {
     });
 };
 
-function updateEvent(id, startTime, endTime, allOccurrence, revertFunc) {
+function updateEvent(eventId, occurrenceId, startTime, endTime, allOccurrence, revertFunc) {
     var param = {
-        id: id,
-        start: startTime.format('HH:mm:ss'),
-        end: endTime.format('HH:mm:ss'),
-        all_occurrences: allOccurrence,
+        event_id: eventId,
+        occurrence_id: occurrenceId,
+        start_date: startTime.format('YYYY-MM-DD%20HH:mm:ss'),
+        end_date: endTime.format('YYYY-MM-DD%20HH:mm:ss'),
+        all_occurrences: allOccurrence
     };
 
     $.getJSON('set_event_time', param)
