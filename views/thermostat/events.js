@@ -67,7 +67,7 @@ var CompCalendar = function() {
                 },
                 displayEventEnd: true,
                 defaultView: 'agendaWeek',
-                height: 900,
+                height: 700,
                 firstDay: 1,
                 scrollTime: '10:00:00',
                 timeFormat: 'H(:mm)',
@@ -82,7 +82,7 @@ var CompCalendar = function() {
                     var copiedEventObject = $.extend({}, originalEventObject);
                     
                     var endDate = moment(date);
-                    endDate.add(2, 'hours');
+                    endDate.add(1, 'hours');
                     
                     addEvent(copiedEventObject.heater_id, date, endDate, copiedEventObject.occurrenceNumber);
                 },
@@ -118,7 +118,7 @@ var CompCalendar = function() {
                                 
                                 object.eventId = event.event_id;
                                 object.occurrenceId = event.occurrence_id;
-                                object.title = ((event.recurrent_date)?"(R) ":"") + event.heater_id;
+                                object.title = ((event.recurrent_date)?"(R) ":"") + "Heat";
                                 object.start = new Date(event.start_date);
                                 object.end = new Date(event.end_date);
                                 object.allDay = false;
