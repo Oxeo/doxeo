@@ -67,7 +67,7 @@ var CompCalendar = function() {
                 },
                 displayEventEnd: true,
                 defaultView: 'agendaWeek',
-                height: 700,
+                height: 710,
                 firstDay: 1,
                 scrollTime: '10:00:00',
                 timeFormat: 'H(:mm)',
