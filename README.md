@@ -1,8 +1,6 @@
 # Web connected thermostat with Raspberry Pi
 
-![Home](/pictures/web_home.png)
-![Temperature](/pictures/web_temperature.png)
-![Heating time](/pictures/web_heating_time.png)
+![Home](/pictures/web_presentation.png)
 
 ## Requirements
 
@@ -17,12 +15,10 @@
 4. Run : ./doxeo-monitor
 5. To get somme help : ./doxeo-monitor --help
 
-## Can be connected to Doxeo Android
+## Work also with Doxeo-Android
 
-![Home](/pictures/android_home.png)
-![Home](/pictures/android_thermostat.png)
-![Home](/pictures/android_temperature.png)
-![Home](/pictures/android_switch.png)
+![Home](/pictures/android_presentation2.png)
+![Home](/pictures/android_presentation.png)
 
 ## Extras
 
