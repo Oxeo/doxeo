@@ -146,6 +146,13 @@ void DoxeoMonitor::createUser()
     QString password;
     User newUser = User();
 
+    // Connection to Mysql Database
+    Database::initialize("QMYSQL");
+    if(!Database::open()) {
+        cout << "Mysql connection failed!";
+        return;
+    }
+
     userName = commandLine("email:");
     password = commandLine("password:");
 
@@ -155,6 +162,7 @@ void DoxeoMonitor::createUser()
 
         if (newUser.flush()) {
             cout << "User created with success!" << endl;
+            cout << "The application shall be restared to take into acount the new user!" << endl;
         } else {
             cout << "User not created: unknown error!" << endl;
         }
