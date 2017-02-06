@@ -18,8 +18,9 @@ protected slots:
     void closeApplication();
 
 protected:
-    void settingsCommandLine(QString title, QString setting);
+    QString commandLine(QString title);
     void configure();
+    void createUser();
     bool commandLineParser(bool *error);
     bool stopApplication();
 

@@ -4,16 +4,18 @@
 
 ## Requirements
 
-* Qt
+* Qt 5
 * Mysql
 
 ## Installation
 
-1. Generate a MakeFile : qmake
-2. Compile the application : make
-3. Configure the application : ./doxeo-monitor --configure
-4. Run : ./doxeo-monitor
-5. To get somme help : ./doxeo-monitor --help
+* Generate a MakeFile: qmake
+* Compile the application: make
+* Configure the application: ./doxeo-monitor --configure
+* Create a new user: ./doxeo-monitor --user
+* Run : ./doxeo-monitor
+* Go the web page: http://localhost:8080
+* To get somme help : ./doxeo-monitor --help
 
 ## Work also with Doxeo-Android
 

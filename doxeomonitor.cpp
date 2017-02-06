@@ -91,11 +91,11 @@ void DoxeoMonitor::closeApplication()
     }
 }
 
-void DoxeoMonitor::settingsCommandLine(QString title, QString setting)
+QString DoxeoMonitor::commandLine(QString title)
 {
-    QSettings settings;
     QTextStream Qin(stdin);
     QTextStream cout(stdout);
+    QString result;
 
     cout << title << endl;
     forever
@@ -104,19 +104,63 @@ void DoxeoMonitor::settingsCommandLine(QString title, QString setting)
         if (!line.isNull())
         {
             if (line != "") {
-                settings.setValue(setting, line);
+                result = line;
             }
             break;
         }
     }
+
+    return result;
 }
 
 void DoxeoMonitor::configure()
 {
-    settingsCommandLine("Enter database host name:", "database/hostname");
-    settingsCommandLine("Enter database username:", "database/username");
-    settingsCommandLine("Enter database password:", "database/password");
-    settingsCommandLine("Enter database name:", "database/databasename");
+    QSettings settings;
+    QString userInput;
+
+    userInput = commandLine("Enter database host name:");
+    if (userInput != "") {
+        settings.setValue("database/hostname", userInput);
+    }
+
+    userInput = commandLine("Enter database username:");
+    if (userInput != "") {
+        settings.setValue("database/username", userInput);
+    }
+
+    userInput = commandLine("Enter database password:");
+    if (userInput != "") {
+        settings.setValue("database/password", userInput);
+    }
+
+    userInput = commandLine("Enter database name:");
+    if (userInput != "") {
+        settings.setValue("database/databasename", userInput);
+    }
+}
+
+void DoxeoMonitor::createUser()
+{
+    QTextStream cout(stdout);
+    QString userName;
+    QString password;
+    User newUser = User();
+
+    userName = commandLine("email:");
+    password = commandLine("password:");
+
+    if (userName != "" && password != "") {
+        newUser.setUsername(userName);
+        newUser.setPassword(password);
+
+        if (newUser.flush()) {
+            cout << "User created with success!" << endl;
+        } else {
+            cout << "User not created: unknown error!" << endl;
+        }
+    } else {
+        cout << "User not created: email or password empty!" << endl;
+    }
 }
 
 bool DoxeoMonitor::commandLineParser(bool *error)
@@ -130,6 +174,9 @@ bool DoxeoMonitor::commandLineParser(bool *error)
 
     QCommandLineOption configureOption(QStringList() << "c" << "configure", "Configure the programme.");
     parser.addOption(configureOption);
+
+    QCommandLineOption userOption(QStringList() << "u" << "user", "create a new user");
+    parser.addOption(userOption);
 
     QCommandLineOption debugOption(QStringList() << "d" << "debug", "Print debug logs in stderr/console.");
     parser.addOption(debugOption);
@@ -145,6 +192,11 @@ bool DoxeoMonitor::commandLineParser(bool *error)
 
     if (parser.isSet(configureOption)) {
         configure();
+        return true;
+    }
+
+    if (parser.isSet(userOption)) {
+        createUser();
         return true;
     }
 
