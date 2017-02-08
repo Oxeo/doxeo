@@ -15,8 +15,11 @@ public:
     void stop();
 
 public slots:
+    void user();
     void jsonLogin();
     void jsonLogout();
+    void jsonChangePassword();
+    void jsonUserInfo();
 
 };
 

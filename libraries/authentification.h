@@ -2,6 +2,7 @@
 #define AUTHENTIFICATION_H
 
 #include <core/httpheader.h>
+#include <models/user.h>
 #include <QHash>
 #include <QString>
 
@@ -11,6 +12,8 @@ public:
     bool connection(QString &login, QString &password, QString &cookie, QString &error);
     void disconnection(HttpHeader *header, QString &cookie);
     bool isConnected(HttpHeader *header, QString &cookie);
+    User& getConnectedUser(HttpHeader *header, QString &cookie);
+    void removeUserAutoconnect(QString login);
 
     static Authentification& auth();
 

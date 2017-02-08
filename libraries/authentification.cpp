@@ -114,6 +114,29 @@ bool Authentification::isConnected(HttpHeader *header, QString &cookie)
     return true;
 }
 
+User &Authentification::getConnectedUser(HttpHeader *header, QString &cookie)
+{
+    if (!isConnected(header, cookie)) {
+        throw QString("User not connected");
+    }
+
+    QString login = header->getCookie("doxeomonitor_login");
+
+    return User::get(login);
+}
+
+void Authentification::removeUserAutoconnect(QString login)
+{
+    QHashIterator<QString, Authentification::Remember> i(rememberList);
+    while (i.hasNext()) {
+        i.next();
+
+        if (login.compare(i.value().login, Qt::CaseInsensitive)) {
+            removeRememberCode(i.key());
+        }
+    }
+}
+
 Authentification &Authentification::auth()
 {
     static Authentification instance;
