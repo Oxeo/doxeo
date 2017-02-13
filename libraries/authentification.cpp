@@ -131,7 +131,7 @@ void Authentification::removeUserAutoconnect(QString login)
     while (i.hasNext()) {
         i.next();
 
-        if (login.compare(i.value().login, Qt::CaseInsensitive)) {
+        if (login.compare(i.value().login, Qt::CaseInsensitive) == 0) {
             removeRememberCode(i.key());
         }
     }
