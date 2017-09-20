@@ -29,7 +29,7 @@
  1. Download the driver [here](https://dev.mysql.com/downloads/connector/c/).
  2. Copy libmysql.dll into C:\Program Files\Qt\5.5\mingw492_32\bin
 
-### Install Qt
+### Install Qt 5.5 (not tested)
 
  1. Download Qt [here](http://download.qt.io/archive/qt/5.5/5.5.1/single/qt-everywhere-opensource-src-5.5.1.tar.xz).
  2. Copy the folder qtbase into your raspberry pi
@@ -49,11 +49,14 @@
  5. do: make
  6. do: sudo make install
  
-### Install QtSerialPort
+### Install QtSerialPort (5.5)
 
  1. Download Qt [here](http://download.qt.io/archive/qt/5.5/5.5.1/single/qt-everywhere-opensource-src-5.5.1.tar.xz).
  2. Copy the folder qtserialport into your raspberry pi
  3. Create a folder qtserialport-build next to the repository qtserialport
- 4. do: qmake ../qtserialport/qtserialport.pro
- 5. do: make
- 6. do: sudo make install
+ 4. Go to the folder qtserialport-build and do:
+ ```
+ qmake ../qtserialport/qtserialport.pro
+ make
+ sudo make install
+```
