@@ -3,14 +3,17 @@
 #include "models/switch.h"
 #include "models/user.h"
 #include "models/heater.h"
+#include "models/sensor.h"
 #include "controllers/switchcontroller.h"
 #include "controllers/defaultcontroller.h"
 #include "controllers/assetcontroller.h"
 #include "controllers/authcontroller.h"
 #include "controllers/freeboxcontroller.h"
 #include "controllers/thermostatcontroller.h"
+#include "controllers/sensorcontroller.h"
 #include "libraries/messagelogger.h"
 #include "libraries/authentification.h"
+#include "libraries/device.h"
 #include "core/database.h"
 
 #include <QDir>
@@ -67,13 +70,18 @@ int DoxeoMonitor::start()
 
     // Update data
     Switch::update();
+    Sensor::update();
+
+    // Connect device
+    Device::initialize(this);
 
     // Add controller
     httpServer->addController(new AssetController(), "assets");
     httpServer->addController(new SwitchController(this), "switch");
-    httpServer->addController(new AuthController(), "auth");
-    httpServer->addController(new FreeboxController(this), "freebox");
+    httpServer->addController(new AuthController(this), "auth");
+    httpServer->addController(new FreeboxController(), "freebox");
     httpServer->addController(new ThermostatController(this), "thermostat");
+    httpServer->addController(new SensorController(this), "sensor");
 
     qDebug() << QCoreApplication::applicationName() + " started.";
 

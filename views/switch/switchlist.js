@@ -28,8 +28,11 @@ $(document).ready(function () {
             name: {
                 title: 'Name',
             },
-            command: {
-                title: 'Command',
+            power_on_cmd: {
+                title: 'Power on command',
+            },
+			power_off_cmd: {
+                title: 'Power off command',
             },
             status: {
                 title: 'Status',

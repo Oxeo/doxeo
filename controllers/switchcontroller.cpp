@@ -2,6 +2,7 @@
 #include "models/switch.h"
 #include "models/switchevent.h"
 #include "libraries/authentification.h"
+#include "libraries/device.h"
 
 #include <QProcess>
 #include <QJsonObject>
@@ -10,6 +11,8 @@
 
 SwitchController::SwitchController(QObject *parent) : AbstractController(parent)
 {
+    connect(Device::Instance(), SIGNAL(dataReceived(QString, QString)), this, SLOT(dataReceivedFromDevice(QString, QString)));
+
     switchScheduler = new SwitchScheduler(parent);
     switchScheduler->start(QThread::LowPriority);
 
@@ -36,6 +39,18 @@ void SwitchController::defaultAction()
 void SwitchController::stop()
 {
 
+}
+
+void SwitchController::dataReceivedFromDevice(QString id, QString value) {
+    QHash<int, Switch> &list = Switch::getSwitchList();
+
+    foreach (const Switch &sw, list) {
+        if (sw.getPowerOnCmd().contains(id + ";" + value)) {
+            list[sw.getId()].setStatus("on");
+        } else if (sw.getPowerOffCmd().contains(id + ";" + value)) {
+            list[sw.getId()].setStatus("off");
+        }
+    }
 }
 
 void SwitchController::events()
@@ -277,7 +292,8 @@ void SwitchController::jsonEditSwitch()
 
     Switch sw(query->getItem("id").toInt());
     sw.setName(query->getItem("name"));
-    sw.setCommand(query->getItem("command"));
+    sw.setPowerOnCmd(query->getItem("power_on_cmd"));
+    sw.setPowerOffCmd(query->getItem("power_off_cmd"));
     sw.setStatus(query->getItem("status"));
     sw.flush();
 

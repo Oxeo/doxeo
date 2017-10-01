@@ -189,6 +189,23 @@ function update() {
             $('#room_temperature').text('ERROR');
         }
     });
+	
+	$.getJSON('sensor/sensor_list.js').done(function(result) {
+        if (result.Result == "OK") {
+            $('#sensorList').html('');
+            $.each(result.Records, function(key, val) {
+                $('#sensorList').append('<tr><td class="text-right" style="width: 50%">'+val.name+'</td><td class="text-left">'+val.value+'</td></tr>');
+            });
+        } else {
+            $('#sensorList').html('<tr><td></td></tr>');
+            updateError = true;
+            alert_error(result.msg);
+        }
+    }).fail(function(jqxhr, textStatus, error) {
+        $('#sensorList').html('<tr><td></td></tr>')
+        updateError = true;
+        alert_error("Request Failed: " + error);
+    });
 }
 
 $(".restart_scheduler").click(function() {

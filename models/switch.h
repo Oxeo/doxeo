@@ -16,15 +16,17 @@ public:
     void setStatus(QString status);
     int getId()  const;
     QString getStatus()  const;
-    QString getCommand()  const;
     void powerOn();
     void powerOff();
     QString getName() const;
     QJsonObject toJson() const;
     void setName(const QString &value);
-    void setCommand(const QString &value);
     bool flush();
     bool remove();
+    void setPowerOnCmd(const QString &value);
+    void setPowerOffCmd(const QString &value);
+    QString getPowerOnCmd() const;
+    QString getPowerOffCmd() const;
 
     static void update();
     static bool isIdValid(int id);
@@ -32,12 +34,12 @@ public:
     static QHash<int, Switch>& getSwitchList();
 
 protected:
-    void sendCommand(QString command, QString status);
 
     int id;
     QString name;
     QString status;
-    QString command;
+    QString powerOnCmd;
+    QString powerOffCmd;
 
     static QHash<int, Switch> switchList;
 };

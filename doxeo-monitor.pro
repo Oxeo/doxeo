@@ -6,7 +6,7 @@
 
 CONFIG += debug_and_release
 
-QT       += network sql
+QT       += network sql serialport
 
 TARGET = doxeo-monitor
 TEMPLATE = app
@@ -38,7 +38,10 @@ SOURCES += main.cpp\
     controllers/thermostatcontroller.cpp \
     models/temperature.cpp \
     libraries/temperaturelogger.cpp \
-    models/heaterindicator.cpp
+    models/heaterindicator.cpp \
+    libraries/device.cpp \
+    models/sensor.cpp \
+    controllers/sensorcontroller.cpp
 
 HEADERS  += \
     controllers/switchcontroller.h \
@@ -67,4 +70,9 @@ HEADERS  += \
     controllers/thermostatcontroller.h \
     models/temperature.h \
     libraries/temperaturelogger.h \
-    models/heaterindicator.h
+    models/heaterindicator.h \
+    libraries/device.h \
+    models/sensor.h \
+    controllers/sensorcontroller.h
+
+RESOURCES +=

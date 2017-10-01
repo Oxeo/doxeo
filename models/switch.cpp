@@ -1,5 +1,6 @@
 #include "switch.h"
 #include "core/database.h"
+#include "libraries/device.h"
 #include <QSqlQuery>
 #include <QVariant>
 #include <QDebug>
@@ -43,27 +44,22 @@ QString Switch::getStatus() const
     return status;
 }
 
-QString Switch::getCommand() const
-{
-    return command;
-}
-
 void Switch::powerOn()
 {
-    sendCommand(this->command, "on");
+    Device::Instance()->send(powerOnCmd.split(",").value(0));
     setStatus("on");
 }
 
 void Switch::powerOff()
 {
-    sendCommand(this->command, "off");
+    Device::Instance()->send(powerOffCmd.split(",").value(0));
     setStatus("off");
 }
 
 void Switch::update()
 {
     QSqlQuery query = Database::getQuery();
-    query.prepare("SELECT id, status, command, name FROM switch");
+    query.prepare("SELECT id, status, name, power_on_cmd, power_off_cmd FROM switch");
 
     if(Database::exec(query))
     {
@@ -73,8 +69,9 @@ void Switch::update()
             Switch sw(query.value(0).toInt());
 
             sw.status = query.value(1).toString();
-            sw.command = query.value(2).toString();
-            sw.name = query.value(3).toString();
+            sw.name = query.value(2).toString();
+            sw.powerOnCmd = query.value(3).toString();
+            sw.powerOffCmd = query.value(4).toString();
 
             switchList.insert(sw.id, sw);
         }
@@ -93,25 +90,6 @@ Switch &Switch::get(int id)
     return switchList[id];
 }
 
-void Switch::sendCommand(QString command, QString status)
-{
-    QProcess process;
-    QStringList params;
-
-    params << "doxeo-remote" << command << status.toLower();
-    process.start("sudo", params);
-    process.waitForFinished(10000);
-
-    if (process.exitCode() != 0) {
-        qCritical() << "Unable to send switch command: " << process.readAll() << process.readAllStandardError();
-    }
-}
-
-void Switch::setCommand(const QString &value)
-{
-    command = value;
-}
-
 void Switch::setName(const QString &value)
 {
     name = value;
@@ -128,7 +106,8 @@ QJsonObject Switch::toJson() const
 
     result.insert("id", id);
     result.insert("name", name);
-    result.insert("command", command);
+    result.insert("power_on_cmd", powerOnCmd);
+    result.insert("power_off_cmd", powerOffCmd);
     result.insert("status", status);
 
     return result;
@@ -139,18 +118,39 @@ QHash<int, Switch> &Switch::getSwitchList()
     return switchList;
 }
 
+QString Switch::getPowerOnCmd() const
+{
+    return powerOnCmd;
+}
+
+QString Switch::getPowerOffCmd() const
+{
+    return powerOffCmd;
+}
+
+void Switch::setPowerOnCmd(const QString &value)
+{
+    powerOnCmd = value;
+}
+
+void Switch::setPowerOffCmd(const QString &value)
+{
+    powerOffCmd = value;
+}
+
 bool Switch::flush()
 {
     QSqlQuery query = Database::getQuery();
 
     if (id > 0) {
-        query.prepare("UPDATE switch SET name=?, command=?, status=? WHERE id=?");
+        query.prepare("UPDATE switch SET name=?, power_on_cmd=?, power_off_cmd=?, status=? WHERE id=?");
     } else {
-        query.prepare("INSERT INTO switch (name, command, status) "
+        query.prepare("INSERT INTO switch (name, power_on_cmd, power_off_cmd, status) "
                       "VALUES (?, ?, ?)");
     }
     query.addBindValue(name);
-    query.addBindValue(command);
+    query.addBindValue(powerOnCmd);
+    query.addBindValue(powerOffCmd);
     query.addBindValue(status);
 
     if (id > 0) {

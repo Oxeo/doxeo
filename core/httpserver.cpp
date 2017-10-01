@@ -70,7 +70,7 @@ void HttpServer::readClient()
             delete socket;
         }
 
-        if (timer.elapsed() > 100) {
+        if (timer.elapsed() > 3000) {
             qDebug() << httpHeader.getUrl() << "took" << timer.elapsed() << "milliseconds.";
         }
     }

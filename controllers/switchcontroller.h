@@ -29,6 +29,9 @@ public slots:
     void jsonDeleteSwitch();
     void jsonChangeSwitchStatus();
 
+protected slots:
+    void dataReceivedFromDevice(QString id, QString value);
+
 protected:
     QJsonObject convertToJson(const SwitchEvent &event);
 
