@@ -36,7 +36,7 @@ DoxeoMonitor::DoxeoMonitor(int &argc, char **argv) : QCoreApplication(argc, argv
     setOrganizationName("Oxeo");
     setOrganizationDomain("www.oxeo.fr");
     setApplicationName("Doxeo Monitor");
-    setApplicationVersion("beta 0.1");
+    setApplicationVersion("V1.1.0 beta 1");
 
     connect(this, SIGNAL(aboutToQuit()), this, SLOT(closeApplication()));
 }

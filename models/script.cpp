@@ -26,7 +26,7 @@ int Script::getId() const
 void Script::update()
 {
     QSqlQuery query = Database::getQuery();
-    query.prepare("SELECT id, status, name, description, content FROM Script");
+    query.prepare("SELECT id, status, name, description, content FROM script");
 
     if(Database::exec(query))
     {
@@ -120,9 +120,9 @@ bool Script::flush()
     QSqlQuery query = Database::getQuery();
 
     if (id > 0) {
-        query.prepare("UPDATE Script SET name=?, description=?, content=?, status=? WHERE id=?");
+        query.prepare("UPDATE script SET name=?, description=?, content=?, status=? WHERE id=?");
     } else {
-        query.prepare("INSERT INTO Script (name, description, content, status) "
+        query.prepare("INSERT INTO script (name, description, content, status) "
                       "VALUES (?, ?, ?, ?)");
     }
     query.addBindValue(name);
@@ -154,7 +154,7 @@ bool Script::remove()
 {
     QSqlQuery query = Database::getQuery();
 
-    query.prepare("DELETE FROM Script WHERE id=?");
+    query.prepare("DELETE FROM script WHERE id=?");
     query.addBindValue(id);
 
     if (Database::exec(query)) {
