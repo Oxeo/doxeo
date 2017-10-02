@@ -16,7 +16,7 @@ public:
     QString getItem(QString key);
 
 private:
-    QString normalize(QString text);
+    QString normalize(const QString &text);
 
     QStringList query;
     QHash<QString, QString> item;

@@ -1,4 +1,5 @@
 #include "urlquery.h"
+#include <QUrl>
 
 UrlQuery::UrlQuery(QString url)
 {
@@ -6,16 +7,16 @@ UrlQuery::UrlQuery(QString url)
     query = url.split("/");
 
     if (query.last().contains("?")) {
-        QString text = normalize(query.last());
+        QString text = query.last();
         text.remove(QRegExp("^.*\\?"));
         QStringList list = text.split("&");
 
         foreach(QString element, list) {
             QStringList a = element.split("=");
             if (a.length() > 1) {
-                this->item.insert(a.at(0), a.at(1));
+                this->item.insert(normalize(a.at(0)), normalize(a.at(1)));
             } else {
-                this->item.insert(a.at(0), "");
+                this->item.insert(normalize(a.at(0)), "");
             }
         }
 
@@ -46,18 +47,18 @@ QString UrlQuery::getItem(QString key)
     }
 }
 
-QString UrlQuery::normalize(QString text)
+QString UrlQuery::normalize(const QString &text)
 {
-    text.replace("%25", "%");
-    text.replace("%40", "@");
-    text.replace("%27", "‘");
-    text.replace("%26", "&");
-    text.replace("%22", "“");
-    text.replace("%27", "’");
-    text.replace("%2C", ",");
-    text.replace("%20", " ");
-    text.replace("%3A", ":");
-
-    return text;
+    QString input = "http://www.test.com/" + text;
+    input.replace("+", " ");
+    QByteArray latin = input.toLatin1();
+    QByteArray utf8 = input.toUtf8();
+    if (latin != utf8) {
+       // URL string containing unicode characters (no percent encoding expected)
+       return QUrl::fromUserInput(input).toDisplayString().remove("http://www.test.com/");
+    } else {
+       // URL string containing ASCII characters only (assume possible %-encoding)
+       return QUrl::fromUserInput(QUrl::fromPercentEncoding(input.toLatin1())).toDisplayString().remove("http://www.test.com/");
+    }
 }
 
