@@ -41,7 +41,9 @@ SOURCES += main.cpp\
     models/heaterindicator.cpp \
     libraries/device.cpp \
     models/sensor.cpp \
-    controllers/sensorcontroller.cpp
+    controllers/sensorcontroller.cpp \
+    controllers/scriptcontroller.cpp \
+    models/script.cpp
 
 HEADERS  += \
     controllers/switchcontroller.h \
@@ -73,6 +75,8 @@ HEADERS  += \
     models/heaterindicator.h \
     libraries/device.h \
     models/sensor.h \
-    controllers/sensorcontroller.h
+    controllers/sensorcontroller.h \
+    controllers/scriptcontroller.h \
+    models/script.h
 
 RESOURCES +=

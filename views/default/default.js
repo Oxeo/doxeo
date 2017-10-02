@@ -206,6 +206,23 @@ function update() {
         updateError = true;
         alert_error("Request Failed: " + error);
     });
+	
+	$.getJSON('script/script_list.js').done(function(result) {
+        if (result.Result == "OK") {
+            $('#scriptList').html('');
+            $.each(result.Records, function(key, val) {
+                $('#scriptList').append('<tr><td class="text-right" style="width: 50%">'+val.name+'</td><td class="text-left">'+val.status+'</td></tr>');
+            });
+        } else {
+            $('#scriptList').html('<tr><td></td></tr>');
+            updateError = true;
+            alert_error(result.msg);
+        }
+    }).fail(function(jqxhr, textStatus, error) {
+        $('#scriptList').html('<tr><td></td></tr>')
+        updateError = true;
+        alert_error("Request Failed: " + error);
+    });
 }
 
 $(".restart_scheduler").click(function() {

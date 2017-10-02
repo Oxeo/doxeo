@@ -146,7 +146,7 @@ bool Switch::flush()
         query.prepare("UPDATE switch SET name=?, power_on_cmd=?, power_off_cmd=?, status=? WHERE id=?");
     } else {
         query.prepare("INSERT INTO switch (name, power_on_cmd, power_off_cmd, status) "
-                      "VALUES (?, ?, ?)");
+                      "VALUES (?, ?, ?, ?)");
     }
     query.addBindValue(name);
     query.addBindValue(powerOnCmd);
