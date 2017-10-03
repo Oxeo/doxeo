@@ -1,6 +1,7 @@
 #include "device.h"
 #include <QtSerialPort/QSerialPortInfo>
 #include <QtDebug>
+#include <QThread>
 
 Device* Device::instance = NULL;
 
@@ -64,10 +65,15 @@ QSerialPort* Device::foundDevice(const QString name)
         serialTemp->setPort(info);
         serialTemp->setBaudRate(QSerialPort::Baud9600);
 
+        if (info.portName().contains("ttyAMA0")) {
+            continue;
+        }
+
         if (serialTemp->open(QIODevice::ReadWrite)) {
-            serialTemp->waitForReadyRead(3000);
+            QThread::sleep(3);
             serialTemp->setTextModeEnabled(true);
-            serialTemp->write("device_name");
+            serialTemp->write("device_name\n");
+            return serialTemp;
             for (int i=0; i<10;i++) {
                 if (serialTemp->waitForReadyRead(1000) && serialTemp->canReadLine()) {
                     QByteArray response = serialTemp->readLine();
