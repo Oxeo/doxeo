@@ -2,6 +2,7 @@
 #define SCRIPTCONTROLLER_H
 
 #include "core/abstractcontroller.h"
+#include "libraries/scriptengine.h"
 
 
 class ScriptController : public AbstractController
@@ -19,8 +20,8 @@ public slots:
     void jsonEditScript();
     void jsonDeleteScript();
 
-protected slots:
-    void dataReceivedFromDevice(QString id, QString value);
+protected:
+    ScriptEngine *scriptEngine;
 };
 
 

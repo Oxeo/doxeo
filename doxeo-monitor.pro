@@ -6,7 +6,7 @@
 
 CONFIG += debug_and_release
 
-QT       += network sql serialport
+QT       += network sql serialport script
 
 TARGET = doxeo-monitor
 TEMPLATE = app
@@ -43,7 +43,10 @@ SOURCES += main.cpp\
     models/sensor.cpp \
     controllers/sensorcontroller.cpp \
     controllers/scriptcontroller.cpp \
-    models/script.cpp
+    models/script.cpp \
+    libraries/scriptengine.cpp \
+    libraries/scripthelper.cpp \
+    core/event.cpp
 
 HEADERS  += \
     controllers/switchcontroller.h \
@@ -77,6 +80,9 @@ HEADERS  += \
     models/sensor.h \
     controllers/sensorcontroller.h \
     controllers/scriptcontroller.h \
-    models/script.h
+    models/script.h \
+    libraries/scriptengine.h \
+    libraries/scripthelper.h \
+    core/event.h
 
 RESOURCES +=

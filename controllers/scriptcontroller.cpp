@@ -8,12 +8,13 @@
 
 ScriptController::ScriptController(QObject *parent) : AbstractController(parent)
 {
-    connect(Device::Instance(), SIGNAL(dataReceived(QString, QString)), this, SLOT(dataReceivedFromDevice(QString, QString)));
-
     router.insert("list", "scriptList");
     router.insert("script_list.js", "jsonScriptList");
     router.insert("edit_script.js", "jsonEditScript");
     router.insert("delete_script.js", "jsonDeleteScript");
+
+    Script::update();
+    scriptEngine = new ScriptEngine(parent);
 }
 
 void ScriptController::defaultAction()
@@ -24,32 +25,6 @@ void ScriptController::defaultAction()
 void ScriptController::stop()
 {
 
-}
-
-void ScriptController::dataReceivedFromDevice(QString id, QString value) {
-    QHash<int, Script> &list = Script::getScriptList();
-
-    foreach (const Script &script, list) {
-        QString c = script.getContent();
-
-        QStringList a = c.split("=");
-
-        if (a.length() != 2) {
-            break;
-        }
-
-        QString action = a[0];
-        QString test = a[1];
-
-        if (!test.trimmed().contains(id + ";" + value)) {
-            break;
-        }
-
-        if (action.contains("email")) {
-            QString email = action.split(":")[1].trimmed();
-            qDebug() << "send alert email to " + email;
-        }
-    }
 }
 
 void ScriptController::scriptList()

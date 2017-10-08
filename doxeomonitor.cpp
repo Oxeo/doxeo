@@ -1,10 +1,7 @@
 #include "doxeomonitor.h"
 
-#include "models/switch.h"
 #include "models/user.h"
 #include "models/heater.h"
-#include "models/sensor.h"
-#include "models/script.h"
 #include "controllers/switchcontroller.h"
 #include "controllers/defaultcontroller.h"
 #include "controllers/assetcontroller.h"
@@ -69,11 +66,6 @@ int DoxeoMonitor::start()
     if (!verbose) {
         qInstallMessageHandler(MessageLogger::messageHandler);
     }
-
-    // Update data
-    Switch::update();
-    Sensor::update();
-    Script::update();
 
     // Connect device
     Device::initialize(this);

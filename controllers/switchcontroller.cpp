@@ -11,6 +11,8 @@
 
 SwitchController::SwitchController(QObject *parent) : AbstractController(parent)
 {
+    Switch::update();
+
     connect(Device::Instance(), SIGNAL(dataReceived(QString, QString)), this, SLOT(dataReceivedFromDevice(QString, QString)));
 
     switchScheduler = new SwitchScheduler(parent);
@@ -42,13 +44,13 @@ void SwitchController::stop()
 }
 
 void SwitchController::dataReceivedFromDevice(QString id, QString value) {
-    QHash<int, Switch> &list = Switch::getSwitchList();
+    QHash<int, Switch*> &list = Switch::getSwitchList();
 
-    foreach (const Switch &sw, list) {
-        if (sw.getPowerOnCmd().contains(id + ";" + value)) {
-            list[sw.getId()].setStatus("on");
-        } else if (sw.getPowerOffCmd().contains(id + ";" + value)) {
-            list[sw.getId()].setStatus("off");
+    foreach (const Switch* sw, list) {
+        if (sw->getPowerOnCmd().contains(id + ";" + value)) {
+            list[sw->getId()]->setStatus("on");
+        } else if (sw->getPowerOffCmd().contains(id + ";" + value)) {
+            list[sw->getId()]->setStatus("off");
         }
     }
 }
@@ -179,12 +181,12 @@ void SwitchController::jsonDeleteEvent()
 void SwitchController::jsonSwitchOptions()
 {
     QJsonArray array;
-    QHash<int, Switch> &switchList = Switch::getSwitchList();
+    QHash<int, Switch*> &switchList = Switch::getSwitchList();
 
-    foreach (const Switch &sw, switchList) {
+    foreach (const Switch *sw, switchList) {
         QJsonObject object;
-        object.insert("DisplayText", sw.getName());
-        object.insert("Value", sw.getId());
+        object.insert("DisplayText", sw->getName());
+        object.insert("Value", sw->getId());
         array.push_back(object);
     }
 
@@ -252,11 +254,10 @@ void SwitchController::jsonRestartScheduler()
 
 void SwitchController::jsonSwitchList()
 {
-    QList<Switch> list = Switch::getSwitchList().values();
     QJsonArray array;
 
-    foreach (const Switch &sw, list) {
-        array.push_back(sw.toJson());
+    foreach (const Switch *sw, Switch::getSwitchList()) {
+        array.push_back(sw->toJson());
     }
 
     QJsonObject result;
@@ -338,14 +339,14 @@ void SwitchController::jsonChangeSwitchStatus()
         result.insert("success", false);
     }
     else if (Switch::isIdValid(query->getItem("id").toInt())) {
-        Switch &sw = Switch::get(query->getItem("id").toInt());
+        Switch* sw = Switch::get(query->getItem("id").toInt());
 
         if (query->getItem("status").toLower() == "on") {
-            sw.powerOn();
+            sw->powerOn();
             result.insert("status", "on");
             result.insert("success", true);
         } else if (query->getItem("status").toLower() == "off") {
-            sw.powerOff();
+            sw->powerOff();
             result.insert("status", "off");
             result.insert("success", true);
         } else {

@@ -108,13 +108,13 @@ void SwitchScheduler::run()
                         activeEvents.removeOne(actionToDo.event);
                     }
                 } else {
-                    Switch &sw = Switch::get(actionToDo.event.getSwitchId());
+                    Switch *sw = Switch::get(actionToDo.event.getSwitchId());
                     if (actionToDo.type == Action::Start) {
-                        sw.powerOn();
-                        qDebug() << "[SwitchScheduler] " << sw.getName() << " set to on";
+                        sw->powerOn();
+                        qDebug() << "[SwitchScheduler] " << sw->getName() << " set to on";
                     } else {
-                        sw.powerOff();
-                        qDebug() << "[SwitchScheduler] " << sw.getName() << " set to off";
+                        sw->powerOff();
+                        qDebug() << "[SwitchScheduler] " << sw->getName() << " set to off";
                     }
                 }
             }
@@ -172,27 +172,27 @@ bool SwitchScheduler::isKilled()
 
 void SwitchScheduler::manageFreeboxEvent(const SwitchEvent &event, const FreeboxCtrl::Status &status) const
 {
-    Switch &sw = Switch::get(event.getSwitchId());
+    Switch *sw = Switch::get(event.getSwitchId());
     SwitchEvent::CheckOptions check = event.getCheckFreebox();
 
     if (status == FreeboxCtrl::On && (check == SwitchEvent::Start || check == SwitchEvent::StartStop)) {
-        sw.powerOn();
-        qDebug() << "[SwitchScheduler] " << sw.getName() << " set to on";
+        sw->powerOn();
+        qDebug() << "[SwitchScheduler] " << sw->getName() << " set to on";
     }
 
     else if (status == FreeboxCtrl::Off && (check == SwitchEvent::Stop || check == SwitchEvent::StartStop)) {
-        sw.powerOff();
-        qDebug() << "[SwitchScheduler] " << sw.getName() << " set to off";
+        sw->powerOff();
+        qDebug() << "[SwitchScheduler] " << sw->getName() << " set to off";
     }
 
     else if (status == FreeboxCtrl::On && (check == SwitchEvent::ReverseStart || check == SwitchEvent::ReverseStartStop)) {
-        sw.powerOff();
-        qDebug() << "[SwitchScheduler] " << sw.getName() << " set to off";
+        sw->powerOff();
+        qDebug() << "[SwitchScheduler] " << sw->getName() << " set to off";
     }
 
     else if (status == FreeboxCtrl::Off && (check == SwitchEvent::ReverseStop || check == SwitchEvent::ReverseStartStop)) {
-        sw.powerOn();
-        qDebug() << "[SwitchScheduler] " << sw.getName() << " set to on";
+        sw->powerOn();
+        qDebug() << "[SwitchScheduler] " << sw->getName() << " set to on";
     }
 }
 

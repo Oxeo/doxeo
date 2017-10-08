@@ -15,10 +15,11 @@ public:
     void stop();
 
 public slots:
+    void sensorList();
     void jsonSensorList();
-
-protected slots:
-    void update(QString id, QString value);
+    void jsonCreateSensor();
+    void jsonEditSensor();
+    void jsonDeleteSensor();
 };
 
 #endif // SENSORCONTROLLER_H

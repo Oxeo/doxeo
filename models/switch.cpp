@@ -7,21 +7,28 @@
 #include <QSqlError>
 #include <QProcess>
 
-QHash<int, Switch> Switch::switchList;
+QHash<int, Switch*> Switch::switchList;
+Event* Switch::event;
 
-Switch::Switch()
+Switch::Switch(QObject *parent) : QObject(parent)
 {
+    event = new Event(parent);
     this->id = 0;
 }
 
-Switch::Switch(int id)
+Switch::Switch(int id, QObject *parent) : QObject(parent)
 {
+    event = new Event(parent);
     this->id = id;
 }
 
 void Switch::setStatus(QString status)
 {
     QSqlQuery query = Database::getQuery();
+
+    if (this->status != status) {
+        emit Switch::event->valueChanged(QString::number(this->id), status);
+    }
 
     this->status = status;
 
@@ -66,14 +73,14 @@ void Switch::update()
         switchList.clear();
         while(query.next())
         {
-            Switch sw(query.value(0).toInt());
+            Switch *sw = new Switch(query.value(0).toInt());
 
-            sw.status = query.value(1).toString();
-            sw.name = query.value(2).toString();
-            sw.powerOnCmd = query.value(3).toString();
-            sw.powerOffCmd = query.value(4).toString();
+            sw->status = query.value(1).toString();
+            sw->name = query.value(2).toString();
+            sw->powerOnCmd = query.value(3).toString();
+            sw->powerOffCmd = query.value(4).toString();
 
-            switchList.insert(sw.id, sw);
+            switchList.insert(sw->id, sw);
         }
     }
 
@@ -85,7 +92,7 @@ bool Switch::isIdValid(int id)
     return switchList.contains(id);
 }
 
-Switch &Switch::get(int id)
+Switch *Switch::get(int id)
 {
     return switchList[id];
 }
@@ -113,9 +120,14 @@ QJsonObject Switch::toJson() const
     return result;
 }
 
-QHash<int, Switch> &Switch::getSwitchList()
+QHash<int, Switch*> &Switch::getSwitchList()
 {
     return switchList;
+}
+
+Event *Switch::getEvent()
+{
+    return event;
 }
 
 QString Switch::getPowerOnCmd() const
@@ -166,6 +178,7 @@ bool Switch::flush()
             id = query.value("id").toInt();
         }
         Database::release();
+        emit Switch::event->dataChanged();
         return true;
     } else {
         Database::release();
@@ -182,6 +195,7 @@ bool Switch::remove()
 
     if (Database::exec(query)) {
         Database::release();
+        emit Switch::event->dataChanged();
         return true;
     } else {
         Database::release();

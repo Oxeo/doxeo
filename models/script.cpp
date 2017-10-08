@@ -111,10 +111,6 @@ void Script::setContent(const QString &value)
     content = value;
 }
 
-
-
-
-
 bool Script::flush()
 {
     QSqlQuery query = Database::getQuery();
@@ -165,5 +161,3 @@ bool Script::remove()
         return false;
     }
 }
-
-
