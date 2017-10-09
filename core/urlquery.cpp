@@ -53,12 +53,20 @@ QString UrlQuery::normalize(const QString &text)
     input.replace("+", " ");
     QByteArray latin = input.toLatin1();
     QByteArray utf8 = input.toUtf8();
+    QString result;
     if (latin != utf8) {
        // URL string containing unicode characters (no percent encoding expected)
-       return QUrl::fromUserInput(input).toDisplayString().remove("http://www.test.com/");
+       result = QUrl::fromUserInput(input).toDisplayString().remove("http://www.test.com/");
     } else {
        // URL string containing ASCII characters only (assume possible %-encoding)
-       return QUrl::fromUserInput(QUrl::fromPercentEncoding(input.toLatin1())).toDisplayString().remove("http://www.test.com/");
+       result = QUrl::fromUserInput(QUrl::fromPercentEncoding(input.toLatin1())).toDisplayString().remove("http://www.test.com/");
     }
+
+    result.replace("%22", "\"");
+    result.replace("%7B", "{");
+    result.replace("%7D", "}");
+    result.replace("%0D%0A", "\n");
+
+    return result;
 }
 

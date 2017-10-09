@@ -34,6 +34,7 @@ $(document).ready(function () {
 			content: {
                 title: 'Content',
 				type: 'textarea',
+				list: false,
             },
             status: {
                 title: 'Status',

@@ -5,6 +5,7 @@
 
 #include <QObject>
 #include <QScriptEngine>
+#include <QTimer>
 
 class ScriptEngine : public QObject
 {
@@ -15,13 +16,15 @@ public:
     void load();
 
 protected slots:
-    void run();
+    void run(QString event = "scheduler");
     void updateSensors();
     void updateSwitches();
-    void statusChanged(QString id, QString value);
+    void switchValueChanged(QString id, QString value);
+    void sensorValueChanged(QString id, QString value);
 
 protected:
     QScriptEngine engine;
+    QTimer timer;
 };
 
 #endif // SCRIPTENGINE_H

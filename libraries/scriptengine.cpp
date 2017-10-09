@@ -5,7 +5,6 @@
 #include "libraries/device.h"
 
 #include <QDebug>
-#include <QTimer>
 
 ScriptEngine::ScriptEngine(QObject *parent) : QObject(parent)
 {
@@ -15,13 +14,19 @@ ScriptEngine::ScriptEngine(QObject *parent) : QObject(parent)
     updateSwitches();
 
     connect(Sensor::getEvent(), SIGNAL(dataChanged()), this, SLOT(updateSensors()));
-    connect(Sensor::getEvent(), SIGNAL(valueChanged(QString,QString)), this, SLOT(statusChanged(QString, QString)));
+    connect(Sensor::getEvent(), SIGNAL(valueChanged(QString,QString)), this, SLOT(sensorValueChanged(QString, QString)));
     connect(Switch::getEvent(), SIGNAL(dataChanged()), this, SLOT(updateSwitches()));
-    connect(Switch::getEvent(), SIGNAL(valueChanged(QString,QString)), this, SLOT(statusChanged(QString, QString)));
+    connect(Switch::getEvent(), SIGNAL(valueChanged(QString,QString)), this, SLOT(switchValueChanged(QString, QString)));
+
+    timer.setInterval(60000); // 1 minutes
+    connect(&timer, SIGNAL(timeout()), this, SLOT(run()));
+    timer.start();
 }
 
-void ScriptEngine::run()
+void ScriptEngine::run(QString event)
 {
+    engine.globalObject().setProperty("event", event);
+
     foreach (const Script &script, Script::getScriptList()) {
 
         if (script.getStatus().compare("off", Qt::CaseInsensitive) == 0) {
@@ -34,7 +39,7 @@ void ScriptEngine::run()
             int line = engine.uncaughtExceptionLineNumber();
             qCritical() << "uncaught exception at line" << line << ":" << result.toString();
         } else {
-            qDebug() << result.toString();
+            qDebug() << "script engine output:" << result.toString();
         }
     }
 }
@@ -53,9 +58,12 @@ void ScriptEngine::updateSwitches()
     }
 }
 
-void ScriptEngine::statusChanged(QString id, QString value)
+void ScriptEngine::switchValueChanged(QString id, QString value)
 {
-    engine.globalObject().setProperty("event", id + ";" + value);
+    run("switch_" + id + ";" + value);
+}
 
-    QTimer::singleShot(500, this, SLOT(run()));
+void ScriptEngine::sensorValueChanged(QString id, QString value)
+{
+    run(id + ";" + value);
 }
