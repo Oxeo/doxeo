@@ -24,21 +24,22 @@ Switch::Switch(int id, QObject *parent) : QObject(parent)
 
 void Switch::setStatus(QString status)
 {
-    QSqlQuery query = Database::getQuery();
-
-    if (this->status != status) {
-        emit Switch::event->valueChanged(QString::number(this->id), status);
+    if (status == this->status) {
+        return;
     }
 
     this->status = status;
 
     // Update database
+    QSqlQuery query = Database::getQuery();
     query.prepare("UPDATE switch SET status=? WHERE id=?");
     query.addBindValue(status);
     query.addBindValue(this->id);
 
     Database::exec(query);
     Database::release();
+
+    emit Switch::event->valueChanged(QString::number(this->id), status);
 }
 
 int Switch::getId() const
