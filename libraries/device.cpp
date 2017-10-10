@@ -48,7 +48,7 @@ void Device::readData()
 
 void Device::send(QString id, QString value)
 {
-    QString sendingString = id + ";" + value;
+    QString sendingString = id + ";" + value + "\n";
     serial->write(sendingString.toLatin1());
 }
 
