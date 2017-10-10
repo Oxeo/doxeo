@@ -7,19 +7,15 @@
 #include <QSqlError>
 #include <QProcess>
 
-QHash<int, Switch*> Switch::switchList;
+QHash<QString, Switch*> Switch::switchList;
 Event* Switch::event;
 
-Switch::Switch(QObject *parent) : QObject(parent)
-{
-    event = new Event(parent);
-    this->id = 0;
-}
-
-Switch::Switch(int id, QObject *parent) : QObject(parent)
+Switch::Switch(QString id, QObject *parent) : QObject(parent)
 {
     event = new Event(parent);
     this->id = id;
+
+    connect(Device::Instance(), SIGNAL(dataReceived(QString, QString)), this, SLOT(updateValue(QString, QString)));
 }
 
 void Switch::setStatus(QString status)
@@ -39,10 +35,10 @@ void Switch::setStatus(QString status)
     Database::exec(query);
     Database::release();
 
-    emit Switch::event->valueChanged(QString::number(this->id), status);
+    emit Switch::event->valueChanged(this->id, status);
 }
 
-int Switch::getId() const
+QString Switch::getId() const
 {
     return id;
 }
@@ -54,13 +50,17 @@ QString Switch::getStatus() const
 
 void Switch::powerOn()
 {
-    Device::Instance()->send(powerOnCmd.split(",").value(0));
+    if (powerOnCmd.trimmed() != "") {
+        Device::Instance()->send(powerOnCmd.split(",").value(0));
+    }
     setStatus("on");
 }
 
 void Switch::powerOff()
 {
-    Device::Instance()->send(powerOffCmd.split(",").value(0));
+    if (powerOffCmd.trimmed() != "") {
+        Device::Instance()->send(powerOffCmd.split(",").value(0));
+    }
     setStatus("off");
 }
 
@@ -74,7 +74,7 @@ void Switch::update()
         switchList.clear();
         while(query.next())
         {
-            Switch *sw = new Switch(query.value(0).toInt());
+            Switch *sw = new Switch(query.value(0).toString());
 
             sw->status = query.value(1).toString();
             sw->name = query.value(2).toString();
@@ -88,12 +88,12 @@ void Switch::update()
     Database::release();
 }
 
-bool Switch::isIdValid(int id)
+bool Switch::isIdValid(QString id)
 {
     return switchList.contains(id);
 }
 
-Switch *Switch::get(int id)
+Switch *Switch::get(QString id)
 {
     return switchList[id];
 }
@@ -121,7 +121,7 @@ QJsonObject Switch::toJson() const
     return result;
 }
 
-QHash<int, Switch*> &Switch::getSwitchList()
+QHash<QString, Switch *> &Switch::getSwitchList()
 {
     return switchList;
 }
@@ -151,33 +151,23 @@ void Switch::setPowerOffCmd(const QString &value)
     powerOffCmd = value;
 }
 
-bool Switch::flush()
+bool Switch::flush(bool newObject)
 {
     QSqlQuery query = Database::getQuery();
 
-    if (id > 0) {
+    if (!newObject) {
         query.prepare("UPDATE switch SET name=?, power_on_cmd=?, power_off_cmd=?, status=? WHERE id=?");
     } else {
-        query.prepare("INSERT INTO switch (name, power_on_cmd, power_off_cmd, status) "
-                      "VALUES (?, ?, ?, ?)");
+        query.prepare("INSERT INTO switch (name, power_on_cmd, power_off_cmd, status, id) "
+                      "VALUES (?, ?, ?, ?, ?)");
     }
     query.addBindValue(name);
     query.addBindValue(powerOnCmd);
     query.addBindValue(powerOffCmd);
     query.addBindValue(status);
-
-    if (id > 0) {
-        query.addBindValue(id);
-    }
+    query.addBindValue(id);
 
     if (Database::exec(query)) {
-
-        if (id < 1) {
-            query.prepare("SELECT id FROM switch WHERE id = LAST_INSERT_ID();");
-            Database::exec(query);
-            query.next();
-            id = query.value("id").toInt();
-        }
         Database::release();
         emit Switch::event->dataChanged();
         return true;
@@ -201,5 +191,14 @@ bool Switch::remove()
     } else {
         Database::release();
         return false;
+    }
+}
+
+void Switch::updateValue(QString id, QString value)
+{
+    if (getPowerOnCmd().contains(id + ";" + value)) {
+        setStatus("on");
+    } else if (getPowerOffCmd().contains(id + ";" + value)) {
+        setStatus("off");
     }
 }

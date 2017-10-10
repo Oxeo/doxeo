@@ -11,6 +11,7 @@ Sensor::Sensor(QString id, QObject *parent) : QObject(parent)
 {
     event = new Event(parent);
     this->id = id;
+    cmd = "";
     name = "";
     value = "";
 
@@ -22,6 +23,7 @@ QJsonObject Sensor::toJson() const
     QJsonObject result;
 
     result.insert("id", id);
+    result.insert("cmd", cmd);
     result.insert("name", name);
     result.insert("value", value);
 
@@ -59,7 +61,7 @@ QHash<QString, Sensor*> &Sensor::getSensorList()
 void Sensor::update()
 {
     QSqlQuery query = Database::getQuery();
-    query.prepare("SELECT id, name, value FROM sensor");
+    query.prepare("SELECT id, cmd, name, value FROM sensor");
 
     if(Database::exec(query))
     {
@@ -67,8 +69,9 @@ void Sensor::update()
         while(query.next())
         {
             Sensor* s = new Sensor(query.value(0).toString());
-            s->name = query.value(1).toString();
-            s->value = query.value(2).toString();
+            s->cmd = query.value(1).toString();
+            s->name = query.value(2).toString();
+            s->value = query.value(3).toString();
 
             sensorList.insert(s->getId(), s);
         }
@@ -87,12 +90,13 @@ bool Sensor::flush(bool newObject)
     QSqlQuery query = Database::getQuery();
 
     if (!newObject) {
-        query.prepare("UPDATE sensor SET name=?, value=? WHERE id=?");
+        query.prepare("UPDATE sensor SET cmd=?, name=?, value=? WHERE id=?");
     } else {
-        query.prepare("INSERT INTO sensor (name, value, id) "
-                      "VALUES (?, ?, ?)");
+        query.prepare("INSERT INTO sensor (cmd, name, value, id) "
+                      "VALUES (?, ?, ?, ?)");
     }
 
+    query.addBindValue(cmd);
     query.addBindValue(name);
     query.addBindValue(value);
     query.addBindValue(id);
@@ -124,10 +128,21 @@ bool Sensor::remove()
     }
 }
 
-void Sensor::updateValue(QString id, QString value)
+void Sensor::updateValue(QString cmd, QString value)
 {
-    if (this->id == id && this->value != value) {
+    if (this->cmd == cmd && this->value != value) {
         this->value = value;
         emit Sensor::event->valueChanged(this->id, value);
     }
 }
+
+QString Sensor::getCmd() const
+{
+    return cmd;
+}
+
+void Sensor::setCmd(const QString &value)
+{
+    cmd = value;
+}
+

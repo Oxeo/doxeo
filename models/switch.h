@@ -11,21 +11,20 @@
 class Switch : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(int id READ getId)
+    Q_PROPERTY(QString id READ getId)
     Q_PROPERTY(QString status READ getStatus)
 
 public:
-    explicit Switch(QObject *parent = 0);
-    explicit Switch(int id, QObject *parent = 0);
+    explicit Switch(QString id, QObject *parent = 0);
 
     void setStatus(QString status);
-    int getId()  const;
+    QString getId()  const;
     QString getStatus()  const;
 
     QString getName() const;
     QJsonObject toJson() const;
     void setName(const QString &value);
-    bool flush();
+    bool flush(bool newObject);
     bool remove();
     void setPowerOnCmd(const QString &value);
     void setPowerOffCmd(const QString &value);
@@ -33,23 +32,26 @@ public:
     QString getPowerOffCmd() const;
 
     static void update();
-    static bool isIdValid(int id);
-    static Switch *get(int id);
-    static QHash<int, Switch *> &getSwitchList();
+    static bool isIdValid(QString id);
+    static Switch *get(QString id);
+    static QHash<QString, Switch *> &getSwitchList();
     static Event* getEvent();
 
 public slots:
     void powerOn();
     void powerOff();
 
+protected slots:
+    void updateValue(QString cmd, QString value);
+
 protected:
-    int id;
+    QString id;
     QString name;
     QString status;
     QString powerOnCmd;
     QString powerOffCmd;
 
-    static QHash<int, Switch*> switchList;
+    static QHash<QString, Switch*> switchList;
     static Event *event;
 };
 

@@ -26,6 +26,9 @@ $(document).ready(function () {
                 edit: false,
                 list: true
             },
+			cmd: {
+				title: 'Command',
+            },
             name: {
                 title: 'Name',
             },

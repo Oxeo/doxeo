@@ -54,7 +54,7 @@ void ScriptEngine::updateSensors()
 void ScriptEngine::updateSwitches()
 {
     foreach (Switch* s, Switch::getSwitchList()) {
-        engine.globalObject().setProperty("switch_" + QString::number(s->getId()), engine.newQObject(s));
+        engine.globalObject().setProperty("switch_" + s->getId(), engine.newQObject(s));
     }
 }
 
@@ -65,5 +65,5 @@ void ScriptEngine::switchValueChanged(QString id, QString value)
 
 void ScriptEngine::sensorValueChanged(QString id, QString value)
 {
-    run(id + ";" + value);
+    run("sensor_" + id + ";" + value);
 }

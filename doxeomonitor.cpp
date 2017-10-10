@@ -6,7 +6,6 @@
 #include "controllers/defaultcontroller.h"
 #include "controllers/assetcontroller.h"
 #include "controllers/authcontroller.h"
-#include "controllers/freeboxcontroller.h"
 #include "controllers/thermostatcontroller.h"
 #include "controllers/sensorcontroller.h"
 #include "controllers/scriptcontroller.h"
@@ -74,7 +73,6 @@ int DoxeoMonitor::start()
     httpServer->addController(new AssetController(), "assets");
     httpServer->addController(new SwitchController(this), "switch");
     httpServer->addController(new AuthController(this), "auth");
-    httpServer->addController(new FreeboxController(), "freebox");
     httpServer->addController(new ThermostatController(this), "thermostat");
     httpServer->addController(new SensorController(this), "sensor");
     httpServer->addController(new ScriptController(this), "script");

@@ -26,39 +26,23 @@
       </table>
     </div>
     
-    <!-- Switch Scheduler Panel -->
+    <!-- Sensor Panel -->
     <div class="panel panel-warning">
       <div class="panel-heading clearfix">
-        <h3 class="panel-title pull-left" style="padding-top: 2.5px;">Switch Scheduler</h3>
+        <h3 class="panel-title pull-left" style="padding-top: 2.5px;">Sensor</h3>
         <div class="dropdown pull-right">
-          <button class="btn btn-link dropdown-toggle btn-xs" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+          <button class="btn btn-link dropdown-toggle btn-xs" type="button" id="dropdownSwitch" data-toggle="dropdown" aria-expanded="true">
             <span class="glyphicon glyphicon-menu-hamburger" aria-label="menu"></span>
           </button>
-          <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-            <li role="presentation" class="dropdown-header">Scheduler</li>
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="javascript:void(0)" class="enable_switch_scheduler" data-status="on">Enable</a></li>
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="javascript:void(0)" class="enable_switch_scheduler" data-status="off">Disable</a></li>
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="javascript:void(0)" class="restart_scheduler">Restart</a></li>
-            <li role="presentation" class="divider"></li>
-            <li role="presentation" class="dropdown-header">Freebox</li>
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="javascript:void(0)" class="register_freebox">Register</a></li>
-            <li role="presentation" class="divider"></li>
-            <li role="presentation" class="dropdown-header">Events</li>
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="/switch/events">Manage</a></li>
+          <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownSwitch">
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="/sensor/list">Manage</a></li>
           </ul>
-        </div>        
+        </div>
       </div>
-      <table class="table text-center">
-        <tr>
-          <td class="text-right" style="width: 50%">Scheduler</td>
-          <td class="text-left" id="swhitch_scheduler_status"></td>
-        </tr>
-        <tr>
-          <td class="text-right">Freebox</td>
-          <td class="text-left" id="freebox_status"></td>
-        </tr>
+      <table class="table" id="sensorList">
       </table>
     </div>
+    
 
   </div>
   
@@ -129,23 +113,6 @@
       </table>
     </div>
 	
-	<!-- Sensor Panel -->
-    <div class="panel panel-info">
-      <div class="panel-heading clearfix">
-        <h3 class="panel-title pull-left" style="padding-top: 2.5px;">Sensor</h3>
-        <div class="dropdown pull-right">
-          <button class="btn btn-link dropdown-toggle btn-xs" type="button" id="dropdownSwitch" data-toggle="dropdown" aria-expanded="true">
-            <span class="glyphicon glyphicon-menu-hamburger" aria-label="menu"></span>
-          </button>
-          <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownSwitch">
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="/sensor/list">Manage</a></li>
-          </ul>
-        </div>
-      </div>
-      <table class="table" id="sensorList">
-      </table>
-    </div>
-
   </div>
   
   <!-- Right column -->

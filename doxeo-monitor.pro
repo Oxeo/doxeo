@@ -26,9 +26,7 @@ SOURCES += main.cpp\
     libraries/authentification.cpp \
     libraries/freeboxctrl.cpp \
     models/switchevent.cpp \
-    libraries/switchscheduler.cpp \
     core/weektime.cpp \
-    controllers/freeboxcontroller.cpp \
     libraries/messagelogger.cpp \
     doxeomonitor.cpp \
     models/heater.cpp \
@@ -63,9 +61,7 @@ HEADERS  += \
     libraries/authentification.h \
     libraries/freeboxctrl.h \
     models/switchevent.h \
-    libraries/switchscheduler.h \
     core/weektime.h \
-    controllers/freeboxcontroller.h \
     libraries/messagelogger.h \
     doxeomonitor.h \
     models/heater.h \

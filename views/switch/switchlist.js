@@ -14,16 +14,17 @@ $(document).ready(function () {
         },
         actions: {
             listAction: 'switch_list.js',
-            createAction: 'edit_switch.js',
+            createAction: 'create_switch.js',
             updateAction: 'edit_switch.js',
             deleteAction: 'delete_switch.js'
         },
         fields: {
             id: {
+                title: 'Id',
                 key: true,
-                create: false,
+                create: true,
                 edit: false,
-                list: false
+                list: true
             },
             name: {
                 title: 'Name',

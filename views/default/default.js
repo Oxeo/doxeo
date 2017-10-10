@@ -12,34 +12,6 @@ function update() {
     if (updateError) {
         return;
     }
-
-    $.getJSON('switch/status.js').done(function(result) {
-        if (result.success) {
-            if (result.scheduler_enabled) {
-                $('#swhitch_scheduler_status').html("<span class=\"label label-success\">Running</span>");
-            } else {
-                $('#swhitch_scheduler_status').html("<span class=\"label label-danger\">Stopped</span>");
-            }
-            
-            if (result.freebox_status === "Running") {
-                $('#freebox_status').html('<span class="label label-success">Running</span>');
-            } else if (result.freebox_status === "Pending") {
-                $('#freebox_status').html('<span class="label label-success">Pending</span>');
-            } else {
-                $('#freebox_status').html('<span class="label label-danger" data-toggle="tooltip" data-placement="right" title="'+result.freebox_status+'">Ko</span>');
-                // Enable tooltip
-                $(function () {
-                  $('[data-toggle="tooltip"]').tooltip()
-                })
-            }
-        } else {
-            updateError = true;
-            alert_error(result.msg);
-        }
-    }).fail(function(jqxhr, textStatus, error) {
-        updateError = true;
-        alert_error("Request Failed: " + error);
-    });
     
     $.getJSON('system.js').done(function(result) {
         if (result.success) {
@@ -224,58 +196,6 @@ function update() {
         alert_error("Request Failed: " + error);
     });
 }
-
-$(".restart_scheduler").click(function() {
-    $.getJSON('switch/restart_scheduler.js')
-        .done(function(result) {
-            if (result.success) {
-                alert_success("Switch Scheduler restarted with success.");
-            } else {
-                alert_error(result.msg);
-            }
-        }).fail(function(jqxhr, textStatus, error) {
-            alert_error("Request Failed: " + error);
-    });
-});
-
- $(".register_freebox").click(function() {           
-    alert_info("Please validate the freebox registration on the server freebox screen.");
-
-    $.getJSON('freebox/register')
-        .done(function(result) {
-            if (result.success) {
-                alert_success("Freebox registered with success.");
-            } else {
-                alert_error(result.msg);
-            }
-        }).fail(function(jqxhr, textStatus, error) {
-            alert_error("Request Failed: " + error);
-    });
-});
-
-$(".enable_switch_scheduler").click(function() {
-    var data = $(this).data();
-    
-    param = {
-        status: data.status
-    };
-
-    $.getJSON('switch/enable_scheduler.js', param)
-        .done(function(result) {
-            if (result.success) {
-                if (result.scheduler_enable) {
-                    alert_success("Switch scheduler enabled.");
-                } else {
-                    alert_success("Switch scheduler disabled.");
-                }
-                update();
-            } else {
-                alert_error(result.msg);
-            }
-        }).fail(function(jqxhr, textStatus, error) {
-            alert_error("Request Failed: " + error);
-    });
-});
 
 $('#switchList').on('switchChange.bootstrapSwitch', '.switch_on_off', function(event, state){
     var data = $(this).data();

@@ -11,6 +11,7 @@ class Sensor : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString id READ getId)
+    Q_PROPERTY(QString cmd READ getCmd)
     Q_PROPERTY(QString value READ getValue)
 
 public:
@@ -26,6 +27,9 @@ public:
     QString getValue() const;
     void setValue(const QString &value);
 
+    QString getCmd() const;
+    void setCmd(const QString &value);
+
     bool flush(bool newObject);
     bool remove();
 
@@ -34,10 +38,11 @@ public:
     static Event* getEvent();
 
 protected slots:
-    void updateValue(QString id, QString value);
+    void updateValue(QString cmd, QString value);
 
 protected:
     QString id;
+    QString cmd;
     QString name;
     QString value;
 

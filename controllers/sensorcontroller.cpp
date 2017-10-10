@@ -68,7 +68,7 @@ void SensorController::jsonCreateSensor()
     }
 
     Sensor sw(query->getItem("id"));
-
+    sw.setCmd(query->getItem("cmd"));
     sw.setName(query->getItem("name"));
     sw.setValue(query->getItem("value"));
     sw.flush(true);
@@ -92,7 +92,7 @@ void SensorController::jsonEditSensor()
     }
 
     Sensor sw(query->getItem("id"));
-
+    sw.setCmd(query->getItem("cmd"));
     sw.setName(query->getItem("name"));
     sw.setValue(query->getItem("value"));
     sw.flush(false);
