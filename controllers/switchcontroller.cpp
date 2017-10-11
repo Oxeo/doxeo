@@ -1,6 +1,5 @@
 #include "switchcontroller.h"
 #include "models/switch.h"
-#include "models/switchevent.h"
 #include "libraries/authentification.h"
 #include "libraries/device.h"
 

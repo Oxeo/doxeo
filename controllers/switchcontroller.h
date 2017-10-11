@@ -2,7 +2,6 @@
 #define SWITCHCONTROLLER_H
 
 #include "core/abstractcontroller.h"
-#include "models/switchevent.h"
 
 class SwitchController : public AbstractController
 {
