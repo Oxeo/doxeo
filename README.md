@@ -68,3 +68,12 @@
  5. do: qmake ../qtscript/qtscript.pro
  6. do: make
  7. do: sudo make install
+ 
+### Allowing your linux userid permission to use your usb device
+ 1. ls -la /dev/ttyUSB0
+ 2. sudo usermod -a -G dialout myUserName
+ 
+### Run Doxeo at startup
+ 1. do: sudo vim /etc/rc.local
+ 2. add: su pi -c '/home/pi/apps/doxeo-monitor/doxeo-monitor --path /home/pi/apps/doxeo-monitor'
+
