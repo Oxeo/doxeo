@@ -100,21 +100,21 @@ function update() {
         if (result.success) {           
             if (result.thermostat_status === 1) {
                 $('#thermostat_status_active').find('span').first().text("Running");
-                $('#thermostat_status_active').removeClass('btn-danger btn-success btn-warning').addClass('btn-success');
+                $('#thermostat_status_active').removeClass('btn-secondary btn-success btn-warning').addClass('btn-success');
             } else if (result.thermostat_status === 2) {
                 $('#thermostat_status_active').find('span').first().text("On Break");
-                $('#thermostat_status_active').removeClass('btn-danger btn-success btn-warning').addClass('btn-warning');
+                $('#thermostat_status_active').removeClass('btn-secondary btn-success btn-warning').addClass('btn-warning');
             } else {
                 $('#thermostat_status_active').find('span').first().text("Stopped");
-                $('#thermostat_status_active').removeClass('btn-danger btn-success btn-warning').addClass('btn-danger');
+                $('#thermostat_status_active').removeClass('btn-secondary btn-success btn-warning').addClass('btn-secondary');
             }
             
             if (result.temperaturelogger_enable) {
                 $('#temperaturelogger_status_active').find('span').first().text("Running");
-                $('#temperaturelogger_status_active').removeClass('btn-danger btn-success').addClass('btn-success');
+                $('#temperaturelogger_status_active').removeClass('btn-secondary btn-success').addClass('btn-success');
             } else {
                 $('#temperaturelogger_status_active').find('span').first().text("Stopped");
-                $('#temperaturelogger_status_active').removeClass('btn-danger btn-success').addClass('btn-danger');
+                $('#temperaturelogger_status_active').removeClass('btn-secondary btn-success').addClass('btn-secondary');
             }
         } else {
             updateError = true;
