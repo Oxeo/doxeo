@@ -29,7 +29,7 @@
  1. Download the driver [here](https://dev.mysql.com/downloads/connector/c/).
  2. Copy libmysql.dll into C:\Program Files\Qt\5.5\mingw492_32\bin
 
-### Install Qtbase
+### Install Qt 5.5 (not tested)
 
  1. Download Qt [here](http://download.qt.io/archive/qt/5.5/5.5.1/single/qt-everywhere-opensource-src-5.5.1.tar.xz).
  2. Copy the folder qtbase into your raspberry pi
@@ -49,31 +49,36 @@
  5. do: make
  6. do: sudo make install
  
-### Install QtSerialPort
+### Install QtSerialPort (5.5)
 
  1. Download Qt [here](http://download.qt.io/archive/qt/5.5/5.5.1/single/qt-everywhere-opensource-src-5.5.1.tar.xz).
  2. Copy the folder qtserialport into your raspberry pi
  3. Create a folder qtserialport-build next to the repository qtserialport
- 4. Open the folder qtserialport-build
- 5. do: qmake ../qtserialport/qtserialport.pro
- 6. do: make
- 7. do: sudo make install
+ 4. Go to the folder qtserialport-build and do:
+```
+ qmake ../qtserialport/qtserialport.pro
+ make
+ sudo make install
+```
  
 ### Install Qtscript
 
  1. Download Qt [here](http://download.qt.io/archive/qt/5.5/5.5.1/single/qt-everywhere-opensource-src-5.5.1.tar.xz).
  2. Copy the folder qtscript into your raspberry pi
  3. Create a folder qtscript-build next to the repository qtscript
- 4. Open the folder qtscript-build
- 5. do: qmake ../qtscript/qtscript.pro
- 6. do: make
- 7. do: sudo make install
+ 4. Go to the folder qtscript-build and do:
+```
+ qmake ../qtscript/qtscript.pro
+ make
+ sudo make install
+```
  
 ### Allowing your linux userid permission to use your usb device
+
  1. ls -la /dev/ttyUSB0
  2. sudo usermod -a -G dialout myUserName
  
 ### Run Doxeo at startup
+
  1. do: sudo vim /etc/rc.local
  2. add: su pi -c '/home/pi/apps/doxeo-monitor/doxeo-monitor --path /home/pi/apps/doxeo-monitor'
-
