@@ -7,12 +7,14 @@
 #include <QString>
 #include <QHash>
 #include <QJsonObject>
+#include <QDateTime>
 
 class Switch : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString id READ getId)
     Q_PROPERTY(QString status READ getStatus)
+    Q_PROPERTY(int lastUpdate READ getLastUpdate)
 
 public:
     explicit Switch(QString id, QObject *parent = 0);
@@ -30,6 +32,7 @@ public:
     void setPowerOffCmd(const QString &value);
     QString getPowerOnCmd() const;
     QString getPowerOffCmd() const;
+    int getLastUpdate() const;
 
     static void update();
     static bool isIdValid(QString id);
@@ -50,9 +53,10 @@ protected:
     QString status;
     QString powerOnCmd;
     QString powerOffCmd;
+    QDateTime lastUpdate;
 
     static QHash<QString, Switch*> switchList;
-    static Event *event;
+    static Event event;
 };
 
 #endif // SWITCH_H

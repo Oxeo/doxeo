@@ -5,15 +5,15 @@
 #include <QDebug>
 
 QHash<QString, Sensor*> Sensor::sensorList;
-Event* Sensor::event;
+Event Sensor::event;
 
 Sensor::Sensor(QString id, QObject *parent) : QObject(parent)
 {
-    event = new Event(parent);
     this->id = id;
     cmd = "";
     name = "";
     value = "";
+    lastUpdate = QDateTime::currentDateTime().addYears(-1);
 
     connect(Device::Instance(), SIGNAL(dataReceived(QString, QString)), this, SLOT(updateValue(QString, QString)));
 }
@@ -82,7 +82,7 @@ void Sensor::update()
 
 Event *Sensor::getEvent()
 {
-    return event;
+    return &event;
 }
 
 bool Sensor::flush(bool newObject)
@@ -103,7 +103,7 @@ bool Sensor::flush(bool newObject)
 
     if (Database::exec(query)) {
         Database::release();
-        emit Sensor::event->dataChanged();
+        emit Sensor::event.dataChanged();
         return true;
     } else {
         Database::release();
@@ -120,7 +120,7 @@ bool Sensor::remove()
 
     if (Database::exec(query)) {
         Database::release();
-        emit Sensor::event->dataChanged();
+        emit Sensor::event.dataChanged();
         return true;
     } else {
         Database::release();
@@ -132,9 +132,15 @@ void Sensor::updateValue(QString cmd, QString value)
 {
     if (this->cmd == cmd && this->value != value) {
         this->value = value;
-        emit Sensor::event->valueChanged(this->id, value);
+        this->lastUpdate = QDateTime::currentDateTime();
+        emit Sensor::event.valueChanged(this->id, value);
     }
 }
+int Sensor::getLastUpdate() const
+{
+    return (QDateTime::currentDateTime().toTime_t() - lastUpdate.toTime_t()) / 60;
+}
+
 
 QString Sensor::getCmd() const
 {

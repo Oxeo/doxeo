@@ -6,6 +6,7 @@
 #include <QString>
 #include <QHash>
 #include <QJsonObject>
+#include <QDateTime>
 
 class Sensor : public QObject
 {
@@ -13,6 +14,7 @@ class Sensor : public QObject
     Q_PROPERTY(QString id READ getId)
     Q_PROPERTY(QString cmd READ getCmd)
     Q_PROPERTY(QString value READ getValue)
+    Q_PROPERTY(int lastUpdate READ getLastUpdate)
 
 public:
     explicit Sensor(QString id, QObject *parent = 0);
@@ -30,6 +32,8 @@ public:
     QString getCmd() const;
     void setCmd(const QString &value);
 
+    int getLastUpdate() const;
+
     bool flush(bool newObject);
     bool remove();
 
@@ -45,8 +49,9 @@ protected:
     QString cmd;
     QString name;
     QString value;
+    QDateTime lastUpdate;
 
-    static Event *event;
+    static Event event;
     static QHash<QString, Sensor*> sensorList;
 };
 

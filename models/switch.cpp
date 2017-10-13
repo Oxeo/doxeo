@@ -8,12 +8,12 @@
 #include <QProcess>
 
 QHash<QString, Switch*> Switch::switchList;
-Event* Switch::event;
+Event Switch::event;
 
 Switch::Switch(QString id, QObject *parent) : QObject(parent)
 {
-    event = new Event(parent);
     this->id = id;
+    this->lastUpdate = QDateTime::currentDateTime().addYears(-1);
 
     connect(Device::Instance(), SIGNAL(dataReceived(QString, QString)), this, SLOT(updateValue(QString, QString)));
 }
@@ -25,6 +25,7 @@ void Switch::setStatus(QString status)
     }
 
     this->status = status;
+    this->lastUpdate = QDateTime::currentDateTime();
 
     // Update database
     QSqlQuery query = Database::getQuery();
@@ -35,7 +36,7 @@ void Switch::setStatus(QString status)
     Database::exec(query);
     Database::release();
 
-    emit Switch::event->valueChanged(this->id, status);
+    emit Switch::event.valueChanged(this->id, status);
 }
 
 QString Switch::getId() const
@@ -128,7 +129,7 @@ QHash<QString, Switch *> &Switch::getSwitchList()
 
 Event *Switch::getEvent()
 {
-    return event;
+    return &event;
 }
 
 QString Switch::getPowerOnCmd() const
@@ -169,7 +170,7 @@ bool Switch::flush(bool newObject)
 
     if (Database::exec(query)) {
         Database::release();
-        emit Switch::event->dataChanged();
+        emit Switch::event.dataChanged();
         return true;
     } else {
         Database::release();
@@ -186,7 +187,7 @@ bool Switch::remove()
 
     if (Database::exec(query)) {
         Database::release();
-        emit Switch::event->dataChanged();
+        emit Switch::event.dataChanged();
         return true;
     } else {
         Database::release();
@@ -202,3 +203,9 @@ void Switch::updateValue(QString id, QString value)
         setStatus("off");
     }
 }
+
+int Switch::getLastUpdate() const
+{
+    return (QDateTime::currentDateTime().toTime_t() - lastUpdate.toTime_t()) / 60;
+}
+
