@@ -67,6 +67,9 @@ QString UrlQuery::normalize(const QString &text)
     result.replace("%7D", "}");
     result.replace("%3C", "<");
     result.replace("%3E", ">");
+    result.replace("%5C", "\\");
+    result.replace("%7C", "|");
+	
     result.replace("%0D%0A", "\n");
 
     return result;
