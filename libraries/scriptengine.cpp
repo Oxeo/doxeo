@@ -37,9 +37,9 @@ void ScriptEngine::run(QString event)
 
         if (engine.hasUncaughtException()) {
             int line = engine.uncaughtExceptionLineNumber();
-            qCritical() << "uncaught exception at line" << line << ":" << result.toString();
+            qCritical() << "Script " << script.getName() << ": error at line" << line << ":" << result.toString();
         } else if (result.toString() != "undefined") {
-            qDebug() << "script result " << script.getName() << ": " << result.toString();
+            qDebug() << "script " << script.getName() << ": " << result.toString();
         }
     }
 }

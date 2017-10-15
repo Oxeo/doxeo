@@ -25,7 +25,6 @@ void Switch::setStatus(QString status)
     }
 
     this->status = status;
-    this->lastUpdate = QDateTime::currentDateTime();
 
     // Update database
     QSqlQuery query = Database::getQuery();
@@ -37,6 +36,7 @@ void Switch::setStatus(QString status)
     Database::release();
 
     emit Switch::event.valueChanged(this->id, status);
+    this->lastUpdate = QDateTime::currentDateTime();
 }
 
 QString Switch::getId() const

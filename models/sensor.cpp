@@ -132,8 +132,8 @@ void Sensor::updateValue(QString cmd, QString value)
 {
     if (this->cmd == cmd && this->value != value) {
         this->value = value;
-        this->lastUpdate = QDateTime::currentDateTime();
         emit Sensor::event.valueChanged(this->id, value);
+        this->lastUpdate = QDateTime::currentDateTime();
     }
 }
 int Sensor::getLastUpdate() const

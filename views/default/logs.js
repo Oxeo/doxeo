@@ -12,16 +12,10 @@ function update() {
     }
     
     $.getJSON('logs.js?log=debug').done(function(result) {
-        if (result.success) {
-            if (result.debug.length > 0) {
-                $('#clearButton_placeholder').html('<button type="button" class="btn btn-primary clear_logs" data-clear="debug">Clear</button>');
-            } else {
-                $('#clearButton_placeholder').html("");
-            }
-            
+        if (result.success) {            
             $('#logsTable').html("");
             $.each(result.debug, function(key, val) {
-                $('#logsTable').append('<tr><td>'+val.date+'</td><td>'+val.message+'</td><td>'+val.file.split("/").pop()+' ('+val.line+')</td></tr>')
+                $('#logsTable').prepend('<tr><td>'+val.date+'</td><td>'+val.message+'</td><td>'+val.file.split("/").pop()+' ('+val.line+')</td></tr>')
             });
         } else {
             updateError = true;
@@ -39,11 +33,13 @@ $('#clearButton_placeholder').on('click', '.clear_logs', function(){
     param = {
         log: data.clear
     };
+	
+	$('#logsTable').text("");
     
     $.getJSON('clear_logs.js', param)
         .done(function(result) {
             if (result.success) {
-                history.back();
+                //history.back();
             } else {
                 alert_error(result.msg);
             }
