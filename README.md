@@ -82,3 +82,8 @@
 
  1. do: sudo vim /etc/rc.local
  2. add: su pi -c '/home/pi/apps/doxeo-monitor/doxeo-monitor --path /home/pi/apps/doxeo-monitor'
+ 
+### Send mail with raspberry
+
+http://www.pihomeserver.fr/2015/08/13/envoyer-un-email-depuis-votre-raspberry-pi/
+
