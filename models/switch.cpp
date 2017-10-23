@@ -57,16 +57,16 @@ QString Switch::getStatus() const
 
 void Switch::powerOn(int timerOff)
 {
-    if (powerOnCmd.trimmed() != "") {
-        Device::Instance()->send(powerOnCmd.split(",").value(0));
-    }
-    setStatus("on");
-
     if (timerOff > 0) {
         timerPowerOff.start(timerOff*1000);
     } else {
         timerPowerOff.stop();
     }
+
+    if (powerOnCmd.trimmed() != "") {
+        Device::Instance()->send(powerOnCmd.split(",").value(0));
+    }
+    setStatus("on");
 }
 
 void Switch::powerOff()
