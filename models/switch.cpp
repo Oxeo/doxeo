@@ -13,7 +13,10 @@ Event Switch::event;
 Switch::Switch(QString id, QObject *parent) : QObject(parent)
 {
     this->id = id;
-    this->lastUpdate = QDateTime::currentDateTime().addYears(-1);
+
+    for (int i=0; i<5; i++) {
+        lastUpdate.append(QDateTime::currentDateTime().addYears(-1));
+    }
 
     connect(Device::Instance(), SIGNAL(dataReceived(QString, QString)), this, SLOT(updateValue(QString, QString)));
 }
@@ -25,6 +28,8 @@ void Switch::setStatus(QString status)
     }
 
     this->status = status;
+    this->lastUpdate.prepend(QDateTime::currentDateTime());
+    this->lastUpdate.removeLast();
 
     // Update database
     QSqlQuery query = Database::getQuery();
@@ -36,7 +41,6 @@ void Switch::setStatus(QString status)
     Database::release();
 
     emit Switch::event.valueChanged(this->id, status);
-    this->lastUpdate = QDateTime::currentDateTime();
 }
 
 QString Switch::getId() const
@@ -204,8 +208,8 @@ void Switch::updateValue(QString id, QString value)
     }
 }
 
-int Switch::getLastUpdate() const
+int Switch::getLastUpdate(int index) const
 {
-    return (QDateTime::currentDateTime().toTime_t() - lastUpdate.toTime_t()) / 60;
+    return (QDateTime::currentDateTime().toTime_t() - lastUpdate.at(index).toTime_t()) / 60;
 }
 

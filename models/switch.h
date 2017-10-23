@@ -14,7 +14,6 @@ class Switch : public QObject
     Q_OBJECT
     Q_PROPERTY(QString id READ getId)
     Q_PROPERTY(QString status READ getStatus)
-    Q_PROPERTY(int lastUpdate READ getLastUpdate)
 
 public:
     explicit Switch(QString id, QObject *parent = 0);
@@ -32,7 +31,6 @@ public:
     void setPowerOffCmd(const QString &value);
     QString getPowerOnCmd() const;
     QString getPowerOffCmd() const;
-    int getLastUpdate() const;
 
     static void update();
     static bool isIdValid(QString id);
@@ -43,6 +41,7 @@ public:
 public slots:
     void powerOn();
     void powerOff();
+    int getLastUpdate(int index) const;
 
 protected slots:
     void updateValue(QString cmd, QString value);
@@ -53,7 +52,7 @@ protected:
     QString status;
     QString powerOnCmd;
     QString powerOffCmd;
-    QDateTime lastUpdate;
+    QList<QDateTime> lastUpdate;
 
     static QHash<QString, Switch*> switchList;
     static Event event;

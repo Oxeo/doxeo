@@ -13,7 +13,10 @@ Sensor::Sensor(QString id, QObject *parent) : QObject(parent)
     cmd = "";
     name = "";
     value = "";
-    lastUpdate = QDateTime::currentDateTime().addYears(-1);
+
+    for (int i=0; i<5; i++) {
+        lastUpdate.append(QDateTime::currentDateTime().addYears(-1));
+    }
 
     connect(Device::Instance(), SIGNAL(dataReceived(QString, QString)), this, SLOT(updateValue(QString, QString)));
 }
@@ -132,13 +135,15 @@ void Sensor::updateValue(QString cmd, QString value)
 {
     if (this->cmd == cmd && this->value != value) {
         this->value = value;
+        this->lastUpdate.prepend(QDateTime::currentDateTime());
+        this->lastUpdate.removeLast();
         emit Sensor::event.valueChanged(this->id, value);
-        this->lastUpdate = QDateTime::currentDateTime();
     }
 }
-int Sensor::getLastUpdate() const
+
+int Sensor::getLastUpdate(int index) const
 {
-    return (QDateTime::currentDateTime().toTime_t() - lastUpdate.toTime_t()) / 60;
+    return (QDateTime::currentDateTime().toTime_t() - lastUpdate.at(index).toTime_t()) / 60;
 }
 
 

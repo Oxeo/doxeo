@@ -18,7 +18,7 @@ ScriptEngine::ScriptEngine(QObject *parent) : QObject(parent)
     connect(Switch::getEvent(), SIGNAL(dataChanged()), this, SLOT(updateSwitches()));
     connect(Switch::getEvent(), SIGNAL(valueChanged(QString,QString)), this, SLOT(switchValueChanged(QString, QString)));
 
-    timer.setInterval(60000); // 1 minutes
+    timer.setInterval(40000); // 40 seconds
     connect(&timer, SIGNAL(timeout()), this, SLOT(run()));
     timer.start();
 }
