@@ -8,6 +8,7 @@
 #include <QHash>
 #include <QJsonObject>
 #include <QDateTime>
+#include <QTimer>
 
 class Switch : public QObject
 {
@@ -39,7 +40,7 @@ public:
     static Event* getEvent();
 
 public slots:
-    void powerOn();
+    void powerOn(int timerOff = 0);
     void powerOff();
     int getLastUpdate(int index) const;
 
@@ -53,6 +54,7 @@ protected:
     QString powerOnCmd;
     QString powerOffCmd;
     QList<QDateTime> lastUpdate;
+    QTimer timerPowerOff;
 
     static QHash<QString, Switch*> switchList;
     static Event event;

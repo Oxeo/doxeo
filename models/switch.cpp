@@ -18,6 +18,8 @@ Switch::Switch(QString id, QObject *parent) : QObject(parent)
         lastUpdate.append(QDateTime::currentDateTime().addYears(-1));
     }
 
+    timerPowerOff.setSingleShot(true);
+    connect(&timerPowerOff, SIGNAL(timeout()), this, SLOT(powerOff()));
     connect(Device::Instance(), SIGNAL(dataReceived(QString, QString)), this, SLOT(updateValue(QString, QString)));
 }
 
@@ -53,12 +55,18 @@ QString Switch::getStatus() const
     return status;
 }
 
-void Switch::powerOn()
+void Switch::powerOn(int timerOff)
 {
     if (powerOnCmd.trimmed() != "") {
         Device::Instance()->send(powerOnCmd.split(",").value(0));
     }
     setStatus("on");
+
+    if (timerOff > 0) {
+        timerPowerOff.start(timerOff*1000);
+    } else {
+        timerPowerOff.stop();
+    }
 }
 
 void Switch::powerOff()
@@ -67,6 +75,7 @@ void Switch::powerOff()
         Device::Instance()->send(powerOffCmd.split(",").value(0));
     }
     setStatus("off");
+    timerPowerOff.stop();
 }
 
 void Switch::update()
