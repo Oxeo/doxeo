@@ -166,8 +166,11 @@ function update() {
         if (result.Result == "OK") {
             $('#sensorList').html('');
             $.each(result.Records, function(key, val) {
-                $('#sensorList').append('<tr><td class="text-right" style="width: 50%">'+val.name+'</td><td class="text-left">'+val.value+'</td></tr>');
+                var date = new Date(val.last_update * 1000);;
+                var lastUpdate = date.toLocaleTimeString() + ' ' + date.toLocaleDateString();
+                $('#sensorList').append('<tr><td class="text-right" style="width: 50%">'+val.name+'</td><td class="text-left"><span data-toggle="tooltip" data-placement="right" title="'+lastUpdate+'">'+val.value+'</span></td></tr>');
             });
+            $('[data-toggle="tooltip"]').tooltip();
         } else {
             $('#sensorList').html('<tr><td></td></tr>');
             updateError = true;

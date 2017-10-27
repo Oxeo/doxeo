@@ -29,6 +29,7 @@ QJsonObject Sensor::toJson() const
     result.insert("cmd", cmd);
     result.insert("name", name);
     result.insert("value", value);
+    result.insert("last_update", QString::number(lastUpdate.at(0).toTime_t()));
 
     return result;
 }
