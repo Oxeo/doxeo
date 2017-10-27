@@ -183,7 +183,27 @@ function update() {
         if (result.Result == "OK") {
             $('#scriptList').html('');
             $.each(result.Records, function(key, val) {
-                $('#scriptList').append('<tr><td class="text-right" style="width: 50%">'+val.name+'</td><td class="text-left">'+val.status+'</td></tr>');
+				status = "\
+				<div class=\"dropdown\"> \
+				  <button class=\"btn btn-success btn-xs dropdown-toggle\" type=\"button\" style=\"border: 0px; padding:0px 5px 1px 5px; font-size:11px;\" id=\"script_status_"+val.id+"\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"> \
+					<span></span> <span class=\"caret\"></span> \
+				  </button> \
+				  <ul class=\"dropdown-menu\" aria-labelledby=\"dropdownMenuMode\"> \
+					<li><a href='javascript:void(0)' class='change_script_status' data-id='"+val.id+"' data-status='on'>Enable</a></li> \
+					<li><a href='javascript:void(0)' class='change_script_status' data-id='"+val.id+"' data-status='off'>Disable</a></li> \
+				  </ul> \
+				</div>";
+				
+				$('#scriptList').append('<tr><td class="text-right" style="width: 50%">'+val.name+'</td><td class="text-left">'+status+'</td></tr>');
+				 
+				if (val.status === "on") {
+					$('#script_status_'+val.id).find('span').first().text("Enabled");
+					$('#script_status_'+val.id).removeClass('btn-secondary btn-success').addClass('btn-success');
+				} else {
+					$('#script_status_'+val.id).find('span').first().text("Disabled");
+					$('#script_status_'+val.id).removeClass('btn-secondary btn-success').addClass('btn-secondary');
+				}
+				 
             });
         } else {
             $('#scriptList').html('<tr><td></td></tr>');
@@ -286,6 +306,21 @@ $('.container').on('click', '.change_thermostat_status', function(){
     var data = $(this).data();
 
     $.getJSON('thermostat/set_status', data)
+        .done(function(result) {
+            if (result.success) {
+                update();
+            } else {
+                alert_error(result.msg);
+            }
+        }).fail(function(jqxhr, textStatus, error) {
+            alert_error("Request Failed: " + error);
+    });
+});
+
+$('.container').on('click', '.change_script_status', function(){
+    var data = $(this).data();
+
+    $.getJSON('script/set_status', data)
         .done(function(result) {
             if (result.success) {
                 update();

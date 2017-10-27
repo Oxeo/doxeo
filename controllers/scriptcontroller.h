@@ -19,6 +19,7 @@ public slots:
     void jsonScriptList();
     void jsonEditScript();
     void jsonDeleteScript();
+    void jsonChangeScriptStatus();
 
 protected:
     ScriptEngine *scriptEngine;

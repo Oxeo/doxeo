@@ -12,6 +12,7 @@ ScriptController::ScriptController(QObject *parent) : AbstractController(parent)
     router.insert("script_list.js", "jsonScriptList");
     router.insert("edit_script.js", "jsonEditScript");
     router.insert("delete_script.js", "jsonDeleteScript");
+    router.insert("set_status", "jsonChangeScriptStatus");
 
     Script::update();
     scriptEngine = new ScriptEngine(parent);
@@ -105,3 +106,37 @@ void ScriptController::jsonDeleteScript()
 
     loadJsonView(result);
 }
+
+void ScriptController::jsonChangeScriptStatus()
+{
+    QJsonObject result;
+
+    if (!Authentification::auth().isConnected(header, cookie)) {
+        result.insert("msg", "You are not logged.");
+        result.insert("success", false);
+    }
+    else if (Script::isIdValid(query->getItem("id").toInt())) {
+        Script &s = Script::get(query->getItem("id").toInt());
+
+        if (query->getItem("status").toLower() == "on") {
+            s.setStatus("on");
+            s.flush();
+            result.insert("status", "on");
+            result.insert("success", true);
+        } else if (query->getItem("status").toLower() == "off") {
+            s.setStatus("off");
+            s.flush();
+            result.insert("status", "off");
+            result.insert("success", true);
+        } else {
+            result.insert("msg", "Unknown status");
+            result.insert("success", false);
+        }
+    } else {
+       result.insert("msg", "Script Id invalid");
+       result.insert("success", false);
+    }
+
+    loadJsonView(result);
+}
+
