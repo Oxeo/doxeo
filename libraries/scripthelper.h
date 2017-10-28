@@ -24,6 +24,7 @@ signals:
 public slots:
     void sendCmd(QString cmd);
     QString execute(QString cmd);
+    void setLog(QString log);
 };
 
 #endif // SCRIPTHELPER_H

@@ -53,3 +53,8 @@ QString ScriptHelper::execute(QString cmd)
     }
 }
 
+void ScriptHelper::setLog(QString log)
+{
+    qDebug() << log;
+}
+
