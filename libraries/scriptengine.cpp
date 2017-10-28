@@ -13,10 +13,10 @@ ScriptEngine::ScriptEngine(QObject *parent) : QObject(parent)
     updateSensors();
     updateSwitches();
 
-    connect(Sensor::getEvent(), SIGNAL(dataChanged()), this, SLOT(updateSensors()));
-    connect(Sensor::getEvent(), SIGNAL(valueChanged(QString,QString)), this, SLOT(sensorValueChanged(QString, QString)));
-    connect(Switch::getEvent(), SIGNAL(dataChanged()), this, SLOT(updateSwitches()));
-    connect(Switch::getEvent(), SIGNAL(valueChanged(QString,QString)), this, SLOT(switchValueChanged(QString, QString)));
+    connect(Sensor::getEvent(), SIGNAL(dataChanged()), this, SLOT(updateSensors()), Qt::QueuedConnection);
+    connect(Sensor::getEvent(), SIGNAL(valueChanged(QString,QString)), this, SLOT(sensorValueChanged(QString, QString)), Qt::QueuedConnection);
+    connect(Switch::getEvent(), SIGNAL(dataChanged()), this, SLOT(updateSwitches()), Qt::QueuedConnection);
+    connect(Switch::getEvent(), SIGNAL(valueChanged(QString,QString)), this, SLOT(switchValueChanged(QString, QString)), Qt::QueuedConnection);
 
     timer.setInterval(40000); // 40 seconds
     connect(&timer, SIGNAL(timeout()), this, SLOT(run()));
