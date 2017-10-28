@@ -100,21 +100,21 @@ function update() {
         if (result.success) {           
             if (result.thermostat_status === 1) {
                 $('#thermostat_status_active').find('span').first().text("Running");
-                $('#thermostat_status_active').removeClass('btn-secondary btn-success btn-warning').addClass('btn-success');
+                $('#thermostat_status_active').removeClass('btn-secondary btn-info btn-warning').addClass('btn-info');
             } else if (result.thermostat_status === 2) {
                 $('#thermostat_status_active').find('span').first().text("On Break");
-                $('#thermostat_status_active').removeClass('btn-secondary btn-success btn-warning').addClass('btn-warning');
+                $('#thermostat_status_active').removeClass('btn-secondary btn-info btn-warning').addClass('btn-warning');
             } else {
                 $('#thermostat_status_active').find('span').first().text("Stopped");
-                $('#thermostat_status_active').removeClass('btn-secondary btn-success btn-warning').addClass('btn-secondary');
+                $('#thermostat_status_active').removeClass('btn-secondary btn-info btn-warning').addClass('btn-secondary');
             }
             
             if (result.temperaturelogger_enable) {
                 $('#temperaturelogger_status_active').find('span').first().text("Running");
-                $('#temperaturelogger_status_active').removeClass('btn-secondary btn-success').addClass('btn-success');
+                $('#temperaturelogger_status_active').removeClass('btn-secondary btn-info').addClass('btn-info');
             } else {
                 $('#temperaturelogger_status_active').find('span').first().text("Stopped");
-                $('#temperaturelogger_status_active').removeClass('btn-secondary btn-success').addClass('btn-secondary');
+                $('#temperaturelogger_status_active').removeClass('btn-secondary btn-info').addClass('btn-secondary');
             }
         } else {
             updateError = true;
@@ -188,7 +188,7 @@ function update() {
             $.each(result.Records, function(key, val) {
 				status = "\
 				<div class=\"dropdown\"> \
-				  <button class=\"btn btn-success btn-xs dropdown-toggle\" type=\"button\" style=\"border: 0px; padding:0px 5px 1px 5px; font-size:11px;\" id=\"script_status_"+val.id+"\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"> \
+				  <button class=\"btn btn-xs dropdown-toggle\" type=\"button\" style=\"border: 0px; padding:0px 5px 1px 5px; font-size:11px;\" id=\"script_status_"+val.id+"\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"> \
 					<span></span> <span class=\"caret\"></span> \
 				  </button> \
 				  <ul class=\"dropdown-menu\" aria-labelledby=\"dropdownMenuMode\"> \
@@ -201,10 +201,10 @@ function update() {
 				 
 				if (val.status === "on") {
 					$('#script_status_'+val.id).find('span').first().text("Enabled");
-					$('#script_status_'+val.id).removeClass('btn-secondary btn-success').addClass('btn-success');
+					$('#script_status_'+val.id).removeClass('btn-secondary btn-info').addClass('btn-info');
 				} else {
 					$('#script_status_'+val.id).find('span').first().text("Disabled");
-					$('#script_status_'+val.id).removeClass('btn-secondary btn-success').addClass('btn-secondary');
+					$('#script_status_'+val.id).removeClass('btn-secondary btn-info').addClass('btn-secondary');
 				}
 				 
             });
@@ -322,6 +322,8 @@ $('.container').on('click', '.change_thermostat_status', function(){
 
 $('.container').on('click', '.change_script_status', function(){
     var data = $(this).data();
+	
+    $('#script_status_'+data.id).find('span').first().text("...");
 
     $.getJSON('script/set_status', data)
         .done(function(result) {
