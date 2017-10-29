@@ -1,5 +1,5 @@
 <script>
-var updateError = false;
+var updateAll = true;
 
 jQuery(document).ready(function() {
     update();
@@ -7,7 +7,7 @@ jQuery(document).ready(function() {
 });
 
 function update() {
-    if (updateError) {
+    if (!updateAll) {
         return;
     }
     
@@ -18,16 +18,16 @@ function update() {
                 $('#logsTable').prepend('<tr><td>'+val.date+'</td><td>'+val.message+'</td><td>'+val.file.split("/").pop()+' ('+val.line+')</td></tr>')
             });
         } else {
-            updateError = true;
+            updateAll = false;
             alert_error(result.msg);
         }
     }).fail(function(jqxhr, textStatus, error) {
-        updateError = true;
+        updateAll = false;
         alert_error("Request Failed: " + error);
     });
 }
 
-$('#clearButton_placeholder').on('click', '.clear_logs', function(){
+$('#buttons_placeholder').on('click', '.clear_logs', function(){
     var data = $(this).data();
     
     param = {
@@ -46,6 +46,16 @@ $('#clearButton_placeholder').on('click', '.clear_logs', function(){
         }).fail(function(jqxhr, textStatus, error) {
             alert_error("Request Failed: " + error);
     });
+});
+
+$('#buttons_placeholder').on('click', '.stop_logs', function(){
+	if (updateAll == true) {
+		updateAll = false;
+		$('.stop_logs').text("Continue");
+	} else {
+		updateAll = true;
+		$('.stop_logs').text("Stop");
+	}
 });
 
 function alert_error(message) {           
