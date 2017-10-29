@@ -25,6 +25,7 @@ protected slots:
 protected:
     QScriptEngine engine;
     QTimer timer;
+    QHash<QString, uint> eventList;
 };
 
 #endif // SCRIPTENGINE_H

@@ -26,6 +26,7 @@ ScriptEngine::ScriptEngine(QObject *parent) : QObject(parent)
 void ScriptEngine::run(QString event)
 {
     engine.globalObject().setProperty("event", event);
+    engine.globalObject().setProperty("event_date", QDateTime::currentDateTime().toTime_t() - eventList.value(event, 0));
 
     foreach (const Script &script, Script::getScriptList()) {
 
@@ -42,6 +43,8 @@ void ScriptEngine::run(QString event)
             qDebug() << "script " << script.getName() << ": " << result.toString();
         }
     }
+
+    eventList.insert(event, QDateTime::currentDateTime().toTime_t());
 }
 
 void ScriptEngine::updateSensors()
