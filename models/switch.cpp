@@ -19,8 +19,8 @@ Switch::Switch(QString id, QObject *parent) : QObject(parent)
     }
 
     timerPowerOff.setSingleShot(true);
-    connect(&timerPowerOff, SIGNAL(timeout()), this, SLOT(powerOff()));
-    connect(Device::Instance(), SIGNAL(dataReceived(QString, QString)), this, SLOT(updateValue(QString, QString)));
+    connect(&timerPowerOff, SIGNAL(timeout()), this, SLOT(powerOff()), Qt::QueuedConnection);
+    connect(Device::Instance(), SIGNAL(dataReceived(QString, QString)), this, SLOT(updateValue(QString, QString)), Qt::QueuedConnection);
 }
 
 void Switch::setStatus(QString status)

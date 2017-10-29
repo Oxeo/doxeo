@@ -18,7 +18,7 @@ Sensor::Sensor(QString id, QObject *parent) : QObject(parent)
         lastUpdate.append(QDateTime::currentDateTime().addYears(-1));
     }
 
-    connect(Device::Instance(), SIGNAL(dataReceived(QString, QString)), this, SLOT(updateValue(QString, QString)));
+    connect(Device::Instance(), SIGNAL(dataReceived(QString, QString)), this, SLOT(updateValue(QString, QString)), Qt::QueuedConnection);
 }
 
 QJsonObject Sensor::toJson() const

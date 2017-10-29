@@ -43,7 +43,7 @@ QString ScriptHelper::execute(QString cmd)
 
     process.setWorkingDirectory(QDir::currentPath());
     process.start(cmd);
-    process.waitForFinished(5000);
+    process.waitForFinished(2000);
 
     if (process.exitCode() != 0) {
         qCritical() << "Unable to execute cmd: " << process.readAll() << process.readAllStandardError();

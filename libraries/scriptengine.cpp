@@ -19,7 +19,7 @@ ScriptEngine::ScriptEngine(QObject *parent) : QObject(parent)
     connect(Switch::getEvent(), SIGNAL(valueChanged(QString,QString)), this, SLOT(switchValueChanged(QString, QString)), Qt::QueuedConnection);
 
     timer.setInterval(40000); // 40 seconds
-    connect(&timer, SIGNAL(timeout()), this, SLOT(run()));
+    connect(&timer, SIGNAL(timeout()), this, SLOT(run()), Qt::QueuedConnection);
     timer.start();
 }
 
