@@ -9,5 +9,5 @@ doxeo-monitor
 nbproject/*
 /views/nbproject/*
 object_script.*
-script/*.log
+*.log
 
