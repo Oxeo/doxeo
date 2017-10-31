@@ -100,6 +100,7 @@ void Switch::update()
     }
 
     Database::release();
+    emit Switch::event.dataChanged();
 }
 
 bool Switch::isIdValid(QString id)
@@ -183,7 +184,6 @@ bool Switch::flush(bool newObject)
 
     if (Database::exec(query)) {
         Database::release();
-        emit Switch::event.dataChanged();
         return true;
     } else {
         Database::release();
@@ -200,7 +200,6 @@ bool Switch::remove()
 
     if (Database::exec(query)) {
         Database::release();
-        emit Switch::event.dataChanged();
         return true;
     } else {
         Database::release();

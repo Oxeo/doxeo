@@ -82,6 +82,7 @@ void Sensor::update()
     }
 
     Database::release();
+    emit Sensor::event.dataChanged();
 }
 
 Event *Sensor::getEvent()
@@ -107,7 +108,6 @@ bool Sensor::flush(bool newObject)
 
     if (Database::exec(query)) {
         Database::release();
-        emit Sensor::event.dataChanged();
         return true;
     } else {
         Database::release();
@@ -124,7 +124,6 @@ bool Sensor::remove()
 
     if (Database::exec(query)) {
         Database::release();
-        emit Sensor::event.dataChanged();
         return true;
     } else {
         Database::release();
