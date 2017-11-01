@@ -25,7 +25,7 @@ void MessageLogger::messageHandler(QtMsgType type, const QMessageLogContext &con
     switch ((int)type) {
     case QtDebugMsg:
         logger().debugMessages.append(log);
-        if (logger().debugMessages.size() > 500) {
+        if (logger().debugMessages.size() > 1000) {
             logger().debugMessages.removeFirst();
         }
         break;
