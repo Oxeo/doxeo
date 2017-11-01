@@ -15,16 +15,28 @@ $(function () {
 
         var data = [];
         var previousDate = null;
+        var minValue = 50;
+        var maxValue = 0;
         
         // Parse data
         $.each(result.records, function(key, val) {
-            if (previousDate !== null && moment(val.date).diff(previousDate, 'minutes') > 15) {
-                previousDate.add(10, 'minutes');
-                data.push([previousDate.valueOf(), null]);
+            if (val.temp < 50) {			
+                if (previousDate !== null && moment(val.date).diff(previousDate, 'minutes') > 15) {
+                    previousDate.add(10, 'minutes');
+                    data.push([previousDate.valueOf(), null]);
+                }
+
+                previousDate = moment(val.date);
+                data.push([previousDate.valueOf(), val.temp]);
+				
+                if (minValue > val.temp) {
+                    minValue = val.temp;
+                }
+
+                if (maxValue < val.temp) {
+                    maxValue = val.temp;
+                }
             }
-        
-            previousDate = moment(val.date);
-            data.push([previousDate.valueOf(), val.temp]);
         });
     
         // Create the chart
@@ -54,7 +66,7 @@ $(function () {
                             }
                             cpt++;
                         }, 1000);
-                    }
+                   }
                 }
             },
 
@@ -91,8 +103,8 @@ $(function () {
                 title: {
                     text: 'Temperature (°C)'
                 },
-                max: result.max,
-                min: result.min
+                max: maxValue,
+                min: minValue
             },
             
             xAxis: {
