@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QHash>
 
 class ScriptHelper : public QObject
 {
@@ -25,6 +26,12 @@ public slots:
     void sendCmd(QString cmd);
     QString execute(QString cmd);
     void setLog(QString log);
+
+    static QString getData(QString key);
+    static void setData(QString key, QString value);
+
+protected:
+    static QHash<QString, QString> data;
 };
 
 #endif // SCRIPTHELPER_H

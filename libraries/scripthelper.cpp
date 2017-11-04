@@ -7,6 +7,8 @@
 #include <QDebug>
 #include <QDir>
 
+QHash<QString, QString> ScriptHelper::data;
+
 ScriptHelper::ScriptHelper(QObject *parent) : QObject(parent)
 {
 
@@ -57,4 +59,15 @@ void ScriptHelper::setLog(QString log)
 {
     qDebug() << log;
 }
+
+QString ScriptHelper::getData(QString key)
+{
+    return data.value(key, "");
+}
+
+void ScriptHelper::setData(QString key, QString value)
+{
+    data.insert(key, value);
+}
+
 
