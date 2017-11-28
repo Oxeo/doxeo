@@ -70,6 +70,7 @@ function update() {
                     $('#heater_tab_panes div.tab-pane:last-child').attr('id', 'heater_'+heater.id);
                 }
                 
+                $('#heater_'+heater.id).find(".heater_temperature").html(heater.temperature.toFixed(2)+'&deg;');
                 $('#heater_'+heater.id).find(".heat_setpoint").text(heater.heat_setpoint.toFixed(1));
                 $('#heater_'+heater.id).find(".cool_setpoint").text(heater.cool_setpoint.toFixed(1));
                 $('#heater_'+heater.id).find(".heater_mode").text(heater.mode);

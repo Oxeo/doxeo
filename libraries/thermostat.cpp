@@ -1,5 +1,5 @@
 #include "thermostat.h"
-#include "models/temperature.h"
+#include "models/sensor.h"
 
 #include <QDebug>
 #include <QMetaObject>
@@ -54,18 +54,9 @@ void Thermostat::run()
         }
     }
 
-    bool success;
-    Temperature tempObject = Temperature::currentTemp(&success);
-
-    float temp;
-    if (success) {
-        temp = tempObject.getTemperature();
-    } else {
-        temp = 100.0;
-    }
-
     // manage heaters status
     foreach(Heater *heater, *heaterList) {
+        float temp = heater->getTemperature();
         float currentSetpoint = heater->getCurrentSetpoint();
 
         if (currentSetpoint > temp + 0.5 && heater->getStatus() != Heater::On) {

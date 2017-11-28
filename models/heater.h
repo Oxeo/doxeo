@@ -56,9 +56,13 @@ public:
     float getCurrentSetpoint() const;
     Status getStatus() const;
     QString getStatusStr() const;
+    float getTemperature() const;
 
     static QHash<int, Heater*>* heaters();
     static Heater* get(int id);
+
+    QString getSensor() const;
+    void setSensor(const QString &value);
 
 public slots:
     void sendCommand();
@@ -72,6 +76,7 @@ protected:
     Mode mode;
     float coolSetpoint;
     float heatSetpoint;
+    QString sensor;
 
     Setpoint activeSetpoint;
     Status status;

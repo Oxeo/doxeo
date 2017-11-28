@@ -1,4 +1,6 @@
 #include "heater.h"
+#include "sensor.h"
+#include "temperature.h"
 #include "core/database.h"
 
 #include <QSqlDatabase>
@@ -23,6 +25,7 @@ Heater::Heater(QObject *parent) : QObject(parent)
     command = "";
     coolSetpoint = 0;
     heatSetpoint = 0;
+    sensor = "";
 
     connect(&timer, SIGNAL(timeout()), this, SLOT(sendCommand()));
     timer.setInterval(30000);
@@ -81,7 +84,7 @@ void Heater::sendCommand()
 void Heater::fillFromBdd()
 {
     QSqlQuery query = Database::getQuery();
-    query.prepare("SELECT id, name, command, mode, cool_setpoint, heat_setpoint FROM heater ORDER BY id ASC");
+    query.prepare("SELECT id, name, command, mode, cool_setpoint, heat_setpoint, sensor FROM heater ORDER BY id ASC");
 
     if(Database::exec(query))
     {
@@ -97,6 +100,7 @@ void Heater::fillFromBdd()
             heater->mode = (Heater::Mode)query.value(3).toInt();
             heater->coolSetpoint = query.value(4).toFloat();
             heater->heatSetpoint = query.value(5).toFloat();
+            heater->sensor = query.value(6).toString();
 
             heaterList->insert(heater->id, heater);
         }
@@ -104,6 +108,17 @@ void Heater::fillFromBdd()
 
     Database::release();
 }
+
+QString Heater::getSensor() const
+{
+    return sensor;
+}
+
+void Heater::setSensor(const QString &value)
+{
+    sensor = value;
+}
+
 Heater::Status Heater::getStatus() const
 {
     return status;
@@ -114,6 +129,33 @@ QString Heater::getStatusStr() const
     int index = metaObject()->indexOfEnumerator("Status");
     QMetaEnum metaEnum = metaObject()->enumerator(index);
     return metaEnum.valueToKey(status);
+}
+
+float Heater::getTemperature() const
+{
+    float temp = 100.0;
+
+    if (sensor.isEmpty()) {
+        bool success;
+        Temperature tempObject = Temperature::currentTemp(&success);
+        if (success) {
+            temp = tempObject.getTemperature();
+        }
+    } else {
+        if (Sensor::getSensorList().contains(sensor)) {
+            bool parseSuccess;
+            temp = Sensor::getSensorList()[sensor]->getValue().toFloat(&parseSuccess);
+
+            if (!parseSuccess) {
+                qCritical() << "Sensor value" << sensor << " of heater " << name << " is not a float!";
+                temp = 100.0;
+            }
+        } else {
+            qCritical() << "Sensor " << sensor << " of heater " << name << " not found!";
+        }
+    }
+
+    return temp;
 }
 
 float Heater::getCurrentSetpoint() const
@@ -198,15 +240,16 @@ bool Heater::flush()
     QSqlQuery query = Database::getQuery();
 
     if (id > 0) {
-        query.prepare("UPDATE heater SET name=?, mode=?, cool_setpoint=?, heat_setpoint=? WHERE id=?");
+        query.prepare("UPDATE heater SET name=?, mode=?, cool_setpoint=?, heat_setpoint=?, sensor=? WHERE id=?");
     } else {
-        query.prepare("INSERT INTO switch (name, mode, cool_setpoint, heat_setpoint) "
-                      "VALUES (?, ?, ?, ?)");
+        query.prepare("INSERT INTO switch (name, mode, cool_setpoint, heat_setpoint, sensor) "
+                      "VALUES (?, ?, ?, ?, ?)");
     }
     query.addBindValue(name);
     query.addBindValue(mode);
     query.addBindValue(coolSetpoint);
     query.addBindValue(heatSetpoint);
+    query.addBindValue(sensor);
 
     if (id > 0) {
         query.addBindValue(id);
@@ -250,6 +293,7 @@ QJsonObject Heater::toJson() const
     result.insert("heat_setpoint", heatSetpoint);
     result.insert("current_setpoint", this->getCurrentSetpoint());
     result.insert("status", getStatusStr());
+    result.insert("temperature", getTemperature());
 
     return result;
 }
