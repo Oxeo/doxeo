@@ -142,7 +142,11 @@ float Heater::getTemperature() const
             temp = tempObject.getTemperature();
         }
     } else {
-        if (Sensor::getSensorList().contains(sensor)) {
+        if (!Sensor::getSensorList().contains(sensor)) {
+            qCritical() << "Sensor " << sensor << " of heater " << name << " not found!";
+        } else if (Sensor::getSensorList()[sensor]->getLastEvent() > 25) {
+            qCritical() << "Sensor " << sensor << " is not responding!";
+        } else {
             bool parseSuccess;
             temp = Sensor::getSensorList()[sensor]->getValue().toFloat(&parseSuccess);
 
@@ -150,8 +154,6 @@ float Heater::getTemperature() const
                 qCritical() << "Sensor value" << sensor << " of heater " << name << " is not a float!";
                 temp = 100.0;
             }
-        } else {
-            qCritical() << "Sensor " << sensor << " of heater " << name << " not found!";
         }
     }
 

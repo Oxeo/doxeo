@@ -133,13 +133,23 @@ bool Sensor::remove()
 
 void Sensor::updateValue(QString cmd, QString value)
 {
-    if (this->cmd == cmd && this->value != value) {
-        this->value = value;
-        this->lastUpdate.prepend(QDateTime::currentDateTime());
-        this->lastUpdate.removeLast();
-        emit Sensor::event.valueChanged(this->id, value);
+    if (this->cmd == cmd) {
+        lastEvent = QDateTime::currentDateTime();
+
+        if (this->value != value) {
+            this->value = value;
+            this->lastUpdate.prepend(QDateTime::currentDateTime());
+            this->lastUpdate.removeLast();
+            emit Sensor::event.valueChanged(this->id, value);
+        }
     }
 }
+
+int Sensor::getLastEvent() const
+{
+    return (QDateTime::currentDateTime().toTime_t() - lastEvent.toTime_t()) / 60;
+}
+
 
 int Sensor::getLastUpdate(int index) const
 {

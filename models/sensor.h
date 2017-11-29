@@ -14,6 +14,7 @@ class Sensor : public QObject
     Q_PROPERTY(QString id READ getId)
     Q_PROPERTY(QString cmd READ getCmd)
     Q_PROPERTY(QString value READ getValue)
+    Q_PROPERTY(QString lastEvent READ getLastEvent)
 
 public:
     explicit Sensor(QString id, QObject *parent = 0);
@@ -30,6 +31,8 @@ public:
 
     QString getCmd() const;
     void setCmd(const QString &value);
+
+    int getLastEvent() const;
 
     bool flush(bool newObject);
     bool remove();
@@ -50,6 +53,7 @@ protected:
     QString name;
     QString value;
     QList<QDateTime> lastUpdate;
+    QDateTime lastEvent;
 
     static Event event;
     static QHash<QString, Sensor*> sensorList;
