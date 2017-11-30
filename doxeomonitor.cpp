@@ -72,9 +72,9 @@ int DoxeoMonitor::start()
     // Add controller
     httpServer->addController(new AssetController(), "assets");
     httpServer->addController(new SwitchController(this), "switch");
+    httpServer->addController(new SensorController(this), "sensor");
     httpServer->addController(new AuthController(this), "auth");
     httpServer->addController(new ThermostatController(this), "thermostat");
-    httpServer->addController(new SensorController(this), "sensor");
     httpServer->addController(new ScriptController(this), "script");
 
     qDebug() << QCoreApplication::applicationName() + " started.";
