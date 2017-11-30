@@ -10,14 +10,25 @@ TemperatureLogger::TemperatureLogger(QObject *parent) : QObject(parent)
 
 void TemperatureLogger::run()
 {
-    bool success;
-    Temperature temp = Temperature::currentTemp(&success);
+    foreach (Sensor* sensor, sensorList) {
+        if (sensor->getLastEvent() > 25) {
+            if (sensor->getStartTime() > 20) {
+                qWarning() << "Sensor " << sensor << " is not responding!";
+            }
+        } else {
+            bool parseSuccess;
+            float temp = sensor->getValue().toFloat(&parseSuccess);
 
-    if (success) {
-        temperatureList.append(temp);
+            if (parseSuccess) {
+                Temperature temperature(sensor->getId(), temp);
+                temperatureList.append(temperature);
 
-        if (temperatureList.length() > 15000) {
-            temperatureList.removeFirst();
+                if (temperatureList.length() > 15000) {
+                    temperatureList.removeFirst();
+                }
+            } else {
+                qWarning() << "Sensor value" << sensor << " is not a float!";
+            }
         }
     }
 
@@ -30,6 +41,13 @@ void TemperatureLogger::run()
 
 void TemperatureLogger::start()
 {
+    sensorList.clear();
+    foreach (Sensor* s, Sensor::getSensorList()) {
+        if (s->getId().contains("temperature", Qt::CaseInsensitive)) {
+            sensorList.append(s);
+        }
+    }
+
     timer.start();
     qDebug() << "TemperatureLogger started";
 }
@@ -51,17 +69,9 @@ QList<Temperature>& TemperatureLogger::getTemperatures()
     return temperatureList;
 }
 
-bool TemperatureLogger::measureTemperature()
-{
-    bool success;
-    Temperature::currentTemp(&success, 30);
-
-    return success;
-}
-
 void TemperatureLogger::save()
 {
-    if (!temperatureList.isEmpty() && Temperature::insert(temperatureList)) {
+    if (!temperatureList.isEmpty() && Temperature::save(temperatureList)) {
         temperatureList.clear();
     }
 }

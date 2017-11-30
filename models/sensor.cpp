@@ -13,6 +13,8 @@ Sensor::Sensor(QString id, QObject *parent) : QObject(parent)
     cmd = "";
     name = "";
     value = "";
+    lastEvent = QDateTime::currentDateTime().addYears(-1);
+    startTime = QDateTime::currentDateTime();
 
     for (int i=0; i<5; i++) {
         lastUpdate.append(QDateTime::currentDateTime().addYears(-1));
@@ -30,6 +32,7 @@ QJsonObject Sensor::toJson() const
     result.insert("name", name);
     result.insert("value", value);
     result.insert("last_update", QString::number(lastUpdate.at(0).toTime_t()));
+    result.insert("last_event", QString::number(lastEvent.toTime_t()));
 
     return result;
 }
@@ -144,6 +147,11 @@ void Sensor::updateValue(QString cmd, QString value)
         }
     }
 }
+int Sensor::getStartTime() const
+{
+    return (QDateTime::currentDateTime().toTime_t() - startTime.toTime_t()) / 60;
+}
+
 
 int Sensor::getLastEvent() const
 {

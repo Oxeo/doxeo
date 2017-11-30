@@ -20,9 +20,8 @@ public slots:
     void heatersLogs();
     void jsonGetHeaters();
     void jsonGetEvents();
-    void jsonGetTemperature();
-    void jsonGetLogsTemperature();
     void jsonGetLogsHeaters();
+    void jsonGetLogsTemperature();
     void jsonGetStatus();
     void jsonSetSetpoint();
     void jsonSetHeaterMode();

@@ -2,6 +2,7 @@
 #define TEMPERATURELOGGER_H
 
 #include "models/temperature.h"
+#include "models/sensor.h"
 
 #include <QObject>
 #include <QTimer>
@@ -18,9 +19,6 @@ public:
     bool isActive();
     QList<Temperature> &getTemperatures();
 
-public slots:
-    bool measureTemperature();
-
 protected slots:
     void run();
 
@@ -29,6 +27,7 @@ protected:
 
     QTimer timer;
     QList<Temperature> temperatureList;
+    QList<Sensor*> sensorList;
 };
 
 #endif // TEMPERATURELOGGER_H

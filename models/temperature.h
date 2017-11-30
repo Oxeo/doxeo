@@ -2,21 +2,24 @@
 #define TEMPERATURE_H
 
 #include <QDateTime>
+#include <QString>
 
 class Temperature
 {
 public:
-    Temperature();
-    Temperature(float temperature);
+    Temperature(QString id);
+    Temperature(QString id, float temperature);
 
     QDateTime getDate() const;
     float getTemperature() const;
+    QString getId() const;
 
-    static bool insert(QList<Temperature> tempList);
+    static bool save(QList<Temperature> tempList);
     static Temperature currentTemp(bool *success, int cacheInSeconds = 30);
     static QList<Temperature> get(QDateTime start, QDateTime end);
 
 protected:
+    QString id;
     QDateTime date;
     float temp;
 

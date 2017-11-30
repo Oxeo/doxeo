@@ -4,36 +4,39 @@
 #include <QSqlQuery>
 #include <QVariant>
 #include <QVariantList>
-#include <QProcess>
-#include <QDir>
 #include <QDebug>
 
-Temperature::Temperature()
+Temperature::Temperature(QString id)
 {
-    temp = 0;
+    this->id = id;
+    this->temp = 100;
 }
 
-Temperature::Temperature(float temperature)
+Temperature::Temperature(QString id, float temperature)
 {
-    date = QDateTime::currentDateTime();
-    temp = temperature;
+    this->id = id;
+    this->date = QDateTime::currentDateTime();
+    this->temp = temperature;
 }
 
-bool Temperature::insert(QList<Temperature> tempList)
+bool Temperature::save(QList<Temperature> tempList)
 {
     QSqlQuery query = Database::getQuery();
 
-    query.prepare("INSERT INTO temperature (date, temperature) "
-                  "VALUES (?, ?)");
+    query.prepare("INSERT INTO temperature (id, date, temperature) "
+                  "VALUES (?, ?, ?)");
 
+    QVariantList idList;
     QVariantList dateList;
     QVariantList tempertureList;
 
     foreach(const Temperature &temp, tempList) {
+        idList << temp.id;
         dateList << temp.date;
         tempertureList << temp.temp;
     }
 
+    query.addBindValue(idList);
     query.addBindValue(dateList);
     query.addBindValue(tempertureList);
 
@@ -44,42 +47,12 @@ bool Temperature::insert(QList<Temperature> tempList)
     return success;
 }
 
-Temperature Temperature::currentTemp(bool *success, int cacheInSeconds)
-{
-    static Temperature prevTemp;
-
-    // Last temperature measurement is less than x seconds
-    if (prevTemp.getDate().isValid() && prevTemp.getDate().addSecs(cacheInSeconds) > QDateTime::currentDateTime()) {
-        *success = true;
-        return prevTemp;
-    }
-
-    QProcess process;
-    process.setWorkingDirectory(QDir::currentPath() + "/python");
-    process.start("python ./thermometer.py");
-    process.waitForFinished(10000);
-
-    QString result = process.readAll();
-    float temp = result.toFloat(success);
-
-    if (*success) {
-        Temperature t(temp);
-        prevTemp = t;
-        return t;
-    } else {
-        qWarning() << "Temperature probe error: " + process.readAllStandardError();
-        Temperature t(0);
-        return t;
-    }
-}
-
 QList<Temperature> Temperature::get(QDateTime start, QDateTime end)
 {
     QList<Temperature> result;
     QSqlQuery query = Database::getQuery();
-    query.prepare("SELECT date, temperature FROM temperature ORDER BY date ASC");
 
-    query.prepare("SELECT date, temperature FROM temperature "
+    query.prepare("SELECT id, date, temperature FROM temperature "
                   "WHERE date >= ? AND date <= ? "
                   "ORDER BY date ASC");
     query.addBindValue(start);
@@ -89,9 +62,9 @@ QList<Temperature> Temperature::get(QDateTime start, QDateTime end)
     {
         while(query.next())
         {
-            Temperature temp;
-            temp.date = query.value(0).toDateTime();
-            temp.temp = query.value(1).toFloat();
+            Temperature temp(query.value(0).toString());
+            temp.date = query.value(1).toDateTime();
+            temp.temp = query.value(2).toFloat();
 
             result.append(temp);
         }
@@ -101,10 +74,16 @@ QList<Temperature> Temperature::get(QDateTime start, QDateTime end)
     return result;
 }
 
+QString Temperature::getId() const
+{
+    return id;
+}
+
 QDateTime Temperature::getDate() const
 {
     return date;
 }
+
 float Temperature::getTemperature() const
 {
     return temp;

@@ -154,14 +154,6 @@ function update() {
         updateError = true;
         alert_error("Request Failed: " + error);
     });
-    
-    $.getJSON('thermostat/temperature.js', function(result) {
-        if (result.success) {
-            $('#room_temperature').html(result.temp.toFixed(2)+'&deg;');
-        } else {
-            $('#room_temperature').text('ERROR');
-        }
-    });
 	
 	$.getJSON('sensor/sensor_list.js').done(function(result) {
         if (result.Result == "OK") {

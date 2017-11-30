@@ -33,6 +33,7 @@ public:
     void setCmd(const QString &value);
 
     int getLastEvent() const;
+    int getStartTime() const;
 
     bool flush(bool newObject);
     bool remove();
@@ -54,6 +55,7 @@ protected:
     QString value;
     QList<QDateTime> lastUpdate;
     QDateTime lastEvent;
+    QDateTime startTime;
 
     static Event event;
     static QHash<QString, Sensor*> sensorList;

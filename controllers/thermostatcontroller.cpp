@@ -25,7 +25,6 @@ ThermostatController::ThermostatController(QObject *parent) : AbstractController
     router.insert("heaters", "heatersLogs");
     router.insert("events.js", "jsonGetEvents");
     router.insert("heaters.js", "jsonGetHeaters");
-    router.insert("temperature.js", "jsonGetTemperature");
     router.insert("temperature_logs.js", "jsonGetLogsTemperature");
     router.insert("heaters_logs.js", "jsonGetLogsHeaters");
     router.insert("status.js", "jsonGetStatus");
@@ -143,30 +142,6 @@ void ThermostatController::jsonGetEvents()
     loadJsonView(result);
 }
 
-void ThermostatController::jsonGetTemperature()
-{
-    QJsonObject result;
-
-    if (!Authentification::auth().isConnected(header, cookie)) {
-        result.insert("msg", "You are not logged.");
-        result.insert("success", false);
-    } else {
-        bool success;
-        Temperature temp = Temperature::currentTemp(&success, 600);
-        QTimer::singleShot(10, temperatureLogger, SLOT(measureTemperature()));
-
-        if (success) {
-            result.insert("temp", temp.getTemperature());
-            result.insert("success", true);
-        } else {
-            result.insert("msg", "Temperature probe error");
-            result.insert("success", false);
-        }
-    }
-
-    loadJsonView(result);
-}
-
 void ThermostatController::jsonGetLogsTemperature()
 {
     QDateTime start = QDateTime::fromString(query->getItem("start"), "yyyy-MM-dd HH:mm:ss");
@@ -196,6 +171,7 @@ void ThermostatController::jsonGetLogsTemperature()
 
         foreach (const Temperature &temp, list) {
             QJsonObject element;
+            element.insert("id", temp.getId());
             element.insert("date", temp.getDate().toString("yyyy-MM-dd HH:mm:ss"));
             element.insert("temp", temp.getTemperature());
             records.push_back(element);
