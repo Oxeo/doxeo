@@ -13,21 +13,41 @@ $(function () {
 
     $.getJSON('thermostat/temperature_logs.js?start=' + start.format('YYYY-MM-DD%20HH:mm:ss')  + '&end=' + end.format('YYYY-MM-DD%20HH:mm:ss'), function (result) {
 
-        var data = [];
-        var previousDate = null;
+        var sData = [];
         var minValue = 50;
         var maxValue = 0;
+        var cptId = 0;
+        var tabId = [];
         
         // Parse data
         $.each(result.records, function(key, val) {
-            if (val.temp < 50) {			
-                if (previousDate !== null && moment(val.date).diff(previousDate, 'minutes') > 15) {
-                    previousDate.add(10, 'minutes');
-                    data.push([previousDate.valueOf(), null]);
+            if (val.temp < 50) {
+                var id;
+                
+                if (!(val.id in tabId)) {
+                    tabId[val.id] = cptId;
+                    cptId++;
+                    id = tabId[val.id];
+
+                    sData[id] = {};
+                    sData[id].name = val.id,
+                    sData[id].data = [],
+                    sData[id].tooltip = {
+                        valueDecimals: 1,
+                        valueSuffix: '°C',
+                    };
+                    sData[id].previousDate = null;
+                }
+                
+                id = tabId[val.id];
+            
+                if (sData[id].previousDate !== null && moment(val.date).diff(sData[id].previousDate, 'minutes') > 15) {
+                    sData[id].previousDate.add(10, 'minutes');
+                    sData[id].data.push([sData[id].previousDate.valueOf(), null]);
                 }
 
-                previousDate = moment(val.date);
-                data.push([previousDate.valueOf(), val.temp]);
+                sData[id].previousDate = moment(val.date);
+                sData[id].data.push([sData[id].previousDate.valueOf(), val.temp]);
 				
                 if (minValue > val.temp) {
                     minValue = val.temp;
@@ -41,35 +61,6 @@ $(function () {
     
         // Create the chart
         $('#graph_container').highcharts('StockChart', {
-            chart : {
-                events : {
-                    load : function () {
-                        var series = this.series[0];
-                        var cpt = 0;
-                        var y = null;
-
-                        setInterval(function () {
-                            if (cpt%30 == 0) {
-                                $.getJSON('thermostat/temperature.js', function(result) {
-                                    if (result.success) {
-                                        y = result.temp;
-                                        series.addPoint([(new Date()).getTime(), y], true);
-                                    } else {
-                                        y = null;
-                                    }
-                                }).fail(function(jqxhr, textStatus, error) {
-                                    alert("Request Failed: " + error);
-                                    y = null;
-                                });
-                            } else if (y != null)  {
-                                series.addPoint([(new Date()).getTime(), y], true);
-                            }
-                            cpt++;
-                        }, 1000);
-                   }
-                }
-            },
-
             rangeSelector : {
                 buttons: [{
                     type: 'hour',
@@ -122,14 +113,7 @@ $(function () {
                 enabled: false
             },
 
-            series : [{
-                name : 'Temperature',
-                data : data,
-                tooltip: {
-                    valueDecimals: 1,
-                    valueSuffix: '°C',
-                }
-            }]
+            series : sData
         });
     }).fail(function(jqxhr, textStatus, error) {
         alert("Request Failed: " + error);
