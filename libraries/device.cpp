@@ -35,13 +35,14 @@ void Device::readData()
        QString msg = QString( data ).remove("\r").remove("\n");
        QStringList args = msg.split(";");
 
+       qDebug() << "Serial received " << msg;
+
        if (msg.startsWith("error", Qt::CaseInsensitive)) {
            qWarning() << "Serial received " << msg;
-       } else if (args.length() == 3) {
-           qDebug() << "Serial received " << msg;
+       }
+
+       if (args.length() == 3) {
            emit dataReceived(args.value(0) + ";" +args.value(1), args.value(2));
-       } else {
-           qDebug() << "Serial received with wrong argument: " << msg;
        }
      }
 
