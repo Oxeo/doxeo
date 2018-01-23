@@ -147,8 +147,8 @@ float Heater::getTemperature() const
         bool parseSuccess;
         temp = Sensor::getSensorList()[sensor]->getValue().toFloat(&parseSuccess);
 
-        if (!parseSuccess) {
-            qCritical() << "Sensor value" << sensor << " of heater " << name << " is not a float!";
+        if (!parseSuccess || temp < 0 || temp > 50) {
+            qCritical() << "Sensor value" << sensor << " of heater " << name << " is not valid!";
             temp = 100.0;
         }
     }
