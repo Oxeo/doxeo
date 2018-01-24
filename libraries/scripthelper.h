@@ -26,6 +26,8 @@ public slots:
     void sendCmd(QString cmd);
     QString execute(QString cmd);
     void setLog(QString log);
+    void setWarning(QString warning);
+    void setAlert(QString alert);
 
     static QString getData(QString key);
     static void setData(QString key, QString value);

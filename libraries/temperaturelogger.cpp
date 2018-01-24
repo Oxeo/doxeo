@@ -13,7 +13,7 @@ void TemperatureLogger::run()
     foreach (Sensor* sensor, sensorList) {
         if (sensor->getLastEvent() > 25) {
             if (sensor->getStartTime() > 20) {
-                qWarning() << "Sensor " << sensor << " is not responding!";
+                qWarning() << "Sensor " << sensor->getName() << " is not responding!";
             }
         } else {
             bool parseSuccess;
@@ -27,7 +27,7 @@ void TemperatureLogger::run()
                     temperatureList.removeFirst();
                 }
             } else {
-                qWarning() << "Sensor value" << sensor << " is not a float!";
+                qWarning() << "Sensor value" << sensor->getValue() << " is not a float!";
             }
         }
     }

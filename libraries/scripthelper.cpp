@@ -60,6 +60,16 @@ void ScriptHelper::setLog(QString log)
     qDebug() << log;
 }
 
+void ScriptHelper::setWarning(QString warning)
+{
+    qWarning() << warning;
+}
+
+void ScriptHelper::setAlert(QString alert)
+{
+    qCritical() << alert;
+}
+
 QString ScriptHelper::getData(QString key)
 {
     return data.value(key, "");
