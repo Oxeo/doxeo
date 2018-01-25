@@ -166,6 +166,7 @@ float Heater::getCurrentSetpoint() const
         return heatSetpoint;
     }
 
+    // auto mode
     if (activeSetpoint == Heater::Heat) {
         return heatSetpoint;
     } else {

@@ -56,15 +56,22 @@ void Thermostat::run()
 
     // manage heaters status
     foreach(Heater *heater, *heaterList) {
-        float temp = heater->getTemperature();
-        float currentSetpoint = heater->getCurrentSetpoint();
+        if (heater->getMode() == Heater::Off_Mode) {
+            if (heater->getStatus() != Heater::Off) {
+                qDebug() << "Heater set to Off " << heater->getName();
+                heater->changeStatus(Heater::Off);
+            }
+        } else {
+            float temp = heater->getTemperature();
+            float currentSetpoint = heater->getCurrentSetpoint();
 
-        if (currentSetpoint > temp + 0.5 && heater->getStatus() != Heater::On) {
-            qDebug() << "Heater set to On " << heater->getName();
-            heater->changeStatus(Heater::On);
-        } else if (currentSetpoint < temp - 0.5 && heater->getStatus() != Heater::Off) {
-            qDebug() << "Heater set to Off " << heater->getName();
-            heater->changeStatus(Heater::Off);
+            if (currentSetpoint > temp + 0.5 && heater->getStatus() != Heater::On) {
+                qDebug() << "Heater set to On " << heater->getName();
+                heater->changeStatus(Heater::On);
+            } else if (currentSetpoint < temp - 0.5 && heater->getStatus() != Heater::Off) {
+                qDebug() << "Heater set to Off " << heater->getName();
+                heater->changeStatus(Heater::Off);
+            }
         }
     }
 }
