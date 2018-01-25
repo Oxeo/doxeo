@@ -144,8 +144,15 @@ QJsonObject HeaterEvent::toJson() const
     result.insert("start_date", startDate.toString("yyyy-MM-dd HH:mm:ss"));
     result.insert("end_date", endDate.toString("yyyy-MM-dd HH:mm:ss"));
     result.insert("recurrent_date", recurrentDate);
-    result.insert("event_active", false);
-    result.insert("outdated", endDate < QDateTime::currentDateTime());
+    result.insert("event_active", false); // to remove (not used)
+    
+    if (endDate < QDateTime::currentDateTime()) {
+        result.insert("status", "outdated");
+    } else if (startDate > QDateTime::currentDateTime()) {
+        result.insert("status", "scheduled");
+    } else {
+        result.insert("status", "active");
+    }
 
     return result;
 }

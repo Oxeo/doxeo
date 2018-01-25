@@ -19,7 +19,7 @@ void TemperatureLogger::run()
             bool parseSuccess;
             float temp = sensor->getValue().toFloat(&parseSuccess);
 
-            if (parseSuccess) {
+            if (parseSuccess  && temp > -30 && temp < 50) {
                 Temperature temperature(sensor->getId(), temp);
                 temperatureList.append(temperature);
 
@@ -27,7 +27,7 @@ void TemperatureLogger::run()
                     temperatureList.removeFirst();
                 }
             } else {
-                qWarning() << "Sensor value" << sensor->getValue() << " is not a float!";
+                qWarning() << "Sensor value " << sensor->getValue() << " of sensor " << sensor->getName() << " is not valid!";
             }
         }
     }
