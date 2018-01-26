@@ -19,10 +19,15 @@ public:
 signals:
     void dataReceived(QString id, QString value);
 
+protected slots:
+    void connection();
+    void handleError(QSerialPort::SerialPortError error);
+
 protected:
     void readData();
 
     QSerialPort* foundDevice(const QString name);
+
     QSerialPort *serial;
     static Device *instance;
 
