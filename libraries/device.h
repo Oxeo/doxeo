@@ -1,7 +1,8 @@
-#ifndef ARDUINO_H
-#define ARDUINO_H
+#ifndef DEVICE_H
+#define DEVICE_H
 
 #include <QObject>
+#include <QTimer>
 #include <QtSerialPort/QSerialPort>
 
 class Device : public QObject
@@ -12,7 +13,6 @@ public:
     static void initialize(QObject *parent = 0);
     static Device *Instance();
 
-    explicit Device(QObject *parent = 0);
     void send(QString id, QString value);
     void send(QString data);
 
@@ -24,14 +24,16 @@ protected slots:
     void handleError(QSerialPort::SerialPortError error);
 
 protected:
+    explicit Device(QObject *parent = 0);
     void readData();
-
-    QSerialPort* foundDevice(const QString name);
+    bool foundDevice(const QString name);
 
     QSerialPort *serial;
+    QTimer connectionTimer;
+
     static Device *instance;
 
     Q_DISABLE_COPY(Device)
 };
 
-#endif // ARDUINO_H
+#endif // DEVICE_H
