@@ -16,6 +16,11 @@ function update() {
     $.getJSON('system.js').done(function(result) {
         if (result.success) {
             $('#system_time').html(result.time);
+            if (result.device_connected) {
+                $('#board_status').html('<span class="label label-info">Connected</span>');
+            } else {
+                $('#board_status').html('<span class="label label-danger">Disconnected</span>');
+            }
         } else {
             updateError = true;
             alert_error(result.msg);

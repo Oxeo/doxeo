@@ -15,6 +15,7 @@ public:
 
     void send(QString id, QString value);
     void send(QString data);
+    bool isConnected();
 
 signals:
     void dataReceived(QString id, QString value);

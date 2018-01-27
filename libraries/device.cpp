@@ -97,6 +97,11 @@ void Device::send(QString data)
     }
 }
 
+bool Device::isConnected()
+{
+    return serial->isOpen();
+}
+
 bool Device::foundDevice(const QString name)
 {
     foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {

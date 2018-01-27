@@ -1,6 +1,7 @@
 #include "defaultcontroller.h"
 #include "libraries/authentification.h"
 #include "libraries/messagelogger.h"
+#include "libraries/device.h"
 
 #include <QCoreApplication>
 #include <QJsonArray>
@@ -173,6 +174,7 @@ void DefaultController::jsonSystem()
     QJsonObject result;
     result.insert("success", true);
     result.insert("time", QTime::currentTime().toString("HH:mm"));
+    result.insert("device_connected", Device::Instance()->isConnected());
     loadJsonView(result);
 }
 
