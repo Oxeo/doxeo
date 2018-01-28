@@ -26,6 +26,7 @@ Heater::Heater(QObject *parent) : QObject(parent)
     coolSetpoint = 0;
     heatSetpoint = 0;
     sensor = "";
+    sensorErrorFlag = false;
 
     connect(&timer, SIGNAL(timeout()), this, SLOT(sendCommand()));
     timer.setInterval(30000);
@@ -117,6 +118,7 @@ QString Heater::getSensor() const
 void Heater::setSensor(const QString &value)
 {
     sensor = value;
+    sensorErrorFlag = false;
 }
 
 Heater::Status Heater::getStatus() const
@@ -131,25 +133,37 @@ QString Heater::getStatusStr() const
     return metaEnum.valueToKey(status);
 }
 
-float Heater::getTemperature() const
+float Heater::getTemperature()
 {
     float temp = 100.0;
 
     if (sensor.isEmpty()) {
-        qCritical() << "No sensor found for heater " << name;
+        if (!sensorErrorFlag) {
+            qCritical() << "No sensor found for heater " << name;
+            sensorErrorFlag = true;
+        }
     } else if (!Sensor::getSensorList().contains(sensor)) {
-        qCritical() << "Sensor " << sensor << " of heater " << name << " not found!";
+        if (!sensorErrorFlag) {
+            qCritical() << "Sensor " << sensor << " of heater " << name << " not found!";
+            sensorErrorFlag = true;
+        }
     } else if (Sensor::getSensorList()[sensor]->getLastEvent() > 25) {
-        if (Sensor::getSensorList()[sensor]->getStartTime() > 20) {
+        if (Sensor::getSensorList()[sensor]->getStartTime() > 20 && !sensorErrorFlag) {
             qCritical() << "Sensor " << sensor << " is not responding!";
+            sensorErrorFlag = true;
         }
     } else {
         bool parseSuccess;
         temp = Sensor::getSensorList()[sensor]->getValue().toFloat(&parseSuccess);
 
         if (!parseSuccess || temp < 0 || temp > 50) {
-            qCritical() << "Sensor value" << sensor << " of heater " << name << " is not valid!";
             temp = 100.0;
+            if (!sensorErrorFlag) {
+                qCritical() << "Sensor value" << sensor << " of heater " << name << " is not valid!";
+                sensorErrorFlag = true;
+            }
+        } else {
+            sensorErrorFlag = false;
         }
     }
 
@@ -271,7 +285,7 @@ bool Heater::flush()
     return false;
 }
 
-QJsonObject Heater::toJson() const
+QJsonObject Heater::toJson()
 {
     QJsonObject result;
 
