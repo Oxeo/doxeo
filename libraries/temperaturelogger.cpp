@@ -11,14 +11,15 @@ TemperatureLogger::TemperatureLogger(QObject *parent) : QObject(parent)
 void TemperatureLogger::run()
 {
     foreach (Sensor* sensor, sensorList) {
+        bool parseSuccess;
+        float temp = sensor->getValue().toFloat(&parseSuccess);
+            
         if (sensor->getLastEvent() > 25) {
-            if (sensor->getStartTime() > 20) {
+            if (sensor->getStartTime() > 20 && (!parseSuccess || (parseSuccess && temp < 100))) {
                 qWarning() << "Sensor " << sensor->getName() << " is not responding!";
+                sensor->setValue("100");
             }
         } else {
-            bool parseSuccess;
-            float temp = sensor->getValue().toFloat(&parseSuccess);
-
             if (parseSuccess  && temp > -30 && temp < 50) {
                 Temperature temperature(sensor->getId(), temp);
                 temperatureList.append(temperature);

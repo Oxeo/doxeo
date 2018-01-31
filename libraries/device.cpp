@@ -114,8 +114,8 @@ bool Device::foundDevice(const QString name)
         qDebug() << "Try to connect to doxeo_board on port " + info.portName();
 
         if (serial->open(QIODevice::ReadWrite)) {
-            //QThread::sleep(3);
-            //serial->setTextModeEnabled(true);
+            QThread::sleep(3);
+            serial->setTextModeEnabled(true);
             qDebug() << name + " connected with success!";
 
             return true;

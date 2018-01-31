@@ -38,7 +38,7 @@ public:
 
     void changeStatus(Status status);
     bool flush();
-    QJsonObject toJson() const;
+    QJsonObject toJson();
 
     void setName(const QString &value);
     void setMode(Mode mode);
@@ -56,7 +56,7 @@ public:
     float getCurrentSetpoint() const;
     Status getStatus() const;
     QString getStatusStr() const;
-    float getTemperature() const;
+    float getTemperature();
 
     static QHash<int, Heater*>* heaters();
     static Heater* get(int id);
@@ -80,6 +80,7 @@ protected:
 
     Setpoint activeSetpoint;
     Status status;
+    bool sensorErrorFlag;
 
     QTimer timer;
     int repeat;
