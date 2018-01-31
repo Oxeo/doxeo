@@ -10,16 +10,14 @@ class MessageLogger
 {
 public:
     struct Log{
+        int id;
         QDateTime date;
         QString message;
-        QString file;
-        int line;
-        QString function;
+        QString type;
     };
 
-    QList<Log>& getDebug();
-    QList<Log>& getWarning();
-    QList<Log>& getCritical();
+    QList<Log>& getMessages();
+    void removeBeforeId(int id, QString type);
 
     static MessageLogger& logger();
     static void messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);
@@ -28,9 +26,8 @@ protected:
     MessageLogger();
     ~MessageLogger();
 
-    QList<Log> debugMessages;
-    QList<Log> warningMessages;
-    QList<Log> criticalMessages;
+    QList<Log> messages;
+    int idCpt;
 };
 
 #endif // MESSAGELOGGER_H

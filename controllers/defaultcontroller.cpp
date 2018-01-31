@@ -70,6 +70,7 @@ void DefaultController::logs()
 void DefaultController::jsonLogs()
 {
     QJsonObject result;
+    QString request = query->getItem("type");
 
     if (!Authentification::auth().isConnected(header, cookie)) {
         result.insert("msg", "You are not logged.");
@@ -77,61 +78,27 @@ void DefaultController::jsonLogs()
         loadJsonView(result);
         return;
     }
+    
+    QList<MessageLogger::Log> &logs = MessageLogger::logger().getMessages();
+    QJsonArray jsonArray;
 
-    if (query->getItem("log") == "error" || query->getItem("log") == "all") {
-        QList<MessageLogger::Log> &warningLogs = MessageLogger::logger().getWarning();
-        QList<MessageLogger::Log> &criticalLogs = MessageLogger::logger().getCritical();
-        QJsonArray warningArray;
-        QJsonArray criticalArray;
-
-        foreach (const MessageLogger::Log &log, warningLogs) {
-           QJsonObject object;
-           object.insert("date", log.date.toString("dd/MM/yyyy hh:mm:ss"));
-           object.insert("message", log.message);
-           object.insert("file", log.file);
-           object.insert("line", log.line);
-           object.insert("function", log.function);
-           warningArray.push_back(object);
+    foreach (const MessageLogger::Log &log, logs) {
+        if (request == "warning" && log.type != "warning" && log.type != "critical") {
+            continue;
+        } else if (request == "critical" && log.type != "critical") {
+            continue;
+        } else {
+            QJsonObject object;
+            object.insert("id", log.id);
+            object.insert("date", log.date.toString("dd/MM/yyyy hh:mm:ss"));
+            object.insert("message", log.message);
+            object.insert("type", log.type);
+            jsonArray.push_back(object);
         }
-
-        foreach (const MessageLogger::Log &log, criticalLogs) {
-           QJsonObject object;
-           object.insert("date", log.date.toString("dd/MM/yyyy hh:mm:ss"));
-           object.insert("message", log.message);
-           object.insert("file", log.file);
-           object.insert("line", log.line);
-           object.insert("function", log.function);
-           criticalArray.push_back(object);
-        }
-
-        result.insert("warning", warningArray);
-        result.insert("critical", criticalArray);
     }
 
-    if (query->getItem("log") == "debug" || query->getItem("log") == "all") {
-        QList<MessageLogger::Log> &debugLogs = MessageLogger::logger().getDebug();
-        QJsonArray debugArray;
-
-        foreach (const MessageLogger::Log &log, debugLogs) {
-           QJsonObject object;
-           object.insert("date", log.date.toString("dd/MM/yyyy hh:mm:ss"));
-           object.insert("message", log.message);
-           object.insert("file", log.file);
-           object.insert("line", log.line);
-           object.insert("function", log.function);
-           debugArray.push_back(object);
-        }
-
-        result.insert("debug", debugArray);
-    }
-
-    if (result.empty()) {
-        result.insert("success", false);
-        result.insert("msg", "Params missing (debug, error or all)");
-    } else {
-        result.insert("success", true);
-    }
-
+    result.insert("messages", jsonArray);
+    result.insert("success", true);
     loadJsonView(result);
 }
 
@@ -145,26 +112,26 @@ void DefaultController::jsonClearLogs()
         loadJsonView(result);
         return;
     }
-
-    if (query->getItem("log") == "critical" || query->getItem("log") == "all") {
-        MessageLogger::logger().getCritical().clear();
-        result.insert("success", true);
-    }
-
-    if (query->getItem("log") == "warning" || query->getItem("log") == "all") {
-        MessageLogger::logger().getWarning().clear();
-        result.insert("success", true);
-    }
-
-    if (query->getItem("log") == "debug" || query->getItem("log") == "all") {
-        MessageLogger::logger().getDebug().clear();
-        result.insert("success", true);
-    }
-
-    if (result.empty()) {
+    
+    bool ok = false;
+    int id = query->getItem("id").toInt(&ok, 10);
+    
+    if (!ok || id < 0) {
         result.insert("success", false);
-        result.insert("msg", "Params missing (critial, warning or debug)");
+        result.insert("msg", "ID param is not a number!");
+        loadJsonView(result);
+        return;
     }
+    
+    if (query->getItem("type") == "") {
+        result.insert("success", false);
+        result.insert("msg", "TYPE param is missing!");
+        loadJsonView(result);
+        return;
+    }
+    
+    MessageLogger::logger().removeBeforeId(id, query->getItem("type"));
+    result.insert("success", true);
 
     loadJsonView(result);
 }

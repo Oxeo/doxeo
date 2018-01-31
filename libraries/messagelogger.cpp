@@ -3,7 +3,7 @@
 
 MessageLogger::MessageLogger()
 {
-
+    idCpt = 1;
 }
 
 MessageLogger::~MessageLogger()
@@ -20,42 +20,43 @@ MessageLogger& MessageLogger::logger()
 void MessageLogger::messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
     QByteArray localMsg = msg.toLocal8Bit();
-    MessageLogger::Log log = {QDateTime::currentDateTime(), localMsg, context.file, context.line, context.function};
-
+    QString typeString = "Unknown";
+    
     switch ((int)type) {
     case QtDebugMsg:
-        logger().debugMessages.append(log);
-        if (logger().debugMessages.size() > 1000) {
-            logger().debugMessages.removeFirst();
-        }
+        typeString = "debug";
         break;
     case QtWarningMsg:
-        if (logger().warningMessages.size() <= 100) {
-            logger().warningMessages.append(log);
-        }
+        typeString = "warning";
         break;
     case QtCriticalMsg:
-        if (logger().criticalMessages.size() <= 100) {
-            logger().criticalMessages.append(log);
-        }
+        typeString = "critical";
         break;
     case QtFatalMsg:
         fprintf(stderr, "Fatal: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
         abort();
     }
+    
+    MessageLogger::Log log = {logger().idCpt, QDateTime::currentDateTime(), localMsg, typeString};
+    logger().messages.append(log);
+    logger().idCpt++;
+    
+    if (logger().messages.size() > 100000) {
+        logger().messages.removeFirst();
+    }
 }
 
-QList<MessageLogger::Log>& MessageLogger::getDebug()
+QList<MessageLogger::Log>& MessageLogger::getMessages()
 {
-    return debugMessages;
+    return messages;
 }
 
-QList<MessageLogger::Log> &MessageLogger::getWarning()
+void MessageLogger::removeBeforeId(int id, QString type)
 {
-    return warningMessages;
-}
-
-QList<MessageLogger::Log> &MessageLogger::getCritical()
-{
-    return criticalMessages;
+    QMutableListIterator<MessageLogger::Log> i(messages);
+    while (i.hasNext()) {
+        if ((id == 0 || i.peekNext().id <= id) && (i.next().type == type || type == "all")) {
+            i.remove();
+        }
+    }
 }

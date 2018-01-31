@@ -14,8 +14,14 @@ function update() {
     $.getJSON('logs.js?log=debug').done(function(result) {
         if (result.success) {            
             $('#logsTable').html("");
-            $.each(result.debug, function(key, val) {
-                $('#logsTable').prepend('<tr><td>'+val.date+'</td><td>'+val.message+'</td><td>'+val.file.split("/").pop()+' ('+val.line+')</td></tr>')
+            $.each(result.messages, function(key, val) {
+                if (val.type === "critical") {
+                    $('#logsTable').prepend('<tr class="danger"><td>'+val.date+'</td><td>'+val.message+'</td></tr>')
+                } else if (val.type === "warning") {
+                    $('#logsTable').prepend('<tr class="warning"><td>'+val.date+'</td><td>'+val.message+'</td></tr>')
+                } else {
+                    $('#logsTable').prepend('<tr class="info"><td>'+val.date+'</td><td>'+val.message+'</td></tr>')
+                }
             });
         } else {
             updateAll = false;
@@ -31,7 +37,8 @@ $('#buttons_placeholder').on('click', '.clear_logs', function(){
     var data = $(this).data();
     
     param = {
-        log: data.clear
+        type: data.clear,
+        id: 0
     };
 	
 	$('#logsTable').text("");

@@ -131,23 +131,32 @@ function update() {
         alert_error("Request Failed: " + error);
     });
     
-    $.getJSON('logs.js?log=error').done(function(result) {
-        if (result.success) {
-            if (result.critical.length > 0) {
-                $('#critical_error').html('<button type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#errorModal">'+result.critical.length+'</button>');
-                $('#errorModalTable').html("");
-                $.each(result.critical, function(key, val) {
-                    $('#errorModalTable').append('<tr><td>'+val.date+'</td><td>'+val.message+'</td><td>'+val.file.split("/").pop()+' ('+val.line+')</td></tr>')
-                });
+    $.getJSON('logs.js?type=warning').done(function(result) {
+        if (result.success) {            
+            var cptWarning = 0;
+            var cptCritical = 0;
+            
+            $('#errorModalTable').html("");
+            $('#warningModalTable').html("");
+            
+            $.each(result.messages, function(key, val) {
+                if (val.type === "critical") {
+                    cptCritical++;
+                    $('#errorModalTable').append('<tr><td>'+val.date+'</td><td>'+val.message+'</td></tr>')
+                } else if (val.type === "warning") {
+                    cptWarning++;
+                    $('#warningModalTable').append('<tr><td>'+val.date+'</td><td>'+val.message+'</td></tr>')
+                }
+            });
+        
+            if (cptCritical > 0) {
+                $('#critical_error').html('<button type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#errorModal">'+cptCritical+'</button>');
             } else {
                 $('#critical_error').html('<span class="label label-success">0</span>');
             }
-            if (result.warning.length > 0) {
-                $('#warning_error').html('<button type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#warningModal">'+result.warning.length+'</button>');
-                $('#warningModalTable').html("");
-                $.each(result.warning, function(key, val) {
-                    $('#warningModalTable').append('<tr><td>'+val.date+'</td><td>'+val.message+'</td><td>'+val.file.split("/").pop()+' ('+val.line+')</td></tr>')
-                });
+            
+            if (cptWarning > 0) {
+                $('#warning_error').html('<button type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#warningModal">'+cptWarning+'</button>');
             } else {
                 $('#warning_error').html('<span class="label label-success">0</span>');
             }
@@ -240,7 +249,8 @@ $(".clear_logs").click(function() {
     var data = $(this).data();
     
     param = {
-        log: data.clear
+        id: 0,
+        type: data.clear
     };
     
     $.getJSON('clear_logs.js', param)
