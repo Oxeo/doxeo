@@ -130,7 +130,12 @@ void DefaultController::jsonClearLogs()
         return;
     }
     
-    MessageLogger::logger().removeBeforeId(id, query->getItem("type"));
+    if (query->getItem("type") == "warningandcritical") {
+        MessageLogger::logger().removeBeforeId(id, "warning");
+        MessageLogger::logger().removeBeforeId(id, "critical");
+    } else {
+        MessageLogger::logger().removeBeforeId(id, query->getItem("type"));
+    }
     result.insert("success", true);
 
     loadJsonView(result);

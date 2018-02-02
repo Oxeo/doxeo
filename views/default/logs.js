@@ -20,7 +20,7 @@ function update() {
                 } else if (val.type === "warning") {
                     $('#logsTable').prepend('<tr class="warning"><td>'+val.date+'</td><td>'+val.message+'</td></tr>')
                 } else {
-                    $('#logsTable').prepend('<tr class="info"><td>'+val.date+'</td><td>'+val.message+'</td></tr>')
+                    $('#logsTable').prepend('<tr><td>'+val.date+'</td><td>'+val.message+'</td></tr>')
                 }
             });
         } else {
