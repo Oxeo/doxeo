@@ -1,5 +1,6 @@
 <script>
 var updateAll = true;
+var lastLogId = 0;
 
 jQuery(document).ready(function() {
     update();
@@ -11,9 +12,8 @@ function update() {
         return;
     }
     
-    $.getJSON('logs.js?log=debug').done(function(result) {
-        if (result.success) {            
-            $('#logsTable').html("");
+    $.getJSON('logs.js?log=debug&startid=' + lastLogId).done(function(result) {
+        if (result.success) {
             $.each(result.messages, function(key, val) {
                 if (val.type === "critical") {
                     $('#logsTable').prepend('<tr class="danger"><td>'+val.date+'</td><td>'+val.message+'</td></tr>')
@@ -22,6 +22,7 @@ function update() {
                 } else {
                     $('#logsTable').prepend('<tr><td>'+val.date+'</td><td>'+val.message+'</td></tr>')
                 }
+                lastLogId = val.id + 1;
             });
         } else {
             updateAll = false;

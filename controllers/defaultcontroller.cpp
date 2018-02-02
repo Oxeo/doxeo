@@ -71,6 +71,12 @@ void DefaultController::jsonLogs()
 {
     QJsonObject result;
     QString request = query->getItem("type");
+    bool ok = false;
+    int startId = query->getItem("startid").toInt(&ok, 10);
+    
+    if (!ok) {
+        startId = 0;
+    }
 
     if (!Authentification::auth().isConnected(header, cookie)) {
         result.insert("msg", "You are not logged.");
@@ -83,7 +89,9 @@ void DefaultController::jsonLogs()
     QJsonArray jsonArray;
 
     foreach (const MessageLogger::Log &log, logs) {
-        if (request == "warning" && log.type != "warning" && log.type != "critical") {
+        if (startId !=0 && log.id < startId) {
+            continue;
+        } if (request == "warning" && log.type != "warning" && log.type != "critical") {
             continue;
         } else if (request == "critical" && log.type != "critical") {
             continue;
