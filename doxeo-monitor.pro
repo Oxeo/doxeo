@@ -43,6 +43,7 @@ SOURCES += main.cpp\
     models/script.cpp \
     libraries/scriptengine.cpp \
     libraries/scripthelper.cpp \
+    libraries/firebasecloudmessaging.cpp \
     core/event.cpp
 
 HEADERS  += \
@@ -77,6 +78,7 @@ HEADERS  += \
     models/script.h \
     libraries/scriptengine.h \
     libraries/scripthelper.h \
+    libraries/firebasecloudmessaging.h \
     core/event.h
 
 RESOURCES +=

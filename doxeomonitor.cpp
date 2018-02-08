@@ -12,6 +12,7 @@
 #include "libraries/messagelogger.h"
 #include "libraries/authentification.h"
 #include "libraries/device.h"
+#include "libraries/firebasecloudmessaging.h"
 #include "core/database.h"
 
 #include <QDir>
@@ -39,11 +40,11 @@ DoxeoMonitor::DoxeoMonitor(int &argc, char **argv) : QCoreApplication(argc, argv
 
 int DoxeoMonitor::start()
 {
-    // Command line parser
+    QSettings settings;
     bool error;
-    bool stop = commandLineParser(&error);
-
-    if (stop) {
+    
+    // Command line parser
+    if (commandLineParser(&error)) {
         return (error?-1:0);
     }
 
@@ -56,12 +57,21 @@ int DoxeoMonitor::start()
 
     // Connection to Mysql Database
     Database::initialize("QMYSQL");
-
     if(!Database::open()) {
         qCritical() << applicationName() + " stopped: Mysql connection failed";
         return -1;
     }
+    
+    // Initialize Firebase Cloud Messaging
+    FirebaseCloudMessaging *fcm = new FirebaseCloudMessaging(settings.value("firebasecloudmessaging/projectname", "doxeo").toString(), this);
+    fcm->setServerKey(settings.value("firebasecloudmessaging/serverkey", "").toString());
+    MessageLogger::logger().setFirebaseCloudMessaging(fcm);
 
+    fcm->setTitle("Doxeo");
+    fcm->setMessage("Im starting");
+    fcm->send("");
+
+    // Initialize logger messages
     if (!verbose) {
         qInstallMessageHandler(MessageLogger::messageHandler);
     }
@@ -78,7 +88,6 @@ int DoxeoMonitor::start()
     httpServer->addController(new ScriptController(this), "script");
 
     qDebug() << QCoreApplication::applicationName() + " started.";
-
     return this->exec();
 }
 
@@ -138,6 +147,16 @@ void DoxeoMonitor::configure()
     userInput = commandLine("Enter database name:");
     if (userInput != "") {
         settings.setValue("database/databasename", userInput);
+    }
+    
+    userInput = commandLine("Enter Firebase Cloud Messaging project name:");
+    if (userInput != "") {
+        settings.setValue("firebasecloudmessaging/projectname", userInput);
+    }
+    
+    userInput = commandLine("Enter Firebase Cloud Messaging server key:");
+    if (userInput != "") {
+        settings.setValue("firebasecloudmessaging/serverkey", userInput);
     }
 }
 

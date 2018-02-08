@@ -46,6 +46,16 @@ void MessageLogger::messageHandler(QtMsgType type, const QMessageLogContext &con
     }
 }
 
+void MessageLogger::setFirebaseCloudMessaging(FirebaseCloudMessaging *fcm)
+{
+    this->fcm = fcm;
+}
+
+FirebaseCloudMessaging* MessageLogger::getFCM()
+{
+    return fcm;
+}
+
 QList<MessageLogger::Log>& MessageLogger::getMessages()
 {
     return messages;

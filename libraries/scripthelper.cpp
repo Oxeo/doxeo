@@ -1,5 +1,7 @@
 #include "scripthelper.h"
 #include "device.h"
+#include "firebasecloudmessaging.h"
+#include "messagelogger.h"
 
 #include <QDate>
 #include <QTime>
@@ -78,6 +80,14 @@ QString ScriptHelper::getData(QString key)
 void ScriptHelper::setData(QString key, QString value)
 {
     data.insert(key, value);
+}
+
+void ScriptHelper::sendFCM(QString message)
+{
+    FirebaseCloudMessaging *fcm = MessageLogger::logger().getFCM();
+    fcm->setMessage(message);
+    fcm->setTitle("Doxeo");
+    fcm->send("");
 }
 
 

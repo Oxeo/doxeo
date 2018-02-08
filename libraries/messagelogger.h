@@ -1,6 +1,7 @@
 #ifndef MESSAGELOGGER_H
 #define MESSAGELOGGER_H
 
+#include "firebasecloudmessaging.h"
 #include <QList>
 #include <QMessageLogContext>
 #include <QString>
@@ -18,6 +19,8 @@ public:
 
     QList<Log>& getMessages();
     void removeBeforeId(int id, QString type);
+    void setFirebaseCloudMessaging(FirebaseCloudMessaging *fcm);
+    FirebaseCloudMessaging* getFCM();
 
     static MessageLogger& logger();
     static void messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);
@@ -28,6 +31,7 @@ protected:
 
     QList<Log> messages;
     int idCpt;
+    FirebaseCloudMessaging *fcm;
 };
 
 #endif // MESSAGELOGGER_H
