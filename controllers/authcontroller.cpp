@@ -44,16 +44,9 @@ void AuthController::jsonLogin()
     QString password = query->getItem("password");
     QString error;
 
-    if (Authentification::auth().isConnected(header, cookie)) {
-        json.insert("success", false);
-        json.insert("msg", "You are already logged.");
-    }
-
-    else if (Authentification::auth().connection(username, password, cookie, error)) {
+    if (Authentification::auth().connection(username, password, cookie, error)){
         json.insert("success", true);
-    }
-
-    else {
+    } else {
         json.insert("success", false);
         json.insert("msg", error);
     }

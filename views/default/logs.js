@@ -4,7 +4,6 @@ var lastLogId = 0;
 
 jQuery(document).ready(function() {
     update();
-    setInterval(update, 1000);
 });
 
 function update() {
@@ -14,6 +13,10 @@ function update() {
     
     $.getJSON('logs.js?log=debug&startid=' + lastLogId).done(function(result) {
         if (result.success) {
+            if (lastLogId == 0) {
+                setInterval(update, 1000);
+            }
+            
             $.each(result.messages, function(key, val) {
                 if (val.type === "critical") {
                     $('#logsTable').prepend('<tr class="danger"><td>'+val.date+'</td><td>'+val.message+'</td></tr>')
