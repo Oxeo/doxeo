@@ -42,6 +42,8 @@ void Switch::setStatus(QString status)
     Database::exec(query);
     Database::release();
 
+    qDebug() << "Switch status " + id + " set to " + status;
+
     emit Switch::event.valueChanged(this->id, status);
 }
 
@@ -209,9 +211,9 @@ bool Switch::remove()
 
 void Switch::updateValue(QString id, QString value)
 {
-    if (getPowerOnCmd().contains(id + ";" + value)) {
+    if (value != "" && getPowerOnCmd().split(",").contains(id + ";" + value, Qt::CaseInsensitive)) {
         setStatus("on");
-    } else if (getPowerOffCmd().contains(id + ";" + value)) {
+    } else if (value != "" && getPowerOffCmd().split(",").contains(id + ";" + value, Qt::CaseInsensitive)) {
         setStatus("off");
     }
 }
