@@ -28,6 +28,12 @@
 
  1. Download the driver [here](https://dev.mysql.com/downloads/connector/c/).
  2. Copy libmysql.dll into C:\Program Files\Qt\5.5\mingw492_32\bin
+ 
+ ### Install SSL driver on windows
+
+ 1. Download Win32 OpenSSL v1.0.2n [here](http://slproweb.com/products/Win32OpenSSL.html).
+ 2. Install openSLL
+ 2. Copy libeay32.dll and ssleay32.dll into your executable folder
 
 ### Install Qt 5.5 (not tested)
 
