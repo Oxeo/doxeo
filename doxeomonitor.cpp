@@ -77,7 +77,7 @@ int DoxeoMonitor::start()
     }
 
     // Connect device
-    Device::initialize(this);
+    Device::initialize("Doxeoboard", this);
 
     // Add controller
     httpServer->addController(new AssetController(), "assets");

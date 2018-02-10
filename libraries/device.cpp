@@ -2,12 +2,13 @@
 #include <QtSerialPort/QSerialPortInfo>
 #include <QtDebug>
 #include <QThread>
+#include <QSettings>
 
 Device* Device::instance = NULL;
 
-void Device::initialize(QObject *parent)
+void Device::initialize(QString deviceName, QObject *parent)
 {
-    instance = new Device(parent);
+    instance = new Device(deviceName, parent);
 }
 
 Device* Device::Instance()
@@ -15,42 +16,61 @@ Device* Device::Instance()
     return instance;
 }
 
-Device::Device(QObject *parent) : QObject(parent)
+Device::Device(QString deviceName, QObject *parent) : QObject(parent)
 {
+    this->deviceName = deviceName;
+    currentPortTested = "";
+    
     serial = new QSerialPort(this);
     serial->setBaudRate(QSerialPort::Baud9600);
 
     connectionTimer.setSingleShot(true);
+    waitRegisterMsgTimer.setSingleShot(true);
 
     connect(serial, &QSerialPort::readyRead, this, &Device::readData);
     connect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this,
             SLOT(handleError(QSerialPort::SerialPortError)));
     connect(&connectionTimer, SIGNAL(timeout()), this, SLOT(connection()), Qt::QueuedConnection);
+    connect(&waitRegisterMsgTimer, SIGNAL(timeout()), this, SLOT(connection()), Qt::QueuedConnection);
 
-    if (!foundDevice("doxeo_board")) {
-        qCritical() << "Unable to connect to doxeo_board";
+    QSettings settings;
+    QString lastPort = settings.value("device/port", "").toString();
+    bool success = false;
+    
+    if (lastPort != "") {
+       success = foundDevice(lastPort);
+    }
+    
+    if (!success && !foundDevice()) {
+        qCritical() << "Unable to connect to " + deviceName;
         connectionTimer.start(5000);
     }
 }
 
 void Device::connection()
 {
-    if (!serial->isOpen()) {
-        if (!foundDevice("doxeo_board")) {
-            connectionTimer.start(5000);
-        }
-
+    if (serial->isOpen()) {
+        serial->close();
+        qDebug() << deviceName + " disconnected because the registered message has not been send during the last 5 seconds";
+    }
+    
+    waitRegisterMsgTimer.stop();
+    
+    if (!foundDevice()) {
+        connectionTimer.start(5000);
     }
 }
 
 void Device::handleError(QSerialPort::SerialPortError error)
 {
     if (error != QSerialPort::NoError) {
-        qCritical() << "doxeo_board has been disconnected: " + serial->errorString();
+        qCritical() << deviceName + " has been disconnected: " + serial->errorString();
 
         if (serial->isOpen()) {
             serial->close();
         }
+        
+        waitRegisterMsgTimer.stop();
 
         if (!connectionTimer.isActive()) {
             connectionTimer.start(5000);
@@ -67,10 +87,21 @@ void Device::readData()
        QString msg = QString( data ).remove("\r").remove("\n");
        QStringList args = msg.split(";");
 
-       qDebug() << "doxeo_board: " + msg;
+       qDebug() << deviceName + ": " + msg;
+       
+       if (waitRegisterMsgTimer.isActive() && msg.contains(deviceName, Qt::CaseInsensitive)) {
+            waitRegisterMsgTimer.stop();
+            
+            QSettings settings;
+            settings.setValue("device/port", currentPortTested);
+            
+            currentPortTested = "";
+            
+            qDebug() << deviceName + " registered with success!";
+       }
 
        if (msg.startsWith("error", Qt::CaseInsensitive)) {
-           qCritical() << "doxeo_board: " + msg;
+           qCritical() << deviceName + ": " + msg;
        }
 
        if (args.length() == 3) {
@@ -93,7 +124,7 @@ void Device::send(QString data)
     if (serial->isOpen()) {
         serial->write(msg.toLatin1());
     } else {
-        qCritical() << "doxeo_board not connected to send the message: " + msg;
+        qCritical() << deviceName + " not connected to send the message: " + msg;
     }
 }
 
@@ -102,26 +133,39 @@ bool Device::isConnected()
     return serial->isOpen();
 }
 
-bool Device::foundDevice(const QString name)
+bool Device::foundDevice(const QString port)
 {
     foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
-        serial->setPort(info);
+        if (port == "") {
+            if (currentPortTested != "") {
+                if (currentPortTested == info.portName()) {
+                    currentPortTested = "";
+                }
+                continue;
+            }
 
-        if (info.portName().contains("ttyAMA0")) {
-            continue;
+            if (info.portName().contains("ttyAMA0")) {
+                continue;
+            }
+        } else {
+            if (port != info.portName()) {
+                continue;
+            }
         }
 
-        qDebug() << "Try to connect to doxeo_board on port " + info.portName();
-
+        qDebug() << "Try to connect to " + deviceName + " on port " + info.portName();
+        
+        serial->setPort(info);
         if (serial->open(QIODevice::ReadWrite)) {
-            QThread::sleep(3);
-            serial->setTextModeEnabled(true);
-            qDebug() << name + " connected with success!";
+            currentPortTested = info.portName();
+            waitRegisterMsgTimer.start(5000);
+            qDebug() << deviceName + " connected on port " + info.portName() + " (waiting of the registered message)";
 
             return true;
         }
     }
 
+    currentPortTested = "";
     return false;
 }
 
