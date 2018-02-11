@@ -127,33 +127,40 @@ void DoxeoMonitor::configure()
 {
     QSettings settings;
     QString userInput;
+    QString oldValue;
 
-    userInput = commandLine("Enter database host name:");
+    oldValue = settings.value("database/hostname", "").toString();
+    userInput = commandLine("Enter database host name (" + oldValue + "):");
     if (userInput != "") {
         settings.setValue("database/hostname", userInput);
     }
 
-    userInput = commandLine("Enter database username:");
+    oldValue = settings.value("database/username", "").toString();
+    userInput = commandLine("Enter database username (" + oldValue + ")");
     if (userInput != "") {
         settings.setValue("database/username", userInput);
     }
 
-    userInput = commandLine("Enter database password:");
+    oldValue = settings.value("database/password", "").toString();
+    userInput = commandLine("Enter database password (" + oldValue + "):");
     if (userInput != "") {
         settings.setValue("database/password", userInput);
     }
 
-    userInput = commandLine("Enter database name:");
+    oldValue = settings.value("database/databasename", "").toString();
+    userInput = commandLine("Enter database name (" + oldValue + "):");
     if (userInput != "") {
         settings.setValue("database/databasename", userInput);
     }
     
-    userInput = commandLine("Enter Firebase Cloud Messaging project name:");
+    oldValue = settings.value("firebasecloudmessaging/projectname", "").toString();
+    userInput = commandLine("Enter Firebase Cloud Messaging project name (" + oldValue + "):");
     if (userInput != "") {
         settings.setValue("firebasecloudmessaging/projectname", userInput);
     }
     
-    userInput = commandLine("Enter Firebase Cloud Messaging server key:");
+    oldValue = settings.value("firebasecloudmessaging/serverkey", "").toString();
+    userInput = commandLine("Enter Firebase Cloud Messaging server key (" + oldValue + "):");
     if (userInput != "") {
         settings.setValue("firebasecloudmessaging/serverkey", userInput);
     }
