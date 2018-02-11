@@ -33,7 +33,7 @@ DoxeoMonitor::DoxeoMonitor(int &argc, char **argv) : QCoreApplication(argc, argv
     setOrganizationName("Oxeo");
     setOrganizationDomain("www.oxeo.fr");
     setApplicationName("Doxeo Monitor");
-    setApplicationVersion("V1.1.0 beta 1");
+    setApplicationVersion("V1.2.0");
 
     connect(this, SIGNAL(aboutToQuit()), this, SLOT(closeApplication()));
 }
@@ -67,9 +67,8 @@ int DoxeoMonitor::start()
     fcm->setServerKey(settings.value("firebasecloudmessaging/serverkey", "").toString());
     MessageLogger::logger().setFirebaseCloudMessaging(fcm);
 
-    fcm->setTitle("Doxeo");
-    fcm->setMessage("Im starting");
-    fcm->send("");
+    FirebaseCloudMessaging::Message msg = {"INFO", "Doxeo", "Doxeo monitor started!"};
+    fcm->send(msg);
 
     // Initialize logger messages
     if (!verbose) {

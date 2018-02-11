@@ -5,19 +5,24 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QJsonDocument>
+#include <QSslSocket>
 
 FirebaseCloudMessaging::FirebaseCloudMessaging(QString projectName, QObject *parent) : QObject(parent)
 {
     this->projectName = projectName;
     this->manager = new QNetworkAccessManager(this);
+
+    if (!QSslSocket::supportsSsl()) {
+        qCritical() << "SSL not supported: FirebaseCloudMessaging cannot be used!";
+    }
     
     connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(networkReply(QNetworkReply*)));
 }
 
-void FirebaseCloudMessaging::send(QString targetToken)
+void FirebaseCloudMessaging::send(Message message)
 {
     QUrl url("https://fcm.googleapis.com/fcm/send");
-    QJsonDocument doc(buildJsonMessage(targetToken));
+    QJsonDocument doc(buildJsonMessage(message));
     QString postMessage(doc.toJson(QJsonDocument::Compact));
     
     QNetworkRequest request(url);
@@ -28,17 +33,23 @@ void FirebaseCloudMessaging::send(QString targetToken)
     Q_UNUSED(reply);
 }
 
-QJsonObject FirebaseCloudMessaging::buildJsonMessage(QString targetToken)
+QJsonObject FirebaseCloudMessaging::buildJsonMessage(FirebaseCloudMessaging::Message message)
 {
     QJsonObject result;
     
-    QJsonObject notification;
-    notification.insert("body", message);
-    notification.insert("title", title);
-    notification.insert("sound", "default");
+    //QJsonObject notification;
+    //notification.insert("body", message);
+    //notification.insert("title", title);
+    //notification.insert("sound", "default");
+
+    QJsonObject data;
+    data.insert("title", message.title);
+    data.insert("message", message.body);
+    data.insert("type", message.type);
     
-    result.insert("notification", notification);
-    result.insert("to", "/topics/ALERT");
+    //result.insert("notification", notification);
+    result.insert("data", data);
+    result.insert("to", "/topics/" + message.type);
     
     return result;
 }
@@ -55,7 +66,7 @@ void FirebaseCloudMessaging::networkReply(QNetworkReply *reply)
             qDebug() << "Firebase Cloud Messaging send with success";
         }
    } else {
-       qWarning() << "error: " + reply->errorString();
+       qWarning() << "Error: " + reply->errorString();
    }
    
    delete reply;
@@ -64,14 +75,4 @@ void FirebaseCloudMessaging::networkReply(QNetworkReply *reply)
 void FirebaseCloudMessaging::setServerKey(QString serverKey)
 {
     this->serverKey = serverKey;
-}
-
-void FirebaseCloudMessaging::setTitle(QString title)
-{
-    this->title = title;
-}
-
-void FirebaseCloudMessaging::setMessage(QString message)
-{
-    this->message = message;
 }
