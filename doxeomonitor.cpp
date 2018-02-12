@@ -67,9 +67,6 @@ int DoxeoMonitor::start()
     fcm->setServerKey(settings.value("firebasecloudmessaging/serverkey", "").toString());
     MessageLogger::logger().setFirebaseCloudMessaging(fcm);
 
-    FirebaseCloudMessaging::Message msg = {"INFO", "Doxeo", "Doxeo monitor started!"};
-    fcm->send(msg);
-
     // Initialize logger messages
     if (!verbose) {
         qInstallMessageHandler(MessageLogger::messageHandler);

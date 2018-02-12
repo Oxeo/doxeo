@@ -33,7 +33,7 @@ $(document).ready(function () {
             },
 			content: {
                 title: 'Content',
-				type: 'textarea',
+				type: 'hidden',
 				list: false,
             },
             status: {
@@ -41,10 +41,11 @@ $(document).ready(function () {
                 options: { 'on': 'On', 'off': 'Off'}
             },
             editorButton: {
-                title: 'Editor',
+                title: 'Content',
                 display: function(data) {
                      return '<a href="editor?id=' + data.record.id + '"><button type="button" onclick="">Edit</button></a>';
-                }
+                },
+                edit: false
             }
         }
     });
