@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Script editor</title>
+  <style type="text/css" media="screen">
+    body {
+      background-color: #2f3129;
+    }
+    #editor { 
+        position: absolute;
+        top: 40px;
+        right: 0;
+        bottom: 0;
+        left: 0;
+    }
+    #saveButton {
+        margin-left: 40px;
+    }
+  </style>
+</head>
+<body>
+  <button type="button" id="saveButton">Save</button> <button type="button" id="reloadButton">Reload</button>
+  <div id="editor"></div>
+
+<script src="../assets/jquery/jquery-2.1.4.min.js"></script>
+<script src="../assets/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    var editor = ace.edit("editor");
+    
+    jQuery(document).ready(function() {
+        editor.setTheme("ace/theme/monokai");
+        editor.session.setMode("ace/mode/javascript");
+        
+        param = {
+            id: location.search.split('id=')[1]
+        };
+        
+        
+        $.getJSON('get_script.js', param).done(function(result) {
+            if (result.success) {
+                editor.setValue(result.script.content);
+            } else {
+                alert(result.msg);
+            }
+        }).fail(function(jqxhr, textStatus, error) {
+            alert("Request Failed: " + error);
+        });
+    });
+    
+    $("#saveButton").click( function() {
+        param = {
+            id: location.search.split('id=')[1],
+            content: encodeURI(editor.getValue())
+        };
+        
+        $.getJSON('set_body', param)
+            .done(function(result) {
+                if (result.success) {
+                    alert("Saved with success");
+                } else {
+                    alert(result.msg);
+                }
+            }).fail(function(jqxhr, textStatus, error) {
+                alert("Request Failed: " + error);
+        });
+    });
+</script>
+</body>
+</html>

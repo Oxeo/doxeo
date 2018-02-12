@@ -39,6 +39,12 @@ $(document).ready(function () {
             status: {
                 title: 'Status',
                 options: { 'on': 'On', 'off': 'Off'}
+            },
+            editorButton: {
+                title: 'Editor',
+                display: function(data) {
+                     return '<a href="editor?id=' + data.record.id + '"><button type="button" onclick="">Edit</button></a>';
+                }
             }
         }
     });
