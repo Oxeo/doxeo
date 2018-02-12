@@ -29,6 +29,7 @@ void FirebaseCloudMessaging::send(Message message)
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", QString("key=" + serverKey).toUtf8());
     
+    qDebug() << "FCM: " + message.type + " " + message.title + " " + message.body;
     QNetworkReply *reply = manager->post(request, postMessage.toUtf8());
     Q_UNUSED(reply);
 }
@@ -36,18 +37,12 @@ void FirebaseCloudMessaging::send(Message message)
 QJsonObject FirebaseCloudMessaging::buildJsonMessage(FirebaseCloudMessaging::Message message)
 {
     QJsonObject result;
-    
-    //QJsonObject notification;
-    //notification.insert("body", message);
-    //notification.insert("title", title);
-    //notification.insert("sound", "default");
 
     QJsonObject data;
     data.insert("title", message.title);
     data.insert("message", message.body);
     data.insert("type", message.type);
     
-    //result.insert("notification", notification);
     result.insert("data", data);
     result.insert("to", "/topics/" + message.type);
     
@@ -61,12 +56,12 @@ void FirebaseCloudMessaging::networkReply(QNetworkReply *reply)
        QJsonObject json = doc.object();
        
        if (json.contains("error_code")) {
-            qWarning() << "Error: " << json.value("error_code").toString();
+            qWarning() << "FCM error: " << json.value("error_code").toString();
         } else {
-            qDebug() << "Firebase Cloud Messaging send with success";
+            qDebug() << "FCM message send with success!";
         }
    } else {
-       qWarning() << "Error: " + reply->errorString();
+       qWarning() << "FCM error: " + reply->errorString();
    }
    
    delete reply;
