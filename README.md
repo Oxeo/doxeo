@@ -103,3 +103,17 @@ You now have Qt installed in /opt/Qt5.5 ready to be used. To configure your Qt p
 
 http://www.pihomeserver.fr/2015/08/13/envoyer-un-email-depuis-votre-raspberry-pi/
 
+### Install ddclient for DynHost OVH
+
+1. sudo apt-get install ddclient
+2. sudo vim /etc/ddclient.conf
+```
+protocol=dyndns2
+use=web, web=checkip.dyndns.com
+server=www.ovh.com
+login=nomdedomaine.net-login
+password='mypassword'
+dyn.nomdedomaine.net
+```
+3. sudo service ddclient restart
+
