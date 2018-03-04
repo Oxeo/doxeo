@@ -12,6 +12,14 @@ $(document).ready(function () {
             type: 'GET',
             dataType: 'json'
         },
+        toolbar: {
+             items: [{                          
+                text: 'Export',
+                click: function () {
+                    window.location.href = 'export';
+                }
+            }]
+        },
         actions: {
             listAction: 'script_list.js',
             createAction: 'edit_script.js',
