@@ -87,7 +87,7 @@ void Device::readData()
        QString msg = QString( data ).remove("\r").remove("\n");
        QStringList args = msg.split(";");
 
-       qDebug() << deviceName + ": " + msg;
+       qDebug() << deviceName + " read: " + msg;
        
        if (waitRegisterMsgTimer.isActive() && msg.contains(deviceName, Qt::CaseInsensitive)) {
             waitRegisterMsgTimer.stop();
