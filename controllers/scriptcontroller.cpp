@@ -10,6 +10,7 @@ ScriptController::ScriptController(QObject *parent) : AbstractController(parent)
 {
     router.insert("list", "scriptList");
     router.insert("editor", "editor");
+    router.insert("export", "exportScripts");
     router.insert("script_list.js", "jsonScriptList");
     router.insert("edit_script.js", "jsonEditScript");
     router.insert("delete_script.js", "jsonDeleteScript");
@@ -54,6 +55,35 @@ void ScriptController::editor()
 
     QHash<QString, QByteArray> data;
     loadHtmlView("views/script/editor.html", &data);
+}
+
+void ScriptController::exportScripts()
+{
+    if (!Authentification::auth().isConnected(header, cookie)) {
+        redirect("/auth");
+        return;
+    }
+
+    QList<Script> list = Script::getScriptList().values();
+    QString result;
+
+    foreach (const Script &sw, list) {
+        result += " /*\n";
+        result += " * Title: " + sw.getName() + "\n";
+        result += " * Id: " + QString::number(sw.getId()) + "\n";
+        result += " * Description: " + sw.getDescription() + "\n";
+        result += " */\n\n";
+        result += sw.getContent() + "\n\n\n";
+    }
+
+    *output << "HTTP/1.0 200 Ok\r\n";
+    *output << "Content-Type: application/octet-stream\r\n";
+    *output << "Content-Disposition: attachment; filename=\"doxeo_scripts.js\"\r\n\r\n";
+    output->flush();
+
+    // Streaming the file
+    QByteArray block = result.toUtf8();
+    socket->write(block);
 }
 
 void ScriptController::jsonScriptList()

@@ -17,6 +17,7 @@ public:
 public slots:
     void scriptList();
     void editor();
+    void exportScripts();
     void jsonScriptList();
     void jsonEditScript();
     void jsonDeleteScript();
