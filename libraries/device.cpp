@@ -65,10 +65,6 @@ void Device::handleError(QSerialPort::SerialPortError error)
 {
     if (error != QSerialPort::NoError) {
         qCritical() << deviceName + " has been disconnected: " + serial->errorString();
-
-        if (serial->isOpen()) {
-            serial->close();
-        }
         
         waitRegisterMsgTimer.stop();
 
