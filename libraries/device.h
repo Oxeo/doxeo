@@ -34,6 +34,7 @@ protected:
     QTimer connectionTimer;
     QTimer waitRegisterMsgTimer;
     QString currentPortTested;
+    bool systemInError;
 
     static Device *instance;
 

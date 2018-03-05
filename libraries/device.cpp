@@ -20,6 +20,7 @@ Device::Device(QString deviceName, QObject *parent) : QObject(parent)
 {
     this->deviceName = deviceName;
     currentPortTested = "";
+    systemInError = false;
     
     serial = new QSerialPort(this);
     serial->setBaudRate(QSerialPort::Baud9600);
@@ -49,6 +50,8 @@ Device::Device(QString deviceName, QObject *parent) : QObject(parent)
 
 void Device::connection()
 {
+    systemInError = false;
+    
     if (serial->isOpen()) {
         serial->close();
         qDebug() << deviceName + " disconnected because the registered message has not been send during the last 5 seconds";
@@ -63,8 +66,9 @@ void Device::connection()
 
 void Device::handleError(QSerialPort::SerialPortError error)
 {
-    if (error != QSerialPort::NoError) {
+    if (error != QSerialPort::NoError && systemInError == false) {
         qCritical() << deviceName + " has been disconnected: " + serial->errorString();
+        systemInError = true;
         
         waitRegisterMsgTimer.stop();
 
