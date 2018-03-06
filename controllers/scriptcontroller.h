@@ -24,6 +24,7 @@ public slots:
     void jsonChangeScriptStatus();
     void jsonSetScriptBody();
     void jsonGetScript();
+    void jsonExecuteCmd();
 
 protected:
     ScriptEngine *scriptEngine;

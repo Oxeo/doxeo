@@ -6,6 +6,7 @@
 #include <QObject>
 #include <QScriptEngine>
 #include <QTimer>
+#include <QString>
 
 class ScriptEngine : public QObject
 {
@@ -13,7 +14,7 @@ class ScriptEngine : public QObject
 
 public:
     explicit ScriptEngine(QObject *parent = 0);
-    void load();
+    QString runCmd(QString cmd);
 
 protected slots:
     void run(QString event = "scheduler");
@@ -24,7 +25,7 @@ protected slots:
 
 protected:
     QScriptEngine engine;
-    QTimer timer;
+    QTimer *timer;
     QHash<QString, uint> eventList;
 };
 

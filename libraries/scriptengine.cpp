@@ -5,6 +5,7 @@
 #include "libraries/device.h"
 
 #include <QDebug>
+#include <QTime>
 
 ScriptEngine::ScriptEngine(QObject *parent) : QObject(parent)
 {
@@ -18,9 +19,19 @@ ScriptEngine::ScriptEngine(QObject *parent) : QObject(parent)
     connect(Switch::getEvent(), SIGNAL(dataChanged()), this, SLOT(updateSwitches()), Qt::QueuedConnection);
     connect(Switch::getEvent(), SIGNAL(valueChanged(QString,QString)), this, SLOT(switchValueChanged(QString, QString)), Qt::QueuedConnection);
 
-    timer.setInterval(40000); // 40 seconds
-    connect(&timer, SIGNAL(timeout()), this, SLOT(run()), Qt::QueuedConnection);
-    timer.start();
+    
+    timer = new QTimer(this);
+    timer->setSingleShot(true);
+    connect(timer, SIGNAL(timeout()), this, SLOT(run()), Qt::QueuedConnection);
+    
+    timer->start((60 - QTime::currentTime().second() + 10) * 1000); // scheduler event at each start of minute + 10 seconds
+}
+
+QString ScriptEngine::runCmd(QString cmd)
+{
+    QScriptValue result = engine.evaluate(cmd);
+    
+    return result.toString();
 }
 
 void ScriptEngine::run(QString event)
@@ -45,6 +56,10 @@ void ScriptEngine::run(QString event)
     }
 
     eventList.insert(event, QDateTime::currentDateTime().toTime_t());
+    
+    if (event == "scheduler") {
+        timer->start((60 - QTime::currentTime().second() + 10) * 1000); // scheduler event at each start of minute + 10 seconds
+    }
 }
 
 void ScriptEngine::updateSensors()

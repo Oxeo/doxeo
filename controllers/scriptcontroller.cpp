@@ -17,6 +17,7 @@ ScriptController::ScriptController(QObject *parent) : AbstractController(parent)
     router.insert("set_status", "jsonChangeScriptStatus");
     router.insert("set_body", "jsonSetScriptBody");
     router.insert("get_script.js", "jsonGetScript");
+    router.insert("execute_cmd.js", "jsonExecuteCmd");
 
     Script::update();
     scriptEngine = new ScriptEngine(parent);
@@ -220,6 +221,25 @@ void ScriptController::jsonGetScript()
     } else {
        result.insert("msg", "Script Id invalid");
        result.insert("success", false);
+    }
+
+    loadJsonView(result);
+}
+
+void ScriptController::jsonExecuteCmd()
+{
+    QJsonObject result;
+
+    if (!Authentification::auth().isConnected(header, cookie)) {
+        result.insert("msg", "You are not logged.");
+        result.insert("success", false);
+    }
+    else if (query->getItem("cmd").isEmpty()) {
+        result.insert("msg", "cmd paramater missing!");
+        result.insert("success", false);
+    } else {
+        result.insert("result", scriptEngine->runCmd(query->getItem("cmd")));
+        result.insert("success", true);
     }
 
     loadJsonView(result);
