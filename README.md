@@ -65,7 +65,7 @@ You now have Qt installed in /opt/Qt5.5 ready to be used. To configure your Qt p
 /opt/Qt5.5/bin/qmake
 ```
  
-### Install QtSerialPort (5.5)
+### Install QtSerialPort
 
  1. Download Qt [here](http://download.qt.io/archive/qt/5.5/5.5.1/single/qt-everywhere-opensource-src-5.5.1.tar.xz).
  2. Copy the folder qtserialport into your raspberry pi
@@ -98,6 +98,11 @@ You now have Qt installed in /opt/Qt5.5 ready to be used. To configure your Qt p
 
  1. do: sudo vim /etc/rc.local
  2. add: su pi -c '/home/pi/apps/doxeo-monitor/doxeo-monitor --path /home/pi/apps/doxeo-monitor'
+ 
+### Keep internal clock synchronized
+
+* https://formation-debian.viarezo.fr/ntp.html
+* https://serverfault.com/questions/559666/why-doesnt-ntp-recover-after-an-internet-less-startup
  
 ### Send mail with raspberry
 
