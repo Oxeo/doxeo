@@ -1,9 +1,12 @@
 <script>
 var updateAll = true;
 var lastLogId = 0;
+var listCmd = [];
+var listCmdPosition = -1;
 
 jQuery(document).ready(function() {
     update();
+    updateCmdList();
     
     $("#searchInput").on("keyup", function() {
       var value = $(this).val().toLowerCase();
@@ -52,6 +55,18 @@ function update() {
     });
 }
 
+function updateCmdList() {
+    $.getJSON('/script/cmd_list.js').done(function(result) {
+        listCmd = [];
+        $.each(result.records, function(key, val) {
+            listCmd.push(val);
+        });
+        listCmdPosition = -1;
+    }).fail(function(jqxhr, textStatus, error) {
+        alert_error("Request Failed: " + error);
+    });
+}
+
 $('#clear_logs').click(function(event){
     var data = $(this).data();
     
@@ -84,15 +99,33 @@ $('#stop_logs').click(function(event){
 	}
 });
 
-
-$('#send').click(function(event){
+$('#send').click(function(event) {
     var cmd = $('#sendContent').val();
     sendCmd(cmd);
 });
 
-$('#sendBoardCmd').click(function(event){
+$('#sendContent').on('keyup', function (e) {
+    if(e.which === 13) { // enter key
+        var cmd = $('#sendContent').val();
+        sendCmd(cmd);
+    } else if (e.which === 38) { // top key
+        if (listCmdPosition+1 < listCmd.length) {
+            listCmdPosition++;
+            $('#sendContent').val(listCmd[listCmdPosition]);
+         }
+    } else if (e.which === 40) { // down key
+         if (listCmdPosition > 0) {
+            listCmdPosition--;
+            $('#sendContent').val(listCmd[listCmdPosition]);
+         }
+    }
+});
+
+
+
+$('#buildBoardCmd').click(function(event){
     var cmd = $('#sendContent').val();
-    sendCmd('helper.sendCmd("' + cmd + '")');
+    $('#sendContent').val('helper.sendCmd("' + cmd + '")');
 });
 
 function sendCmd(cmdToSend) {
@@ -103,7 +136,8 @@ function sendCmd(cmdToSend) {
     $.getJSON('/script/execute_cmd.js', param)
         .done(function(result) {
             if (result.success) {
-                alert(result.msg);
+                $('#sendContent').val(result.msg);
+                updateCmdList();
             } else {
                 alert_error(result.msg);
             }
@@ -114,6 +148,11 @@ function sendCmd(cmdToSend) {
 
 $('#clearSearch').click(function(event){
     $('#searchInput').val("");
+});
+
+$('#clearCmdContent').click(function(event){
+    $('#sendContent').val("");
+    listCmdPosition = -1;
 });
 
 function alert_error(message) {           
