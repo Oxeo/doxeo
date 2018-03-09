@@ -4,6 +4,8 @@
 #include "core/abstractcontroller.h"
 #include "libraries/scriptengine.h"
 
+#include <QList>
+#include <QString>
 
 class ScriptController : public AbstractController
 {
@@ -25,9 +27,11 @@ public slots:
     void jsonSetScriptBody();
     void jsonGetScript();
     void jsonExecuteCmd();
+    void jsonCmdList();
 
 protected:
     ScriptEngine *scriptEngine;
+    QList<QString> listCmd;
 };
 
 

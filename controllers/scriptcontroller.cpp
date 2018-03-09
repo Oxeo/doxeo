@@ -18,6 +18,7 @@ ScriptController::ScriptController(QObject *parent) : AbstractController(parent)
     router.insert("set_body", "jsonSetScriptBody");
     router.insert("get_script.js", "jsonGetScript");
     router.insert("execute_cmd.js", "jsonExecuteCmd");
+    router.insert("cmd_list.js", "jsonCmdList");
 
     Script::update();
     scriptEngine = new ScriptEngine(parent);
@@ -239,8 +240,24 @@ void ScriptController::jsonExecuteCmd()
         result.insert("success", false);
     } else {
         result.insert("result", scriptEngine->runCmd(query->getItem("cmd")));
+        listCmd.prepend(query->getItem("cmd"));
         result.insert("success", true);
     }
+
+    loadJsonView(result);
+}
+
+void ScriptController::jsonCmdList()
+{
+    QJsonArray array;
+
+    foreach (QString cmd, listCmd) {
+        array.push_back(cmd);
+    }
+
+    QJsonObject result;
+    result.insert("result", "OK");
+    result.insert("records", array);
 
     loadJsonView(result);
 }
