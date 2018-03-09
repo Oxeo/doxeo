@@ -83,7 +83,7 @@ void Switch::powerOff()
 void Switch::update()
 {
     QSqlQuery query = Database::getQuery();
-    query.prepare("SELECT id, status, name, power_on_cmd, power_off_cmd FROM switch");
+    query.prepare("SELECT id, status, name, category, power_on_cmd, power_off_cmd FROM switch");
 
     if(Database::exec(query))
     {
@@ -94,8 +94,9 @@ void Switch::update()
 
             sw->status = query.value(1).toString();
             sw->name = query.value(2).toString();
-            sw->powerOnCmd = query.value(3).toString();
-            sw->powerOffCmd = query.value(4).toString();
+            sw->category = query.value(3).toString();
+            sw->powerOnCmd = query.value(4).toString();
+            sw->powerOffCmd = query.value(5).toString();
 
             switchList.insert(sw->id, sw);
         }
@@ -120,9 +121,19 @@ void Switch::setName(const QString &value)
     name = value;
 }
 
+void Switch::setCategory(const QString &value)
+{
+    category = value;
+}
+
 QString Switch::getName() const
 {
     return name;
+}
+
+QString Switch::getCategory() const
+{
+    return category;
 }
 
 QJsonObject Switch::toJson() const
@@ -131,6 +142,7 @@ QJsonObject Switch::toJson() const
 
     result.insert("id", id);
     result.insert("name", name);
+    result.insert("category", category);
     result.insert("power_on_cmd", powerOnCmd);
     result.insert("power_off_cmd", powerOffCmd);
     result.insert("status", status);
@@ -173,12 +185,13 @@ bool Switch::flush(bool newObject)
     QSqlQuery query = Database::getQuery();
 
     if (!newObject) {
-        query.prepare("UPDATE switch SET name=?, power_on_cmd=?, power_off_cmd=?, status=? WHERE id=?");
+        query.prepare("UPDATE switch SET name=?, category=?, power_on_cmd=?, power_off_cmd=?, status=? WHERE id=?");
     } else {
-        query.prepare("INSERT INTO switch (name, power_on_cmd, power_off_cmd, status, id) "
-                      "VALUES (?, ?, ?, ?, ?)");
+        query.prepare("INSERT INTO switch (name, category, power_on_cmd, power_off_cmd, status, id) "
+                      "VALUES (?, ?, ?, ?, ?, ?)");
     }
     query.addBindValue(name);
+    query.addBindValue(category);
     query.addBindValue(powerOnCmd);
     query.addBindValue(powerOffCmd);
     query.addBindValue(status);

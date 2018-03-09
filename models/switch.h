@@ -24,8 +24,10 @@ public:
     QString getStatus()  const;
 
     QString getName() const;
+    QString getCategory() const;
     QJsonObject toJson() const;
     void setName(const QString &value);
+    void setCategory(const QString &value);
     bool flush(bool newObject);
     bool remove();
     void setPowerOnCmd(const QString &value);
@@ -50,6 +52,7 @@ protected slots:
 protected:
     QString id;
     QString name;
+    QString category;
     QString status;
     QString powerOnCmd;
     QString powerOffCmd;

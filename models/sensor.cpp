@@ -12,6 +12,7 @@ Sensor::Sensor(QString id, QObject *parent) : QObject(parent)
     this->id = id;
     cmd = "";
     name = "";
+    category = "";
     value = "";
     lastEvent = QDateTime::currentDateTime().addYears(-1);
     startTime = QDateTime::currentDateTime();
@@ -30,6 +31,7 @@ QJsonObject Sensor::toJson() const
     result.insert("id", id);
     result.insert("cmd", cmd);
     result.insert("name", name);
+    result.insert("category", category);
     result.insert("value", value);
     result.insert("last_update", QString::number(lastUpdate.at(0).toTime_t()));
     result.insert("last_event", QString::number(lastEvent.toTime_t()));
@@ -50,6 +52,17 @@ void Sensor::setName(const QString &value)
 {
     name = value;
 }
+
+QString Sensor::getCategory() const
+{
+    return category;
+}
+
+void Sensor::setCategory(const QString &value)
+{
+    category = value;
+}
+
 QString Sensor::getValue() const
 {
     return value;
@@ -68,7 +81,7 @@ QHash<QString, Sensor*> &Sensor::getSensorList()
 void Sensor::update()
 {
     QSqlQuery query = Database::getQuery();
-    query.prepare("SELECT id, cmd, name, value FROM sensor");
+    query.prepare("SELECT id, cmd, name, category, value FROM sensor");
 
     if(Database::exec(query))
     {
@@ -78,7 +91,8 @@ void Sensor::update()
             Sensor* s = new Sensor(query.value(0).toString());
             s->cmd = query.value(1).toString();
             s->name = query.value(2).toString();
-            s->value = query.value(3).toString();
+            s->category = query.value(3).toString();
+            s->value = query.value(4).toString();
 
             sensorList.insert(s->getId(), s);
         }
@@ -98,14 +112,15 @@ bool Sensor::flush(bool newObject)
     QSqlQuery query = Database::getQuery();
 
     if (!newObject) {
-        query.prepare("UPDATE sensor SET cmd=?, name=?, value=? WHERE id=?");
+        query.prepare("UPDATE sensor SET cmd=?, name=?, category=?, value=? WHERE id=?");
     } else {
-        query.prepare("INSERT INTO sensor (cmd, name, value, id) "
-                      "VALUES (?, ?, ?, ?)");
+        query.prepare("INSERT INTO sensor (cmd, name, category, value, id) "
+                      "VALUES (?, ?, ?, ?, ?)");
     }
 
     query.addBindValue(cmd);
     query.addBindValue(name);
+    query.addBindValue(category);
     query.addBindValue(value);
     query.addBindValue(id);
 

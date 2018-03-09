@@ -26,6 +26,9 @@ public:
     QString getName() const;
     void setName(const QString &value);
 
+    QString getCategory() const;
+    void setCategory(const QString &value);
+
     QString getValue() const;
     void setValue(const QString &value);
 
@@ -52,6 +55,7 @@ protected:
     QString id;
     QString cmd;
     QString name;
+    QString category;
     QString value;
     QList<QDateTime> lastUpdate;
     QDateTime lastEvent;

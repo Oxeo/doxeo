@@ -72,6 +72,7 @@ void SwitchController::jsonCreateSwitch()
 
     Switch sw(query->getItem("id"));
     sw.setName(query->getItem("name"));
+    sw.setCategory(query->getItem("category"));
     sw.setPowerOnCmd(query->getItem("power_on_cmd"));
     sw.setPowerOffCmd(query->getItem("power_off_cmd"));
     sw.setStatus(query->getItem("status"));
@@ -97,6 +98,7 @@ void SwitchController::jsonEditSwitch()
 
     Switch sw(query->getItem("id"));
     sw.setName(query->getItem("name"));
+    sw.setCategory(query->getItem("category"));
     sw.setPowerOnCmd(query->getItem("power_on_cmd"));
     sw.setPowerOffCmd(query->getItem("power_off_cmd"));
     sw.setStatus(query->getItem("status"));

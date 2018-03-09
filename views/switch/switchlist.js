@@ -29,6 +29,10 @@ $(document).ready(function () {
             name: {
                 title: 'Name',
             },
+            category: {
+                title: 'Category',
+                options: { 'light': 'Light', 'socket': 'Socket', 'camera': 'Camera', 'alarm': 'Alarm', 'speaker': 'Speaker', 'fountain': 'Fountain', 'other': 'Other'}
+            },
             power_on_cmd: {
                 title: 'Power on command',
             },
