@@ -152,6 +152,14 @@ void DefaultController::jsonClearLogs()
 void DefaultController::jsonSystem()
 {
     QJsonObject result;
+
+    if (!Authentification::auth().isConnected(header, cookie)) {
+        result.insert("Result", "ERROR");
+        result.insert("Message", "You are not logged.");
+        loadJsonView(result);
+        return;
+    }
+
     result.insert("success", true);
     result.insert("time", QTime::currentTime().toString("HH:mm"));
     result.insert("device_connected", Device::Instance()->isConnected());

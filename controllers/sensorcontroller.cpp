@@ -43,13 +43,20 @@ void SensorController::sensorList()
 
 void SensorController::jsonSensorList()
 {
-    QJsonArray array;
+    QJsonObject result;
 
+    if (!Authentification::auth().isConnected(header, cookie)) {
+        result.insert("Result", "ERROR");
+        result.insert("Message", "You are not logged.");
+        loadJsonView(result);
+        return;
+    }
+
+    QJsonArray array;
     foreach (const Sensor *s, Sensor::getSensorList()) {
         array.push_back(s->toJson());
     }
 
-    QJsonObject result;
     result.insert("Result", "OK");
     result.insert("Records", array);
 

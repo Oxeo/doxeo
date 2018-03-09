@@ -460,7 +460,9 @@ void ThermostatController::jsonSetStatus()
     QSettings settings;
     QJsonObject result;
 
-    if (query->getItem("thermostat").toLower() == "running") {
+    if (!Authentification::auth().isConnected(header, cookie)) {
+        result.insert("msg", "You are not logged.");
+    } else if (query->getItem("thermostat").toLower() == "running") {
         thermostat->start();
         settings.setValue("thermostatController/startThermostat", true);
     } else if (query->getItem("thermostat").toLower() == "stopped") {

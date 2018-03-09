@@ -46,13 +46,19 @@ void SwitchController::switchList()
 
 void SwitchController::jsonSwitchList()
 {
-    QJsonArray array;
+    QJsonObject result;
+    if (!Authentification::auth().isConnected(header, cookie)) {
+        result.insert("Result", "ERROR");
+        result.insert("Message", "You are not logged.");
+        loadJsonView(result);
+        return;
+    }
 
+    QJsonArray array;
     foreach (const Switch *sw, Switch::getSwitchList()) {
         array.push_back(sw->toJson());
     }
 
-    QJsonObject result;
     result.insert("Result", "OK");
     result.insert("Records", array);
 

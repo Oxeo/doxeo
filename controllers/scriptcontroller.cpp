@@ -90,6 +90,15 @@ void ScriptController::exportScripts()
 
 void ScriptController::jsonScriptList()
 {
+    QJsonObject result;
+
+    if (!Authentification::auth().isConnected(header, cookie)) {
+        result.insert("Result", "ERROR");
+        result.insert("Message", "You are not logged.");
+        loadJsonView(result);
+        return;
+    }
+
     QList<Script> list = Script::getScriptList().values();
     QJsonArray array;
 
@@ -97,7 +106,6 @@ void ScriptController::jsonScriptList()
         array.push_back(sw.toJson());
     }
 
-    QJsonObject result;
     result.insert("Result", "OK");
     result.insert("Records", array);
 
@@ -253,13 +261,21 @@ void ScriptController::jsonExecuteCmd()
 
 void ScriptController::jsonCmdList()
 {
+    QJsonObject result;
+
+    if (!Authentification::auth().isConnected(header, cookie)) {
+        result.insert("Result", "ERROR");
+        result.insert("Message", "You are not logged.");
+        loadJsonView(result);
+        return;
+    }
+
     QJsonArray array;
 
     foreach (QString cmd, listCmd) {
         array.push_back(cmd);
     }
 
-    QJsonObject result;
     result.insert("result", "OK");
     result.insert("records", array);
 
