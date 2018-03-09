@@ -87,7 +87,7 @@ void Device::readData()
        QString msg = QString( data ).remove("\r").remove("\n");
        QStringList args = msg.split(";");
 
-       qDebug() << deviceName + " read: " + msg;
+       qDebug() << "From " + deviceName + ": " + msg;
        
        if (waitRegisterMsgTimer.isActive() && msg.contains(deviceName, Qt::CaseInsensitive)) {
             waitRegisterMsgTimer.stop();
@@ -123,6 +123,7 @@ void Device::send(QString data)
 
     if (serial->isOpen()) {
         serial->write(msg.toLatin1());
+        qDebug() << "To " + deviceName + ": " + data;
     } else {
         qCritical() << deviceName + " not connected to send the message: " + msg;
     }
