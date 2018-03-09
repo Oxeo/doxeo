@@ -52,7 +52,7 @@ function update() {
     });
 }
 
-$('#buttons_placeholder').on('click', '.clear_logs', function(){
+$('#clear_logs').click(function(event){
     var data = $(this).data();
     
     param = {
@@ -74,14 +74,46 @@ $('#buttons_placeholder').on('click', '.clear_logs', function(){
     });
 });
 
-$('#buttons_placeholder').on('click', '.stop_logs', function(){
+$('#stop_logs').click(function(event){
 	if (updateAll == true) {
 		updateAll = false;
-		$('.stop_logs').text("Continue");
+		$('#stop_logs').text("Continue");
 	} else {
 		updateAll = true;
-		$('.stop_logs').text("Stop");
+		$('#stop_logs').text("Stop");
 	}
+});
+
+
+$('#send').click(function(event){
+    var cmd = $('#sendContent').val();
+    sendCmd(cmd);
+});
+
+$('#sendBoardCmd').click(function(event){
+    var cmd = $('#sendContent').val();
+    sendCmd('helper.sendCmd("' + cmd + '")');
+});
+
+function sendCmd(cmdToSend) {
+    var param = {
+        cmd: cmdToSend
+    };
+    
+    $.getJSON('/script/execute_cmd.js', param)
+        .done(function(result) {
+            if (result.success) {
+                alert(result.msg);
+            } else {
+                alert_error(result.msg);
+            }
+        }).fail(function(jqxhr, textStatus, error) {
+            alert_error("Request Failed: " + error);
+    });
+}
+
+$('#clearSearch').click(function(event){
+    $('#searchInput').val("");
 });
 
 function alert_error(message) {           

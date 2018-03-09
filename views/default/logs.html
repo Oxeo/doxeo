@@ -1,27 +1,42 @@
-<div class="page-header">
-    <h1>Logs</h1>
-</div>
+<br/>
 
 <div id="alert_placeholder"></div>
 
-<div id="buttons_placeholder">
-  <button type="button" class="btn btn-primary clear_logs" data-clear="debug">Clear</button> 
-  <button type="button" class="btn btn-primary stop_logs">Stop</button>
+<div class="row">
+  <div class="col-xs-11">
+     <div class="input-group">
+      <input type="text" class="form-control" id="sendContent" aria-label="...">
+      <div class="input-group-btn">
+        <button type="button" class="btn btn-default" id="sendBoardCmd">
+          <span class="glyphicon glyphicon-hdd"></span>
+        </button> 
+        <button type="button" class="btn btn-default" id="send">
+          <span class="glyphicon glyphicon-play"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-xs-1">
+    <button type="button" class="btn btn-primary" id="stop_logs">Stop</button>
+  </div>
 </div>
-<br/>
-<input class="form-control" id="searchInput" type="text" placeholder="Search..">
+
 <br/>
 
+<div class="input-group">
+  <input class="form-control" id="searchInput" type="text" placeholder="Search..">
+  <div class="input-group-btn">
+    <button type="button" class="btn btn-default" id="clearSearch"><span class="glyphicon glyphicon-remove"></span></button> 
+  </div>
+</div>
 <table class="table table-condensed table-bordered">
-  <thead>
-    <tr>
-      <th class="col-xs-2">Date</th>
-      <th class="col-xs-10">Message</th>
-    </tr>
-  </thead>
   <tbody id="logsTable">
     <tr>
       <td colspan="2" class="text-center"><img src="./assets/images/spinner.gif" alt="wait"/></td>
     </tr>
   </tbody>
 </table>
+
+<button type="button" class="btn btn-primary" id="clear_logs" data-clear="debug">Clear</button>
+<br /><br />
