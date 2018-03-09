@@ -240,8 +240,12 @@ void ScriptController::jsonExecuteCmd()
         result.insert("success", false);
     } else {
         result.insert("result", scriptEngine->runCmd(query->getItem("cmd")));
-        listCmd.prepend(query->getItem("cmd"));
         result.insert("success", true);
+
+        if (listCmd.empty() ||
+                query->getItem("cmd").compare(listCmd.first()) != 0) {
+            listCmd.prepend(query->getItem("cmd"));
+        }
     }
 
     loadJsonView(result);
