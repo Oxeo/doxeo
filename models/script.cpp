@@ -133,7 +133,7 @@ bool Script::flush()
     if (Database::exec(query)) {
 
         if (id < 1) {
-            query.prepare("SELECT id FROM Script WHERE id = LAST_INSERT_ID();");
+            query.prepare("SELECT id FROM script WHERE id = LAST_INSERT_ID();");
             Database::exec(query);
             query.next();
             id = query.value("id").toInt();
