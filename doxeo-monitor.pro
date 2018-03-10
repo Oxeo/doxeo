@@ -44,7 +44,8 @@ SOURCES += main.cpp\
     libraries/scriptengine.cpp \
     libraries/scripthelper.cpp \
     libraries/firebasecloudmessaging.cpp \
-    core/event.cpp
+    core/event.cpp \
+    models/command.cpp
 
 HEADERS  += \
     controllers/switchcontroller.h \
@@ -79,6 +80,7 @@ HEADERS  += \
     libraries/scriptengine.h \
     libraries/scripthelper.h \
     libraries/firebasecloudmessaging.h \
-    core/event.h
+    core/event.h \
+    models/command.h
 
 RESOURCES +=

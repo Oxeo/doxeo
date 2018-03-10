@@ -58,9 +58,15 @@ function update() {
 function updateCmdList() {
     $.getJSON('/script/cmd_list.js').done(function(result) {
         listCmd = [];
+        
+        result.records.sort(function(a, b) { 
+            return a.id < b.id;
+        })
+        
         $.each(result.records, function(key, val) {
-            listCmd.push(val);
+            listCmd.push(val.cmd);
         });
+        
         listCmdPosition = -1;
     }).fail(function(jqxhr, textStatus, error) {
         alert_error("Request Failed: " + error);

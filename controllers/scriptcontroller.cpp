@@ -2,6 +2,7 @@
 #include "libraries/authentification.h"
 #include "libraries/device.h"
 #include "models/script.h"
+#include "models/command.h"
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonArray>
@@ -22,6 +23,8 @@ ScriptController::ScriptController(QObject *parent) : AbstractController(parent)
 
     Script::update();
     scriptEngine = new ScriptEngine(parent);
+
+    Command::update();
 }
 
 void ScriptController::defaultAction()
@@ -31,7 +34,6 @@ void ScriptController::defaultAction()
 
 void ScriptController::stop()
 {
-
 }
 
 void ScriptController::scriptList()
@@ -250,9 +252,11 @@ void ScriptController::jsonExecuteCmd()
         result.insert("result", scriptEngine->runCmd(query->getItem("cmd")));
         result.insert("success", true);
 
-        if (listCmd.empty() ||
-                query->getItem("cmd").compare(listCmd.first()) != 0) {
-            listCmd.prepend(query->getItem("cmd"));
+        if (Command::getAll().isEmpty() ||
+                query->getItem("cmd").compare(Command::getAll().last()->getCmd()) != 0) {
+            Command *cmd = new Command(this);
+            cmd->setCmd(query->getItem("cmd"));
+            Command::addCommand(cmd);
         }
     }
 
@@ -272,8 +276,8 @@ void ScriptController::jsonCmdList()
 
     QJsonArray array;
 
-    foreach (QString cmd, listCmd) {
-        array.push_back(cmd);
+    foreach (Command *cmd, Command::getAll()) {
+        array.push_back(cmd->toJson());
     }
 
     result.insert("result", "OK");

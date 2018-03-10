@@ -31,7 +31,6 @@ public slots:
 
 protected:
     ScriptEngine *scriptEngine;
-    QList<QString> listCmd;
 };
 
 
