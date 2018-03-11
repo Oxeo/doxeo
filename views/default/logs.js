@@ -58,6 +58,8 @@ function update() {
 function updateCmdList() {
     $.getJSON('/script/cmd_list.js').done(function(result) {
         listCmd = [];
+        $('#cmdlist').empty();
+        var regex = new RegExp('"', 'g');
         
         result.records.sort(function(a, b) { 
             return a.id < b.id;
@@ -65,6 +67,7 @@ function updateCmdList() {
         
         $.each(result.records, function(key, val) {
             listCmd.push(val.cmd);
+            $('#cmdlist').append('<option value="' + val.cmd.replace(regex, '&quot;') + '" />');
         });
         
         listCmdPosition = -1;
@@ -120,9 +123,13 @@ $('#sendContent').on('keyup', function (e) {
             $('#sendContent').val(listCmd[listCmdPosition]);
          }
     } else if (e.which === 40) { // down key
-         if (listCmdPosition > 0) {
+         if (listCmdPosition >= 0) {
             listCmdPosition--;
-            $('#sendContent').val(listCmd[listCmdPosition]);
+            if (listCmdPosition == -1) {
+                $('#sendContent').val("");
+            } else {
+                $('#sendContent').val(listCmd[listCmdPosition]);
+            }
          }
     }
 });
