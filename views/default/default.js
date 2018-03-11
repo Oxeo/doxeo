@@ -173,7 +173,7 @@ function update() {
         if (result.Result == "OK") {
             $('#sensorList').html('');
             $.each(result.Records, function(key, val) {
-                var date = new Date(val.last_update * 1000);;
+                var date = new Date(val.last_event * 1000);;
                 var lastUpdate = date.toLocaleTimeString() + ' ' + date.toLocaleDateString();
                 $('#sensorList').append('<tr><td class="text-right" style="width: 50%">'+val.name+'</td><td class="text-left"><span data-toggle="tooltip" data-placement="right" title="'+lastUpdate+'">'+val.value+'</span></td></tr>');
             });
