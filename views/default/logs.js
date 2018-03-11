@@ -117,7 +117,7 @@ $('#sendContent').on('keyup', function (e) {
     if(e.which === 13) { // enter key
         var cmd = $('#sendContent').val();
         sendCmd(cmd);
-    } else if (e.which === 38) { // top key
+    } /*else if (e.which === 38) { // top key
         if (listCmdPosition+1 < listCmd.length) {
             listCmdPosition++;
             $('#sendContent').val(listCmd[listCmdPosition]);
@@ -131,7 +131,7 @@ $('#sendContent').on('keyup', function (e) {
                 $('#sendContent').val(listCmd[listCmdPosition]);
             }
          }
-    }
+    }*/
 });
 
 

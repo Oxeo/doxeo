@@ -2,30 +2,32 @@
 
 <div id="alert_placeholder"></div>
 
-<div class="row">
-  <div class="col-xs-11">
-     <div class="input-group">
-      <input type="text" list="cmdlist" class="form-control" id="sendContent">
-      <datalist id="cmdlist"></datalist>
-      <div class="input-group-btn">
-        <button type="button" class="btn btn-default" id="clearCmdContent"><span class="glyphicon glyphicon-remove"></span></button>
-        <button type="button" class="btn btn-default" id="buildBoardCmd">
-          <span class="glyphicon glyphicon-hdd"></span>
-        </button> 
-        <button type="button" class="btn btn-default" id="send">
-          Send
-        </button>
-      </div>
-    </div>
-  </div>
-  
-  <div class="col-xs-1">
+<div class="row">  
     <button type="button" class="btn btn-primary" id="stop_logs">Stop</button>
+    <button type="button" class="btn btn-primary" id="clear_logs" data-clear="debug">Clear</button>
+</div>
+
+<br/>
+
+<div class="row">
+ <div class="input-group">
+  <input type="text" list="cmdlist" class="form-control" id="sendContent" placeholder="Cmd..">
+  <datalist id="cmdlist"></datalist>
+  <div class="input-group-btn">
+    <button type="button" class="btn btn-default" id="clearCmdContent"><span class="glyphicon glyphicon-remove"></span></button>
+    <button type="button" class="btn btn-default" id="buildBoardCmd">
+      <span class="glyphicon glyphicon-hdd"></span>
+    </button> 
+    <button type="button" class="btn btn-default" id="send">
+      Send
+    </button>
+  </div>
   </div>
 </div>
 
 <br/>
 
+<div class="row">
 <div class="input-group">
   <input class="form-control" id="searchInput" type="text" placeholder="Search..">
   <div class="input-group-btn">
@@ -40,5 +42,4 @@
   </tbody>
 </table>
 
-<button type="button" class="btn btn-primary" id="clear_logs" data-clear="debug">Clear</button>
-<br /><br />
+</div>
