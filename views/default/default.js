@@ -33,6 +33,9 @@ function update() {
     $.getJSON('switch/switch_list.js').done(function(result) {
         if (result.Result == "OK") {
             $('#switchList').html('');
+            result.Records.sort(function(a, b) { 
+                return a.order > b.order;
+            })
             $.each(result.Records, function(key, val) {
                 $('#switchList').append('<tr><td class="text-right" style="width: 50%">'+val.name+'</td><td class="text-left"><input id="sw_'+val.id+'" name="switch" class="switch_on_off" type="checkbox" data-id="'+val.id+'" data-size="mini"></td></tr>');
                 if (val.status == "on") {
@@ -172,6 +175,9 @@ function update() {
 	$.getJSON('sensor/sensor_list.js').done(function(result) {
         if (result.Result == "OK") {
             $('#sensorList').html('');
+            result.Records.sort(function(a, b) { 
+                return a.name > b.name;
+            })
             $.each(result.Records, function(key, val) {
                 var date = new Date(val.last_event * 1000);;
                 var lastUpdate = date.toLocaleTimeString() + ' ' + date.toLocaleDateString();
@@ -192,6 +198,9 @@ function update() {
 	$.getJSON('script/script_list.js').done(function(result) {
         if (result.Result == "OK") {
             $('#scriptList').html('');
+            result.Records.sort(function(a, b) { 
+                return a.name > b.name;
+            })
             $.each(result.Records, function(key, val) {
 				status = "\
 				<div class=\"dropdown\"> \

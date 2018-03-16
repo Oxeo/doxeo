@@ -34,6 +34,8 @@ public:
     void setPowerOffCmd(const QString &value);
     QString getPowerOnCmd() const;
     QString getPowerOffCmd() const;
+    int getOrder() const;
+    void setOrder(int value);
 
     static void update();
     static bool isIdValid(QString id);
@@ -56,6 +58,8 @@ protected:
     QString status;
     QString powerOnCmd;
     QString powerOffCmd;
+    int order;
+
     QList<QDateTime> lastUpdate;
     QTimer timerPowerOff;
 

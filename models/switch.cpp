@@ -13,6 +13,7 @@ Event Switch::event;
 Switch::Switch(QString id, QObject *parent) : QObject(parent)
 {
     this->id = id;
+    this->order = 0;
 
     for (int i=0; i<5; i++) {
         lastUpdate.append(QDateTime::currentDateTime().addYears(-1));
@@ -83,7 +84,7 @@ void Switch::powerOff()
 void Switch::update()
 {
     QSqlQuery query = Database::getQuery();
-    query.prepare("SELECT id, status, name, category, power_on_cmd, power_off_cmd FROM switch");
+    query.prepare("SELECT id, status, name, category, order_by, power_on_cmd, power_off_cmd FROM switch");
 
     if(Database::exec(query))
     {
@@ -95,8 +96,9 @@ void Switch::update()
             sw->status = query.value(1).toString();
             sw->name = query.value(2).toString();
             sw->category = query.value(3).toString();
-            sw->powerOnCmd = query.value(4).toString();
-            sw->powerOffCmd = query.value(5).toString();
+            sw->order = query.value(4).toInt();
+            sw->powerOnCmd = query.value(5).toString();
+            sw->powerOffCmd = query.value(6).toString();
 
             switchList.insert(sw->id, sw);
         }
@@ -143,6 +145,7 @@ QJsonObject Switch::toJson() const
     result.insert("id", id);
     result.insert("name", name);
     result.insert("category", category);
+    result.insert("order", order);
     result.insert("power_on_cmd", powerOnCmd);
     result.insert("power_off_cmd", powerOffCmd);
     result.insert("status", status);
@@ -185,13 +188,14 @@ bool Switch::flush(bool newObject)
     QSqlQuery query = Database::getQuery();
 
     if (!newObject) {
-        query.prepare("UPDATE switch SET name=?, category=?, power_on_cmd=?, power_off_cmd=?, status=? WHERE id=?");
+        query.prepare("UPDATE switch SET name=?, category=?, order_by=?, power_on_cmd=?, power_off_cmd=?, status=? WHERE id=?");
     } else {
-        query.prepare("INSERT INTO switch (name, category, power_on_cmd, power_off_cmd, status, id) "
-                      "VALUES (?, ?, ?, ?, ?, ?)");
+        query.prepare("INSERT INTO switch (name, category, order_by, power_on_cmd, power_off_cmd, status, id) "
+                      "VALUES (?, ?, ?, ?, ?, ?, ?)");
     }
     query.addBindValue(name);
     query.addBindValue(category);
+    query.addBindValue(order);
     query.addBindValue(powerOnCmd);
     query.addBindValue(powerOffCmd);
     query.addBindValue(status);
@@ -230,6 +234,16 @@ void Switch::updateValue(QString id, QString value)
         setStatus("off");
     }
 }
+int Switch::getOrder() const
+{
+    return order;
+}
+
+void Switch::setOrder(int value)
+{
+    order = value;
+}
+
 
 int Switch::getLastUpdate(int index) const
 {

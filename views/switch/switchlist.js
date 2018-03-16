@@ -33,6 +33,9 @@ $(document).ready(function () {
                 title: 'Category',
                 options: { 'light': 'Light', 'socket': 'Socket', 'camera': 'Camera', 'alarm': 'Alarm', 'speaker': 'Speaker', 'fountain': 'Fountain', 'other': 'Other'}
             },
+            order: {
+                title: 'Order',
+            },
             power_on_cmd: {
                 title: 'Power on command',
             },
