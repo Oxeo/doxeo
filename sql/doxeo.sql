@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 3.4.3.2
+-- version 3.4.11.1deb2+deb7u8
 -- http://www.phpmyadmin.net
 --
--- Client: 127.0.0.1
--- Généré le : Lun 16 Octobre 2017 à 20:49
--- Version du serveur: 5.5.15
--- Version de PHP: 5.3.8
+-- Client: localhost
+-- Généré le: Ven 16 Mars 2018 à 22:39
+-- Version du serveur: 5.5.59
+-- Version de PHP: 5.4.45-0+deb7u12
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -23,6 +23,18 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `command`
+--
+
+CREATE TABLE IF NOT EXISTS `command` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `cmd` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=13 ;
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `heater`
 --
 
@@ -33,6 +45,7 @@ CREATE TABLE IF NOT EXISTS `heater` (
   `mode` tinyint(1) NOT NULL,
   `cool_setpoint` float NOT NULL,
   `heat_setpoint` float NOT NULL,
+  `sensor` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=3 ;
 
@@ -49,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `heater_indicator` (
   `start_date` datetime NOT NULL,
   `end_date` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=45 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=445 ;
 
 -- --------------------------------------------------------
 
@@ -63,7 +76,7 @@ CREATE TABLE IF NOT EXISTS `schedule_event` (
   `setpoint` varchar(5) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   KEY `heater_id` (`heater_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=304 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=405 ;
 
 -- --------------------------------------------------------
 
@@ -79,7 +92,7 @@ CREATE TABLE IF NOT EXISTS `schedule_occurrence` (
   `recurrent_date` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `event_id` (`event_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=738 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1312 ;
 
 -- --------------------------------------------------------
 
@@ -94,7 +107,7 @@ CREATE TABLE IF NOT EXISTS `script` (
   `description` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `content` text COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=16 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=33 ;
 
 -- --------------------------------------------------------
 
@@ -106,6 +119,7 @@ CREATE TABLE IF NOT EXISTS `sensor` (
   `id` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   `cmd` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   `name` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `category` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   `value` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -119,6 +133,8 @@ CREATE TABLE IF NOT EXISTS `sensor` (
 CREATE TABLE IF NOT EXISTS `switch` (
   `id` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
   `name` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `category` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `order_by` int(11) NOT NULL,
   `status` varchar(4) COLLATE utf8_unicode_ci NOT NULL,
   `power_on_cmd` varchar(150) COLLATE utf8_unicode_ci NOT NULL,
   `power_off_cmd` varchar(150) COLLATE utf8_unicode_ci NOT NULL,
@@ -132,9 +148,9 @@ CREATE TABLE IF NOT EXISTS `switch` (
 --
 
 CREATE TABLE IF NOT EXISTS `temperature` (
+  `id` varchar(20) NOT NULL,
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `temperature` float NOT NULL,
-  UNIQUE KEY `date` (`date`)
+  `temperature` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
