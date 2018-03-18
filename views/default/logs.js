@@ -61,8 +61,8 @@ function updateCmdList() {
         $('#cmdlist').empty();
         var regex = new RegExp('"', 'g');
         
-        result.records.sort(function(a, b) { 
-            return a.id < b.id;
+        result.records.sort(function(a, b) {
+            return Number(b.id) - Number(a.id);
         })
         
         $.each(result.records, function(key, val) {

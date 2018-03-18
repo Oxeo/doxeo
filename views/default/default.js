@@ -34,7 +34,7 @@ function update() {
         if (result.Result == "OK") {
             $('#switchList').html('');
             result.Records.sort(function(a, b) { 
-                return a.order > b.order;
+                return a.order - b.order;
             })
             $.each(result.Records, function(key, val) {
                 $('#switchList').append('<tr><td class="text-right" style="width: 50%">'+val.name+'</td><td class="text-left"><input id="sw_'+val.id+'" name="switch" class="switch_on_off" type="checkbox" data-id="'+val.id+'" data-size="mini"></td></tr>');
@@ -176,7 +176,13 @@ function update() {
         if (result.Result == "OK") {
             $('#sensorList').html('');
             result.Records.sort(function(a, b) { 
-                return a.name > b.name;
+                if (a.name < b.name) {
+                    return -1;
+                } else if (a.name > b.name) {
+                    return 1;
+                } else {
+                    return 0;
+                }
             })
             $.each(result.Records, function(key, val) {
                 var date = new Date(val.last_event * 1000);;
@@ -199,7 +205,13 @@ function update() {
         if (result.Result == "OK") {
             $('#scriptList').html('');
             result.Records.sort(function(a, b) { 
-                return a.name > b.name;
+                if (a.name < b.name) {
+                    return -1;
+                } else if (a.name > b.name) {
+                    return 1;
+                } else {
+                    return 0;
+                }
             })
             $.each(result.Records, function(key, val) {
 				status = "\

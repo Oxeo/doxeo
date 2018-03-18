@@ -7,7 +7,7 @@ $(document).ready(function () {
     $('#SwitchListContainer').jtable({
         title: 'Switch',
         sorting: false,
-        defaultSorting: 'id ASC',
+        defaultSorting: 'order ASC',
         ajaxSettings: {
             type: 'GET',
             dataType: 'json'
