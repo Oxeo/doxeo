@@ -1,11 +1,14 @@
 <script>
-var updateAll = true;
+var updateInterval = true;
 var lastLogId = 0;
 var listCmd = [];
 var listCmdPosition = -1;
+var day = null;
 
 jQuery(document).ready(function() {
-    update();
+    $('#button_newer').hide();
+    day = moment();
+    updateLogs();
     updateCmdList();
     
     $("#searchInput").on("keyup", function() {
@@ -14,18 +17,19 @@ jQuery(document).ready(function() {
         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
       });
     });
+    
+    setInterval(updateLogs, 3000);
 });
 
-function update() {
-    if (!updateAll) {
+function updateLogs(force = false) {
+    if (!updateInterval && force == false) {
         return;
     }
     
-    $.getJSON('logs.js?log=debug&startid=' + lastLogId).done(function(result) {
+    $.getJSON('logs.js?log=debug&startid=' + lastLogId + '&day=' + day.format('YYYY-MM-DD')).done(function(result) {
         if (result.success) {
             if (lastLogId == 0) {
                 $('#logsTable').html("");
-                setInterval(update, 1000);
             }
             
             $.each(result.messages, function(key, val) {
@@ -46,11 +50,13 @@ function update() {
                 $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
             });
         } else {
-            updateAll = false;
+            updateInterval = false;
+            $('#stop_logs').text("Continue");
             alert_error(result.msg);
         }
     }).fail(function(jqxhr, textStatus, error) {
-        updateAll = false;
+        updateInterval = false;
+        $('#stop_logs').text("Continue");
         alert_error("Request Failed: " + error);
     });
 }
@@ -76,6 +82,29 @@ function updateCmdList() {
     });
 }
 
+$('a[href="#older"]').click(function(){
+    day.subtract(1, 'day');
+    lastLogId = 0;
+    updateLogs(true);
+    $('#button_newer').show();
+    
+    updateInterval = false;
+    $('#stop_logs').text("Continue");
+}); 
+
+$('a[href="#newer"]').click(function(){
+    day.add(1, 'day');
+    lastLogId = 0;
+    updateLogs(true);
+    
+    if (moment().diff(day, 'days') == 0) {
+        $('#button_newer').hide();
+        
+        updateInterval = true;
+        $('#stop_logs').text("Stop");
+    }
+}); 
+
 $('#clear_logs').click(function(event){
     var data = $(this).data();
     
@@ -99,11 +128,11 @@ $('#clear_logs').click(function(event){
 });
 
 $('#stop_logs').click(function(event){
-	if (updateAll == true) {
-		updateAll = false;
+	if (updateInterval == true) {
+		updateInterval = false;
 		$('#stop_logs').text("Continue");
 	} else {
-		updateAll = true;
+		updateInterval = true;
 		$('#stop_logs').text("Stop");
 	}
 });
@@ -182,3 +211,5 @@ function alert_error(message) {
 }
 
 </script>
+
+<script src="/assets/fullcalendar/moment.min.js" type="text/javascript"></script>

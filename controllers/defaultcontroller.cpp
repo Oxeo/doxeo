@@ -70,8 +70,10 @@ void DefaultController::logs()
 void DefaultController::jsonLogs()
 {
     QJsonObject result;
-    QString request = query->getItem("type");
     bool ok = false;
+
+    QDate day = QDate::fromString(query->getItem("day"), "yyyy-MM-dd");
+    QString request = query->getItem("type");
     int startId = query->getItem("startid").toInt(&ok, 10);
     
     if (!ok) {
@@ -89,20 +91,28 @@ void DefaultController::jsonLogs()
     QJsonArray jsonArray;
 
     foreach (const MessageLogger::Log &log, logs) {
+        if (day.isValid() && log.date.date() != day) {
+            continue;
+        }
+
         if (startId !=0 && log.id < startId) {
             continue;
-        } if (request == "warning" && log.type != "warning" && log.type != "critical") {
-            continue;
-        } else if (request == "critical" && log.type != "critical") {
-            continue;
-        } else {
-            QJsonObject object;
-            object.insert("id", log.id);
-            object.insert("date", log.date.toString("dd/MM/yyyy hh:mm:ss"));
-            object.insert("message", log.message);
-            object.insert("type", log.type);
-            jsonArray.push_back(object);
         }
+
+        if (request == "warning" && log.type != "warning" && log.type != "critical") {
+            continue;
+        }
+
+        if (request == "critical" && log.type != "critical") {
+            continue;
+        }
+
+        QJsonObject object;
+        object.insert("id", log.id);
+        object.insert("date", log.date.toString("dd/MM/yyyy hh:mm:ss"));
+        object.insert("message", log.message);
+        object.insert("type", log.type);
+        jsonArray.push_back(object);
     }
 
     result.insert("messages", jsonArray);
