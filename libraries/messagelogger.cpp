@@ -43,8 +43,19 @@ void MessageLogger::messageHandler(QtMsgType type, const QMessageLogContext &con
     FirebaseCloudMessaging *fcm = MessageLogger::logger().getFCM();
     if (fcm != NULL) {
         if (typeString == "warning" || typeString == "critical") {
-            FirebaseCloudMessaging::Message msg = {"WARNING", "Doxeo", localMsg};
-            fcm->send(msg);
+            bool alreadySameType = false;
+
+            foreach (const MessageLogger::Log &log, MessageLogger::logger().getMessages()) {
+                if (log.type == typeString) {
+                    alreadySameType = true;
+                    break;
+                }
+            }
+
+            if (alreadySameType == false) {
+                FirebaseCloudMessaging::Message msg = {"WARNING", "Doxeo", localMsg};
+                fcm->send(msg);
+            }
         }
     }
 }
