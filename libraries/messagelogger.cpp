@@ -37,8 +37,6 @@ void MessageLogger::messageHandler(QtMsgType type, const QMessageLogContext &con
         fprintf(stderr, "Fatal: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
         abort();
     }
-    
-    MessageLogger::logger().addMessage(typeString, localMsg);
 
     FirebaseCloudMessaging *fcm = MessageLogger::logger().getFCM();
     if (fcm != NULL) {
@@ -58,6 +56,8 @@ void MessageLogger::messageHandler(QtMsgType type, const QMessageLogContext &con
             }
         }
     }
+    
+    MessageLogger::logger().addMessage(typeString, localMsg);
 }
 
 void MessageLogger::addMessage(QString type, QString msg)
