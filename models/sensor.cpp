@@ -14,11 +14,11 @@ Sensor::Sensor(QString id, QObject *parent) : QObject(parent)
     name = "";
     category = "";
     value = "";
-    lastEvent = QDateTime::currentDateTime().addYears(-1);
+    lastEvent = QDateTime::currentDateTime().addMonths(-6);
     startTime = QDateTime::currentDateTime();
 
     for (int i=0; i<5; i++) {
-        lastUpdate.append(QDateTime::currentDateTime().addYears(-1));
+        lastUpdate.append(QDateTime::currentDateTime().addMonths(-6));
     }
 
     connect(Device::Instance(), SIGNAL(dataReceived(QString, QString)), this, SLOT(updateValue(QString, QString)), Qt::QueuedConnection);
@@ -81,7 +81,7 @@ QHash<QString, Sensor*> &Sensor::getSensorList()
 void Sensor::update()
 {
     QSqlQuery query = Database::getQuery();
-    query.prepare("SELECT id, cmd, name, category, value FROM sensor");
+    query.prepare("SELECT id, cmd, name, category FROM sensor");
 
     if(Database::exec(query))
     {
@@ -92,7 +92,7 @@ void Sensor::update()
             s->cmd = query.value(1).toString();
             s->name = query.value(2).toString();
             s->category = query.value(3).toString();
-            s->value = query.value(4).toString();
+            s->value = "";
 
             sensorList.insert(s->getId(), s);
         }
@@ -112,16 +112,15 @@ bool Sensor::flush(bool newObject)
     QSqlQuery query = Database::getQuery();
 
     if (!newObject) {
-        query.prepare("UPDATE sensor SET cmd=?, name=?, category=?, value=? WHERE id=?");
+        query.prepare("UPDATE sensor SET cmd=?, name=?, category=? WHERE id=?");
     } else {
-        query.prepare("INSERT INTO sensor (cmd, name, category, value, id) "
-                      "VALUES (?, ?, ?, ?, ?)");
+        query.prepare("INSERT INTO sensor (cmd, name, category, id) "
+                      "VALUES (?, ?, ?, ?)");
     }
 
     query.addBindValue(cmd);
     query.addBindValue(name);
     query.addBindValue(category);
-    query.addBindValue(value);
     query.addBindValue(id);
 
     if (Database::exec(query)) {

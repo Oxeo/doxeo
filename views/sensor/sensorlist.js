@@ -35,10 +35,7 @@ $(document).ready(function () {
             category: {
                 title: 'Category',
                 options: { 'temperature': 'Temperature', 'speaker': 'Speaker', 'door': 'Door', 'other': 'Other'}
-            },
-            value: {
-                title: 'Value',
-            },
+            }
         }
     });
 
