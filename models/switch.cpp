@@ -88,7 +88,9 @@ void Switch::update()
 
     if(Database::exec(query))
     {
+        qDeleteAll(switchList.begin(), switchList.end());
         switchList.clear();
+
         while(query.next())
         {
             Switch *sw = new Switch(query.value(0).toString());

@@ -14,7 +14,7 @@ class Switch : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString id READ getId)
-    Q_PROPERTY(QString status READ getStatus)
+    Q_PROPERTY(QString status READ getStatus WRITE setStatus)
 
 public:
     explicit Switch(QString id, QObject *parent = 0);

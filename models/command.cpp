@@ -30,7 +30,9 @@ void Command::update()
 
     if(Database::exec(query))
     {
+        qDeleteAll(commandList.begin(), commandList.end());
         commandList.clear();
+
         while(query.next())
         {
             Command* s = new Command();

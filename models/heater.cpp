@@ -89,6 +89,7 @@ void Heater::fillFromBdd()
 
     if(Database::exec(query))
     {
+        qDeleteAll(heaterList->begin(), heaterList->end());
         heaterList->clear();
 
         while(query.next())

@@ -85,7 +85,9 @@ void Sensor::update()
 
     if(Database::exec(query))
     {
+        qDeleteAll(sensorList.begin(), sensorList.end());
         sensorList.clear();
+
         while(query.next())
         {
             Sensor* s = new Sensor(query.value(0).toString());
