@@ -27,7 +27,6 @@ protected:
 
     QTimer timer;
     QList<Temperature> temperatureList;
-    QList<Sensor*> sensorList;
 };
 
 #endif // TEMPERATURELOGGER_H

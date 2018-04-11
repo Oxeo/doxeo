@@ -6,8 +6,6 @@
 
 Thermostat::Thermostat(QObject *parent) : QObject(parent)
 {
-    heaterList = Heater::heaters();
-
     timer.setInterval(60000); // 1 minute
     connect(&timer, SIGNAL(timeout()), this, SLOT(run()));
 
@@ -25,7 +23,7 @@ void Thermostat::run()
         eventList = HeaterEvent::getEvents(QDateTime::currentDateTime(), QDateTime::currentDateTime().addMonths(6));
         actionList = HeaterEvent::convertToAction(eventList);
 
-        foreach (Heater *heater, *heaterList) {
+        foreach (Heater *heater, *Heater::heaters()) {
             heater->setActiveSetpoint(Heater::Cool);
         }
 
@@ -37,7 +35,7 @@ void Thermostat::run()
     // Manage cool/heat setpoint scheduling
     foreach (const HeaterEvent::Action &action, actionList) {
         if (action.date < QDateTime::currentDateTime()) {
-            Heater *heater = heaterList->value(eventList[action.id].getHeaterId());
+            Heater *heater = Heater::heaters()->value(eventList[action.id].getHeaterId());
 
             if (action.type == HeaterEvent::Action::Start) {
                 heater->setActiveSetpoint(Heater::Heat);
@@ -55,7 +53,7 @@ void Thermostat::run()
     }
 
     // manage heaters status
-    foreach(Heater *heater, *heaterList) {
+    foreach(Heater *heater, *Heater::heaters()) {
         if (heater->getMode() == Heater::Off_Mode) {
             if (heater->getStatus() != Heater::Off) {
                 qDebug() << "Heater set to Off " << heater->getName();
@@ -80,7 +78,7 @@ void Thermostat::logIndicators()
 {
     QList<HeaterIndicator> list;
 
-    foreach(Heater *heater, *heaterList) {
+    foreach(Heater *heater, *Heater::heaters()) {
         list += heater->getValidIndicators();
     }
 
@@ -95,7 +93,7 @@ void Thermostat::start()
         stop();
     }
 
-    foreach (Heater *heater, *heaterList) {
+    foreach (Heater *heater, *Heater::heaters()) {
         heater->changeStatus(Heater::Off);
         heater->clearIndicators();
     }
@@ -114,7 +112,7 @@ void Thermostat::stop()
     breakTimer.stop();
     logTimer.stop();
 
-    foreach (Heater *heater, *heaterList) {
+    foreach (Heater *heater, *Heater::heaters()) {
         heater->changeStatus(Heater::Off);
     }
 

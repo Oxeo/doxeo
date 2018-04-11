@@ -10,7 +10,11 @@ TemperatureLogger::TemperatureLogger(QObject *parent) : QObject(parent)
 
 void TemperatureLogger::run()
 {
-    foreach (Sensor* sensor, sensorList) {
+    foreach (Sensor* sensor, Sensor::getSensorList()) {
+        if (sensor->getCategory().compare("temperature", Qt::CaseInsensitive) != 0) {
+            continue;
+        }
+
         bool parseSuccess;
         float temp = sensor->getValue().toFloat(&parseSuccess);
             
@@ -42,13 +46,6 @@ void TemperatureLogger::run()
 
 void TemperatureLogger::start()
 {
-    sensorList.clear();
-    foreach (Sensor* s, Sensor::getSensorList()) {
-        if (s->getId().contains("temperature", Qt::CaseInsensitive)) {
-            sensorList.append(s);
-        }
-    }
-
     timer.start();
     qDebug() << "TemperatureLogger started";
 }

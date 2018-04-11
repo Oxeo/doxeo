@@ -36,7 +36,6 @@ protected slots:
     void logIndicators();
 
 protected:
-    QHash<int,Heater*> *heaterList;
     QHash<int,HeaterEvent> eventList;
     QList<HeaterEvent::Action> actionList;
     QTimer timer;
