@@ -3,6 +3,7 @@
 #include "core/tools.h"
 
 #include <QSettings>
+#include <QDebug>
 
 Authentification::Authentification()
 {
@@ -87,25 +88,28 @@ void Authentification::disconnection(HttpHeader *header, QString &cookie)
 bool Authentification::isConnected(HttpHeader *header, QString &cookie)
 {
     QString id = header->getCookie("doxeomonitor_id");
-
+    QString login = header->getCookie("doxeomonitor_login");
+    QString code = header->getCookie("doxeomonitor_remember_code");
+    
     if (id == "") {
+        qDebug() << "Authentification failed: id is empty";
         return false;
     }
 
-    QString login = header->getCookie("doxeomonitor_login");
-    QString code = header->getCookie("doxeomonitor_remember_code");
-
     if (login == "" || code.length() < 10) {
+        qDebug() << "Authentification failed: login or code is empty [" + login + "] [" + code + "]";
         clearCookies(cookie);
         return false;
     }
 
     if (!rememberList.contains(id)) {
+        qDebug() << "Authentification failed: id not in the rememberList [" + id + "]";
         clearCookies(cookie);
         return false;
     }
 
     if (rememberList[id].login != login || rememberList[id].code != code) {
+        qDebug() << "Authentification failed: login or code is incorrect [" + login + "] [" + code + "]";
         clearCookies(cookie);
         removeRememberCode(id);
         return false;

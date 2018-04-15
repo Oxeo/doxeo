@@ -38,7 +38,7 @@ function updateLogs(force = false) {
                 } else if (val.type === "warning") {
                     $('#logsTable').prepend('<tr class="warning"><td>'+val.date+'</td><td>'+val.message+'</td></tr>')
                 } else {
-                    var msg = val.message.replace("uFFFD\\uFFFD\\uFFFD\\uFFFD\\uFFFD\\uFFFD\\uFFFD\\uFFFD\\uFFFD\\uFFFD\\uFFFD\\uFFFD\\uFFFD\\uFFFD\\", "...")
+                    var msg = val.message;
                     $('#logsTable').prepend('<tr><td>'+val.date+'</td><td>'+msg+'</td></tr>')
                 }
                 lastLogId = val.id + 1;
@@ -73,7 +73,6 @@ function updateCmdList() {
         
         $.each(result.records, function(key, val) {
             listCmd.push(val.cmd);
-            $('#cmdlist').append('<option value="' + val.cmd.replace(regex, '&quot;') + '" />');
         });
         
         listCmdPosition = -1;
@@ -85,6 +84,7 @@ function updateCmdList() {
 $('a[href="#older"]').click(function(){
     day.subtract(1, 'day');
     lastLogId = 0;
+    $('#logsTable').html('<td colspan="2" class="text-center"><img src="./assets/images/spinner.gif" alt="wait"/></td>');
     updateLogs(true);
     $('#button_newer').show();
     
@@ -95,6 +95,7 @@ $('a[href="#older"]').click(function(){
 $('a[href="#newer"]').click(function(){
     day.add(1, 'day');
     lastLogId = 0;
+    $('#logsTable').html('<td colspan="2" class="text-center"><img src="./assets/images/spinner.gif" alt="wait"/></td>');
     updateLogs(true);
     
     if (moment().diff(day, 'days') == 0) {
@@ -146,34 +147,45 @@ $('#sendContent').on('keyup', function (e) {
     if(e.which === 13) { // enter key
         var cmd = $('#sendContent').val();
         sendCmd(cmd);
-    } /*else if (e.which === 38) { // top key
-        if (listCmdPosition+1 < listCmd.length) {
-            listCmdPosition++;
-            $('#sendContent').val(listCmd[listCmdPosition]);
-         }
+    } else if (e.which === 38) { // top key
+        previousCmd();
     } else if (e.which === 40) { // down key
-         if (listCmdPosition >= 0) {
-            listCmdPosition--;
-            if (listCmdPosition == -1) {
-                $('#sendContent').val("");
-            } else {
-                $('#sendContent').val(listCmd[listCmdPosition]);
-            }
-         }
-    }*/
+        nextCmd();
+    }
 });
 
-
-
-$('#buildBoardCmd').click(function(event){
-    var cmd = $('#sendContent').val();
-    $('#sendContent').val('helper.sendCmd("' + cmd + '")');
+$('#previousCmd').click(function(event){
+    previousCmd();
 });
+
+$('#nextCmd').click(function(event){
+    nextCmd();
+});
+
+function previousCmd() {
+    if (listCmdPosition+1 < listCmd.length) {
+        listCmdPosition++;
+        $('#sendContent').val(listCmd[listCmdPosition]);
+    }
+}
+
+function nextCmd() {
+    if (listCmdPosition >= 0) {
+        listCmdPosition--;
+        if (listCmdPosition == -1) {
+            $('#sendContent').val("");
+        } else {
+            $('#sendContent').val(listCmd[listCmdPosition]);
+        }
+    }
+}
 
 function sendCmd(cmdToSend) {
     var param = {
         cmd: cmdToSend
     };
+    
+    $('#logsTable').prepend('<tr class="active"><td></td><td>'+cmdToSend+'</td></tr>')
     
     $.getJSON('/script/execute_cmd.js', param)
         .done(function(result) {
@@ -187,6 +199,11 @@ function sendCmd(cmdToSend) {
             alert_error("Request Failed: " + error);
     });
 }
+
+$('#buildBoardCmd').click(function(event){
+    var cmd = $('#sendContent').val();
+    $('#sendContent').val('helper.sendCmd("' + cmd + '")');
+});
 
 $('#clearSearch').click(function(event){
     $('#searchInput').val("");
