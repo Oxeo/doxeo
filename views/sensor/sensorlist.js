@@ -34,7 +34,7 @@ $(document).ready(function () {
             },
             category: {
                 title: 'Category',
-                options: { 'temperature': 'Temperature', 'speaker': 'Speaker', 'door': 'Door', 'other': 'Other'}
+                options: { 'temperature': 'Temperature', 'speaker': 'Speaker', 'door': 'Door', 'pump': 'Pump', 'light': 'Light', 'other': 'Other'}
             }
         }
     });
