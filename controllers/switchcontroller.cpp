@@ -83,6 +83,7 @@ void SwitchController::jsonCreateSwitch()
     sw.setPowerOnCmd(query->getItem("power_on_cmd"));
     sw.setPowerOffCmd(query->getItem("power_off_cmd"));
     sw.setStatus(query->getItem("status"));
+    sw.setSensor(query->getItem("sensor"));
     sw.flush(true);
 
     Switch::update();
@@ -110,6 +111,7 @@ void SwitchController::jsonEditSwitch()
     sw.setPowerOnCmd(query->getItem("power_on_cmd"));
     sw.setPowerOffCmd(query->getItem("power_off_cmd"));
     sw.setStatus(query->getItem("status"));
+    sw.setSensor(query->getItem("sensor"));
     sw.flush(false);
 
     Switch::update();

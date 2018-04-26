@@ -42,6 +42,9 @@ $(document).ready(function () {
 			power_off_cmd: {
                 title: 'Power off command',
             },
+            sensor: {
+                title: 'Sensor',
+            },
             status: {
                 title: 'Status',
                 options: { 'on': 'On', 'off': 'Off'}

@@ -36,6 +36,9 @@ public:
     QString getPowerOffCmd() const;
     int getOrder() const;
     void setOrder(int value);
+    QString getSensorStatus() const;
+    QString getSensor() const;
+    void setSensor(const QString &value);
 
     static void update();
     static bool isIdValid(QString id);
@@ -58,6 +61,7 @@ protected:
     QString status;
     QString powerOnCmd;
     QString powerOffCmd;
+    QString sensor;
     int order;
 
     QList<QDateTime> lastUpdate;

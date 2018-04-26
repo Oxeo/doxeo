@@ -1,6 +1,7 @@
 #include "switch.h"
 #include "core/database.h"
 #include "libraries/device.h"
+#include "models/sensor.h"
 #include <QSqlQuery>
 #include <QVariant>
 #include <QDebug>
@@ -14,6 +15,7 @@ Switch::Switch(QString id, QObject *parent) : QObject(parent)
 {
     this->id = id;
     this->order = 0;
+    this->sensor = "";
 
     for (int i=0; i<5; i++) {
         lastUpdate.append(QDateTime::currentDateTime().addYears(-1));
@@ -84,7 +86,7 @@ void Switch::powerOff()
 void Switch::update()
 {
     QSqlQuery query = Database::getQuery();
-    query.prepare("SELECT id, status, name, category, order_by, power_on_cmd, power_off_cmd FROM switch");
+    query.prepare("SELECT id, status, name, category, order_by, power_on_cmd, power_off_cmd, sensor FROM switch");
 
     if(Database::exec(query))
     {
@@ -101,6 +103,7 @@ void Switch::update()
             sw->order = query.value(4).toInt();
             sw->powerOnCmd = query.value(5).toString();
             sw->powerOffCmd = query.value(6).toString();
+            sw->sensor = query.value(7).toString();
 
             switchList.insert(sw->id, sw);
         }
@@ -151,6 +154,8 @@ QJsonObject Switch::toJson() const
     result.insert("power_on_cmd", powerOnCmd);
     result.insert("power_off_cmd", powerOffCmd);
     result.insert("status", status);
+    result.insert("sensor", sensor);
+    result.insert("sensor_status", getSensorStatus());
 
     return result;
 }
@@ -190,10 +195,10 @@ bool Switch::flush(bool newObject)
     QSqlQuery query = Database::getQuery();
 
     if (!newObject) {
-        query.prepare("UPDATE switch SET name=?, category=?, order_by=?, power_on_cmd=?, power_off_cmd=?, status=? WHERE id=?");
+        query.prepare("UPDATE switch SET name=?, category=?, order_by=?, power_on_cmd=?, power_off_cmd=?, status=?, sensor=? WHERE id=?");
     } else {
-        query.prepare("INSERT INTO switch (name, category, order_by, power_on_cmd, power_off_cmd, status, id) "
-                      "VALUES (?, ?, ?, ?, ?, ?, ?)");
+        query.prepare("INSERT INTO switch (name, category, order_by, power_on_cmd, power_off_cmd, status, sensor, id) "
+                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
     }
     query.addBindValue(name);
     query.addBindValue(category);
@@ -201,6 +206,7 @@ bool Switch::flush(bool newObject)
     query.addBindValue(powerOnCmd);
     query.addBindValue(powerOffCmd);
     query.addBindValue(status);
+    query.addBindValue(sensor);
     query.addBindValue(id);
 
     if (Database::exec(query)) {
@@ -236,6 +242,16 @@ void Switch::updateValue(QString id, QString value)
         setStatus("off");
     }
 }
+QString Switch::getSensor() const
+{
+    return sensor;
+}
+
+void Switch::setSensor(const QString &value)
+{
+    sensor = value;
+}
+
 int Switch::getOrder() const
 {
     return order;
@@ -250,5 +266,20 @@ void Switch::setOrder(int value)
 int Switch::getLastUpdate(int index) const
 {
     return (QDateTime::currentDateTime().toTime_t() - lastUpdate.at(index).toTime_t()) / 60;
+}
+
+QString Switch::getSensorStatus() const
+{
+    QString result = "";
+
+    if (sensor.isEmpty()) {
+        result = "";
+    } else if (!Sensor::getSensorList().contains(sensor)) {
+        qWarning() << "Sensor " << sensor << " of switch " << name << " not found!";
+    } else {
+        result = Sensor::getSensorList()[sensor]->getValue();
+    }
+
+    return result;
 }
 
