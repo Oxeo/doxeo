@@ -92,7 +92,6 @@ bool Authentification::isConnected(HttpHeader *header, QString &cookie)
     QString code = header->getCookie("doxeomonitor_remember_code");
     
     if (id == "") {
-        qDebug() << "Authentification failed: id is empty";
         return false;
     }
 
