@@ -200,11 +200,6 @@ function sendCmd(cmdToSend) {
     });
 }
 
-$('#buildBoardCmd').click(function(event){
-    var cmd = $('#sendContent').val();
-    $('#sendContent').val('helper.sendCmd("' + cmd + '")');
-});
-
 $('#clearSearch').click(function(event){
     $('#searchInput').val("");
 });
