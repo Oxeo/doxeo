@@ -38,6 +38,7 @@ public:
 
     void changeStatus(Status status);
     bool flush();
+    bool remove();
     QJsonObject toJson();
 
     void setName(const QString &value);
@@ -72,7 +73,8 @@ protected:
 
     int id;
     QString name;
-    QString command;
+    QString powerOnCmd;
+    QString powerOffCmd;
     Mode mode;
     float coolSetpoint;
     float heatSetpoint;

@@ -2,13 +2,13 @@
 #include "sensor.h"
 #include "temperature.h"
 #include "core/database.h"
+#include "libraries/device.h"
 
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QVariant>
 #include <QDebug>
 #include <QSqlError>
-#include <QProcess>
 #include <QTime>
 #include <QDebug>
 #include <QMetaEnum>
@@ -22,7 +22,8 @@ Heater::Heater(QObject *parent) : QObject(parent)
     status = Heater::Off;
     mode = Heater::Off_Mode;
     name = "heater";
-    command = "";
+    powerOnCmd = "";
+    powerOffCmd = "";
     coolSetpoint = 0;
     heatSetpoint = 0;
     sensor = "";
@@ -58,23 +59,17 @@ Heater *Heater::get(int id)
 
 void Heater::sendCommand()
 {
-    QProcess process;
-    QStringList params;
-    QString statusCmd = "off";
+    QString statusCmd;
 
     if (status == On) {
         statusCmd = "on";
-    }
-
-    params << "doxeo-remote" << command << statusCmd;
-    process.start("sudo", params);
-    process.waitForFinished(10000);
-
-    if (process.exitCode() != 0) {
-        qCritical() << "Unable to send heater command: " << process.readAll() << process.readAllStandardError();
+        Device::Instance()->send(powerOnCmd);
     } else {
-        qDebug() << "Heater command send: " << this->name << statusCmd;
+        statusCmd = "off";
+        Device::Instance()->send(powerOffCmd);
     }
+    
+    qDebug() << "Heater command send: " << this->name << statusCmd;
 
     repeat--;
     if (repeat == 0) {
@@ -85,7 +80,7 @@ void Heater::sendCommand()
 void Heater::fillFromBdd()
 {
     QSqlQuery query = Database::getQuery();
-    query.prepare("SELECT id, name, command, mode, cool_setpoint, heat_setpoint, sensor FROM heater ORDER BY id ASC");
+    query.prepare("SELECT id, name, power_on_cmd, power_off_cmd, mode, cool_setpoint, heat_setpoint, sensor FROM heater ORDER BY id ASC");
 
     if(Database::exec(query))
     {
@@ -98,11 +93,12 @@ void Heater::fillFromBdd()
 
             heater->id = query.value(0).toInt();
             heater->name = query.value(1).toString();
-            heater->command = query.value(2).toString();
-            heater->mode = (Heater::Mode)query.value(3).toInt();
-            heater->coolSetpoint = query.value(4).toFloat();
-            heater->heatSetpoint = query.value(5).toFloat();
-            heater->sensor = query.value(6).toString();
+            heater->powerOnCmd = query.value(2).toString();
+            heater->powerOffCmd = query.value(3).toString();
+            heater->mode = (Heater::Mode)query.value(4).toInt();
+            heater->coolSetpoint = query.value(5).toFloat();
+            heater->heatSetpoint = query.value(6).toFloat();
+            heater->sensor = query.value(7).toString();
 
             heaterList->insert(heater->id, heater);
         }
@@ -254,12 +250,14 @@ bool Heater::flush()
     QSqlQuery query = Database::getQuery();
 
     if (id > 0) {
-        query.prepare("UPDATE heater SET name=?, mode=?, cool_setpoint=?, heat_setpoint=?, sensor=? WHERE id=?");
+        query.prepare("UPDATE heater SET name=?, power_on_cmd, power_off_cmd, mode=?, cool_setpoint=?, heat_setpoint=?, sensor=? WHERE id=?");
     } else {
-        query.prepare("INSERT INTO switch (name, mode, cool_setpoint, heat_setpoint, sensor) "
-                      "VALUES (?, ?, ?, ?, ?)");
+        query.prepare("INSERT INTO heater (name, power_on_cmd, power_off_cmd, mode, cool_setpoint, heat_setpoint, sensor) "
+                      "VALUES (?, ?, ?, ?, ?, ?, ?)");
     }
     query.addBindValue(name);
+    query.addBindValue(powerOnCmd);
+    query.addBindValue(powerOffCmd);
     query.addBindValue(mode);
     query.addBindValue(coolSetpoint);
     query.addBindValue(heatSetpoint);
@@ -286,12 +284,30 @@ bool Heater::flush()
     return false;
 }
 
+bool Heater::remove()
+{
+    QSqlQuery query = Database::getQuery();
+
+    query.prepare("DELETE FROM heater WHERE id=?");
+    query.addBindValue(id);
+
+    if (Database::exec(query)) {
+        Database::release();
+        return true;
+    } else {
+        Database::release();
+        return false;
+    }
+}
+
 QJsonObject Heater::toJson()
 {
     QJsonObject result;
 
     result.insert("id", id);
     result.insert("name", name);
+    result.insert("power_on_cmd", powerOnCmd);
+    result.insert("power_off_cmd", powerOffCmd);
 
     if (mode == Heater::Off_Mode) {
         result.insert("mode", "Off");
@@ -305,6 +321,8 @@ QJsonObject Heater::toJson()
 
     result.insert("cool_setpoint", coolSetpoint);
     result.insert("heat_setpoint", heatSetpoint);
+    result.insert("sensor", sensor);
+    
     result.insert("current_setpoint", this->getCurrentSetpoint());
     result.insert("status", getStatusStr());
     result.insert("temperature", getTemperature());
