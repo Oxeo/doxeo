@@ -250,7 +250,7 @@ bool Heater::flush()
     QSqlQuery query = Database::getQuery();
 
     if (id > 0) {
-        query.prepare("UPDATE heater SET name=?, power_on_cmd, power_off_cmd, mode=?, cool_setpoint=?, heat_setpoint=?, sensor=? WHERE id=?");
+        query.prepare("UPDATE heater SET name=?, power_on_cmd=?, power_off_cmd=?, mode=?, cool_setpoint=?, heat_setpoint=?, sensor=? WHERE id=?");
     } else {
         query.prepare("INSERT INTO heater (name, power_on_cmd, power_off_cmd, mode, cool_setpoint, heat_setpoint, sensor) "
                       "VALUES (?, ?, ?, ?, ?, ?, ?)");
