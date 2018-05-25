@@ -7,7 +7,7 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 
-ScriptController::ScriptController(QObject *parent) : AbstractController(parent)
+ScriptController::ScriptController(Sim900 *sim900, QObject *parent) : AbstractController(parent)
 {
     router.insert("list", "scriptList");
     router.insert("editor", "editor");
@@ -22,7 +22,7 @@ ScriptController::ScriptController(QObject *parent) : AbstractController(parent)
     router.insert("cmd_list.js", "jsonCmdList");
 
     Script::update();
-    scriptEngine = new ScriptEngine(parent);
+    scriptEngine = new ScriptEngine(sim900, this);
 
     Command::update();
 }

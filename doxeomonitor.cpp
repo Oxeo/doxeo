@@ -13,6 +13,7 @@
 #include "libraries/authentification.h"
 #include "libraries/device.h"
 #include "libraries/firebasecloudmessaging.h"
+#include "libraries/sim900.h"
 #include "core/database.h"
 
 #include <QDir>
@@ -67,6 +68,10 @@ int DoxeoMonitor::start()
     fcm->setServerKey(settings.value("firebasecloudmessaging/serverkey", "").toString());
     MessageLogger::logger().setFirebaseCloudMessaging(fcm);
 
+    // Initialise SIM900 GSM module
+    Sim900 *sim900 = new Sim900(this);
+    sim900->connection();
+
     // Initialize logger messages
     if (!verbose) {
         qInstallMessageHandler(MessageLogger::messageHandler);
@@ -81,7 +86,7 @@ int DoxeoMonitor::start()
     httpServer->addController(new SensorController(this), "sensor");
     httpServer->addController(new AuthController(this), "auth");
     httpServer->addController(new ThermostatController(this), "thermostat");
-    httpServer->addController(new ScriptController(this), "script");
+    httpServer->addController(new ScriptController(sim900, this), "script");
 
     qDebug() << QCoreApplication::applicationName() + " started.";
     return this->exec();

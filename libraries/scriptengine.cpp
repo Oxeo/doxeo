@@ -7,9 +7,10 @@
 #include <QDebug>
 #include <QTime>
 
-ScriptEngine::ScriptEngine(QObject *parent) : QObject(parent)
+ScriptEngine::ScriptEngine(Sim900 *sim900, QObject *parent) : QObject(parent)
 {
-    engine.globalObject().setProperty("helper", engine.newQObject(new ScriptHelper(parent)));
+    this->sim900 = sim900;
+    engine.globalObject().setProperty("helper", engine.newQObject(new ScriptHelper(sim900, this)));
 
     updateSensors();
     updateSwitches();
@@ -19,6 +20,7 @@ ScriptEngine::ScriptEngine(QObject *parent) : QObject(parent)
     connect(Switch::getEvent(), SIGNAL(dataChanged()), this, SLOT(updateSwitches()), Qt::QueuedConnection);
     connect(Switch::getEvent(), SIGNAL(valueChanged(QString,QString)), this, SLOT(switchValueChanged(QString, QString)), Qt::QueuedConnection);
 
+    connect(sim900, SIGNAL(newSMS(QString,QString)), this, SLOT(newSMS(QString,QString)), Qt::QueuedConnection);
     
     timer = new QTimer(this);
     timer->setSingleShot(true);
@@ -84,4 +86,11 @@ void ScriptEngine::switchValueChanged(QString id, QString value)
 void ScriptEngine::sensorValueChanged(QString id, QString value)
 {
     run("sensor_" + id + ";" + value);
+}
+
+void ScriptEngine::newSMS(QString numbers, QString msg)
+{
+    engine.globalObject().setProperty("sms_numbers", numbers);
+    engine.globalObject().setProperty("sms_message", msg);
+    run("new_sms");
 }
