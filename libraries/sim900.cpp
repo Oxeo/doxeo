@@ -18,6 +18,9 @@ Sim900::Sim900(QObject *parent) : QObject(parent)
     updateTimer = new QTimer(this);
     updateTimer->setSingleShot(true);
 
+    sendSmsTimer = new QTimer(this);
+    sendSmsTimer->setSingleShot(true);
+
     state = 0;
     isInitialized = false;
     data = "";
@@ -29,6 +32,7 @@ Sim900::Sim900(QObject *parent) : QObject(parent)
     connect(readTimer, SIGNAL(timeout()), this, SLOT(dataReady()), Qt::QueuedConnection);
     connect(timeoutTimer, SIGNAL(timeout()), this, SLOT(timeout()), Qt::QueuedConnection);
     connect(updateTimer, SIGNAL(timeout()), this, SLOT(update()), Qt::QueuedConnection);
+    connect(sendSmsTimer, SIGNAL(timeout()), this, SLOT(sendSMSProcess()), Qt::QueuedConnection);
 }
 
 void Sim900::connection()
@@ -126,15 +130,29 @@ void Sim900::sendSMS(QString numbers, QString msg)
 {
     if (isInitialized == false) {
         qWarning() << "Unable to send SMS: GMS module not initialized!";
+    } else {
+        Sms sms = {msg, numbers};
+        smsToSendList.append(sms);
+
+        sendSMSProcess();
+    }
+}
+
+void Sim900::sendSMSProcess()
+{
+    if (smsToSendList.empty()) {
+        sendSmsTimer->stop();
     } else if (state == 0) {
         qDebug() << "Sending SMS...";
-        smsToSend.numbers = numbers;
-        smsToSend.msg = msg;
         state = 1;
         send("WAKEUP\r");
         updateTimer->start(100);
+
+        if (smsToSendList.size() > 1) {
+            sendSmsTimer->start(10000);
+        }
     } else {
-        qWarning() << "already sending an SMS";
+        sendSmsTimer->start(10000);
     }
 }
 
@@ -170,38 +188,38 @@ void Sim900::update(QString buffer) {
         if (buffer.contains("AT+CMGF=1") && buffer.contains("OK")) {
             state += 1;
             update();
-        } else {
+        } else if (!buffer.isEmpty()) {
             qWarning() << "Unable to send SMS (mode error): " + buffer;
             state = 0;
         }
         break;
     case 3:
         // mobile numbers
-        send("AT+CMGS = \"" + smsToSend.numbers + "\"\r");
+        send("AT+CMGS = \"" + smsToSendList.first().numbers + "\"\r");
         timeoutTimer->start(500);
         state += 1;
         break;
     case 4:
         // Wait numbers
-        if (buffer.contains(smsToSend.numbers)) {
+        if (buffer.contains(smsToSendList.first().numbers)) {
             state += 1;
             update();
-        } else {
+        } else if (!buffer.isEmpty()) {
             qWarning() << "Unable to send SMS (numbers error): " + buffer;
             state = 0;
         }
         break;
     case 5:
         // message
-        send(smsToSend.msg + '\r');
+        send(smsToSendList.first().msg + '\r');
         timeoutTimer->start(500);
         state += 1;
         break;
     case 6:
-        if (buffer.contains(smsToSend.msg)) {
+        if (buffer.contains(smsToSendList.first().msg)) {
             state += 1;
             update();
-        } else {
+        } else if (!buffer.isEmpty()){
             qWarning() << "Unable to send SMS (message error): " + buffer;
             state = 0;
         }
@@ -216,7 +234,11 @@ void Sim900::update(QString buffer) {
     case 8:
         if (buffer.contains("+CMGS:") && buffer.contains("OK")) {
             qDebug() << "SMS send with success";
-        } else {
+            smsToSendList.removeFirst();
+            if (!smsToSendList.isEmpty()) {
+                sendSmsTimer->start(10);
+            }
+        } else if (!buffer.isEmpty()){
             qWarning() << "Unable to send SMS (send AT): " + buffer;
         }
         state = 0;
@@ -231,7 +253,7 @@ void Sim900::update(QString buffer) {
         if (buffer.contains("AT+CMGF=1") && buffer.contains("OK")) {
             state += 1;
             update();
-        } else {
+        } else if (!buffer.isEmpty()) {
             qWarning() << "Unable to initialize SIM900 (mode error): " + buffer;
             state = 0;
         }
@@ -246,7 +268,7 @@ void Sim900::update(QString buffer) {
         if (buffer.contains("AT+CNMI=2,2,0,0,0") && buffer.contains("OK")) {
             state += 1;
             update();
-        } else {
+        } else if (!buffer.isEmpty()) {
             qWarning() << "Unable to initialize SIM900 (sms data): " + buffer;
             state = 0;
         }
@@ -261,7 +283,7 @@ void Sim900::update(QString buffer) {
         if (buffer.contains("AT+CSCLK=2") && buffer.contains("OK")) {
             isInitialized = true;
             qDebug() << "SIM900 initialized with success";
-        } else {
+        } else if (!buffer.isEmpty()) {
             qWarning() << "Unable to initialize SIM900 (sleep mode): " + buffer;
         }
         state = 0;

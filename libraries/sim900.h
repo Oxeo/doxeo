@@ -29,6 +29,7 @@ protected slots:
     void init();
     void update(QString buffer = "");
     void dataReady();
+    void sendSMSProcess();
     void handleError(QSerialPort::SerialPortError error);
     void timeout();
 
@@ -43,10 +44,10 @@ protected:
 
     QTimer *updateTimer;
     QTimer *timeoutTimer;
+    QTimer *sendSmsTimer;
     int state;
     bool isInitialized;
     QList<Sms> smsToSendList;
-    Sms smsToSend;
 };
 
 #endif // SIM900_H
