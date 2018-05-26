@@ -24,6 +24,7 @@ Sim900::Sim900(QObject *parent) : QObject(parent)
     state = 0;
     isInitialized = false;
     data = "";
+    nbInitTryMax = 0;
 
     connect(serial, &QSerialPort::readyRead, this, &Sim900::readData);
     connect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this,
@@ -62,6 +63,7 @@ void Sim900::init()
 {
     isInitialized = false;
     state = 100;
+    nbInitTryMax = 5;
     send("WAKEUP\r");
     updateTimer->start(100);
 }
@@ -129,7 +131,7 @@ void Sim900::send(QString data)
 void Sim900::sendSMS(QString numbers, QString msg)
 {
     if (isInitialized == false) {
-        qWarning() << "Unable to send SMS: GMS module not initialized!";
+        qWarning() << "Unable to send SMS: GSM module not initialized!";
     } else {
         Sms sms = {msg, numbers};
         smsToSendList.append(sms);
@@ -140,7 +142,7 @@ void Sim900::sendSMS(QString numbers, QString msg)
 
 void Sim900::sendAtCmd(QString cmd)
 {
-    if (isInitialized && state == 0) {
+    if (isConnected() && state == 0) {
         send(cmd + "\r");
     } else {
         qWarning() << "Unable to send AT command!";
@@ -254,46 +256,64 @@ void Sim900::update(QString buffer) {
         break;
     case 100:
         qDebug() << "Initialize SIM900... (SMS mode)";
-        send("AT+CMGF=1\r");
         timeoutTimer->start(500);
         state += 1;
+        send("AT+CMGF=1\r");
         break;
     case 101:
         if (buffer.contains("AT+CMGF=1") && buffer.contains("OK")) {
             state += 1;
             update();
         } else if (!buffer.isEmpty()) {
-            qWarning() << "Unable to initialize SIM900 (mode error): " + buffer;
-            state = 0;
+            if (nbInitTryMax > 0) {
+                nbInitTryMax--;
+                state = 100;
+                updateTimer->start(1000);
+            } else {
+                qWarning() << "Unable to initialize SIM900 (mode error): " + buffer;
+                state = 0;
+             }
         }
         break;
     case 102:
         qDebug() << "Initialize SIM900... (SMS notification)";
-        send("AT+CNMI=2,2,0,0,0\r");
         timeoutTimer->start(500);
         state += 1;
+        send("AT+CNMI=2,2,0,0,0\r");
         break;
     case 103:
         if (buffer.contains("AT+CNMI=2,2,0,0,0") && buffer.contains("OK")) {
             state += 1;
             update();
         } else if (!buffer.isEmpty()) {
-            qWarning() << "Unable to initialize SIM900 (sms data): " + buffer;
-            state = 0;
+            if (nbInitTryMax > 0) {
+                nbInitTryMax--;
+                state = 102;
+                updateTimer->start(1000);
+            } else {
+                qWarning() << "Unable to initialize SIM900 (sms data): " + buffer;
+                state = 0;
+            }
         }
         break;
     case 104:
         qDebug() << "Initialize SIM900... (Sleep mode)";
-        send("AT+CSCLK=2\r");
         timeoutTimer->start(500);
         state += 1;
+        send("AT+CSCLK=2\r");
         break;
     case 105:
         if (buffer.contains("AT+CSCLK=2") && buffer.contains("OK")) {
             isInitialized = true;
             qDebug() << "SIM900 initialized with success";
         } else if (!buffer.isEmpty()) {
-            qWarning() << "Unable to initialize SIM900 (sleep mode): " + buffer;
+            if (nbInitTryMax > 0) {
+                nbInitTryMax--;
+                state = 104;
+                updateTimer->start(1000);
+            } else {
+                qWarning() << "Unable to initialize SIM900 (sleep mode): " + buffer;
+            }
         }
         state = 0;
         break;
