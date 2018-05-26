@@ -16,14 +16,15 @@ class Sim900 : public QObject
 
 public:
     explicit Sim900(QObject *parent = 0);
-
     void connection();
-    void send(QString data);
-    void sendSMS(QString numbers, QString msg);
     bool isConnected();
 
 signals:
     void newSMS(QString numbers, QString msg);
+
+public slots:
+    void sendSMS(QString numbers, QString msg);
+    void sendAtCmd(QString cmd);
 
 protected slots:
     void init();
@@ -34,6 +35,7 @@ protected slots:
     void timeout();
 
 protected:
+    void send(QString data);
     void readData();
     void parseSms(QString data);
 

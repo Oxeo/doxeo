@@ -138,6 +138,15 @@ void Sim900::sendSMS(QString numbers, QString msg)
     }
 }
 
+void Sim900::sendAtCmd(QString cmd)
+{
+    if (isInitialized && state == 0) {
+        send(cmd + "\r");
+    } else {
+        qWarning() << "Unable to send AT command!";
+    }
+}
+
 void Sim900::sendSMSProcess()
 {
     if (smsToSendList.empty()) {

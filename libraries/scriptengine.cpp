@@ -10,7 +10,8 @@
 ScriptEngine::ScriptEngine(Sim900 *sim900, QObject *parent) : QObject(parent)
 {
     this->sim900 = sim900;
-    engine.globalObject().setProperty("helper", engine.newQObject(new ScriptHelper(sim900, this)));
+    engine.globalObject().setProperty("helper", engine.newQObject(new ScriptHelper(this)));
+    engine.globalObject().setProperty("gsm", engine.newQObject(sim900));
 
     updateSensors();
     updateSwitches();

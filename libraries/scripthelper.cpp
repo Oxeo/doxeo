@@ -11,9 +11,9 @@
 
 QHash<QString, QString> ScriptHelper::data;
 
-ScriptHelper::ScriptHelper(Sim900 *sim900, QObject *parent) : QObject(parent)
+ScriptHelper::ScriptHelper(QObject *parent) : QObject(parent)
 {
-    this->sim900 = sim900;
+
 }
 
 int ScriptHelper::getDay()
@@ -87,11 +87,4 @@ void ScriptHelper::sendFCM(QString type, QString name, QString body)
     FirebaseCloudMessaging *fcm = MessageLogger::logger().getFCM();
     FirebaseCloudMessaging::Message msg = {type.toUpper(), name, body};
     fcm->send(msg);
-}
-
-void ScriptHelper::sendSMS(QString numbers, QString msg)
-{
-    if (sim900 != NULL) {
-        sim900->sendSMS(numbers, msg);
-    }
 }
