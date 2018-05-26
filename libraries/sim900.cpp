@@ -19,6 +19,7 @@ Sim900::Sim900(QObject *parent) : QObject(parent)
     updateTimer->setSingleShot(true);
 
     state = 0;
+    isInitialized = false;
     data = "";
 
     connect(serial, &QSerialPort::readyRead, this, &Sim900::readData);
@@ -33,9 +34,8 @@ Sim900::Sim900(QObject *parent) : QObject(parent)
 void Sim900::connection()
 {
     systemInError = false;
+    isInitialized = false;
     state = 0;
-
-    qDebug() << "connection in progress";
 
     foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
         if (!info.portName().contains("ttyAMA0")) {
@@ -56,6 +56,7 @@ void Sim900::connection()
 
 void Sim900::init()
 {
+    isInitialized = false;
     state = 100;
     send("WAKEUP\r");
     updateTimer->start(100);
@@ -123,7 +124,9 @@ void Sim900::send(QString data)
 
 void Sim900::sendSMS(QString numbers, QString msg)
 {
-    if (state == 0) {
+    if (isInitialized == false) {
+        qWarning() << "Unable to send SMS: GMS module not initialized!";
+    } else if (state == 0) {
         qDebug() << "Sending SMS...";
         smsToSend.numbers = numbers;
         smsToSend.msg = msg;
@@ -143,8 +146,6 @@ bool Sim900::isConnected()
 void Sim900::update(QString buffer) {
     timeoutTimer->stop();
     updateTimer->stop();
-
-    QByteArray ba("  ");
 
     switch (state)
     {
@@ -207,10 +208,8 @@ void Sim900::update(QString buffer) {
         break;
     case 7:
         // End AT command with a ^Z, ASCII code 26
-        ba.resize(2);
-        ba[0] = 26;
-        ba[1] = '\r';
-        send(QString(ba));
+        send(QString(QByteArray(1, 26)));
+        send(QString('\r'));
         timeoutTimer->start(5000);
         state += 1;
         break;
@@ -260,6 +259,7 @@ void Sim900::update(QString buffer) {
         break;
     case 105:
         if (buffer.contains("AT+CSCLK=2") && buffer.contains("OK")) {
+            isInitialized = true;
             qDebug() << "SIM900 initialized with success";
         } else {
             qWarning() << "Unable to initialize SIM900 (sleep mode): " + buffer;

@@ -68,14 +68,14 @@ int DoxeoMonitor::start()
     fcm->setServerKey(settings.value("firebasecloudmessaging/serverkey", "").toString());
     MessageLogger::logger().setFirebaseCloudMessaging(fcm);
 
-    // Initialise SIM900 GSM module
-    Sim900 *sim900 = new Sim900(this);
-    sim900->connection();
-
     // Initialize logger messages
     if (!verbose) {
         qInstallMessageHandler(MessageLogger::messageHandler);
     }
+
+    // Initialise SIM900 GSM module
+    Sim900 *sim900 = new Sim900(this);
+    sim900->connection();
 
     // Connect device
     Device::initialize("Doxeoboard", this);

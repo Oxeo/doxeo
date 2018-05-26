@@ -44,6 +44,8 @@ protected:
     QTimer *updateTimer;
     QTimer *timeoutTimer;
     int state;
+    bool isInitialized;
+    QList<Sms> smsToSendList;
     Sms smsToSend;
 };
 
