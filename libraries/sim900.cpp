@@ -3,6 +3,7 @@
 #include <QtSerialPort/QSerialPortInfo>
 #include <QtDebug>
 #include <QThread>
+#include <QRegularExpression>
 
 Sim900::Sim900(QObject *parent) : QObject(parent)
 {
@@ -90,30 +91,26 @@ void Sim900::readData()
 
 void Sim900::parseSms(QString data)
 {
-    int cmt = data.indexOf("+CMT:");
+    QRegularExpression rx("\\+CMT: \"(.*)\",\"\",\"(.*)\\+.*\r\n(.*)\r\n");
+    QRegularExpressionMatchIterator i = rx.globalMatch(data);
 
-    if (cmt >= 0 && data.length() > cmt + 43) {
-        QString numbers = data.mid(cmt + 7, 12);
-        QString date = data.mid(cmt + 25, 17);
+    while (i.hasNext()) {
+        QRegularExpressionMatch match = i.next();
 
-        int m = data.indexOf('\n', cmt + 1);
-
-        if (m >= 0) {
-            QString message = data.mid(m + 1);
-            message.chop(2); // remove end
-
-            //qDebug() << "Numbers: " + numbers;
-            //qDebug() << "Date: " + date;
-            //qDebug() << "Message: " + message;
-
-            emit newSMS(numbers, message);
-        }
+        QString numbers = match.captured(1);
+        QString date = match.captured(2);
+        QString message =  match.captured(3);
+        emit newSMS(numbers, message);
     }
 }
 
 void Sim900::dataReady()
 {
+    parseSms(data);
     update(data);
+
+    //qDebug() << "new data: " << data;
+
     data.clear();
 }
 
@@ -181,7 +178,7 @@ void Sim900::update(QString buffer) {
     case 0:
         if (!buffer.isEmpty()) {
             if (buffer.contains("+CMT:")) {
-                parseSms(buffer);
+                // nothing to do is a SMS
             } else if (buffer.contains("Call Ready")) {
                 qCritical() << "SIM900 has rebooting";
             } else {
