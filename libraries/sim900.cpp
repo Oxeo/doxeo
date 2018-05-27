@@ -151,16 +151,16 @@ void Sim900::sendSMSProcess()
     if (smsToSendList.empty()) {
         sendSmsTimer->stop();
     } else if (state == 0) {
-        qDebug() << "Sending SMS...";
+        qDebug() << "Sending SMS... (" + smsToSendList.first().numbers + ": " + smsToSendList.first().msg + ")";
         state = 1;
         send("WAKEUP\r");
         updateTimer->start(100);
 
         if (smsToSendList.size() > 1) {
-            sendSmsTimer->start(10000);
+            sendSmsTimer->start(15000);
         }
     } else {
-        sendSmsTimer->start(10000);
+        sendSmsTimer->start(15000);
     }
 }
 
@@ -236,7 +236,7 @@ void Sim900::update(QString buffer) {
         // End AT command with a ^Z, ASCII code 26
         send(QString(QByteArray(1, 26)));
         send(QString('\r'));
-        timeoutTimer->start(5000);
+        timeoutTimer->start(10000);
         state += 1;
         break;
     case 8:
