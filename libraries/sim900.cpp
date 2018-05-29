@@ -86,14 +86,15 @@ void Sim900::readData()
         data += QString(bytes);
     }
 
-    readTimer->start(50);
+    readTimer->start(100);
 }
 
 void Sim900::parseSms(QString data)
 {
-    QRegularExpression rx("\\+CMT: \"(.*)\",\"\",\"(.*)\\+.*\r\n(.*)\r\n");
+    QRegularExpression rx("\\+CMT: \"(.*)\",\"\",\"(.*)\\+.*\r\n(.*)(\r\n)*");
     QRegularExpressionMatchIterator i = rx.globalMatch(data);
 
+    bool exist = false;
     while (i.hasNext()) {
         QRegularExpressionMatch match = i.next();
 
@@ -101,6 +102,11 @@ void Sim900::parseSms(QString data)
         QString date = match.captured(2);
         QString message =  match.captured(3);
         emit newSMS(numbers, message);
+        exist = true;
+    }
+    
+    if (data.contains("+CMT:") && exist == false) {
+        qWarning() << "SMS decoding error: " + data;
     }
 }
 
@@ -108,8 +114,6 @@ void Sim900::dataReady()
 {
     parseSms(data);
     update(data);
-
-    //qDebug() << "new data: " << data;
 
     data.clear();
 }
@@ -182,7 +186,7 @@ void Sim900::update(QString buffer) {
             } else if (buffer.contains("Call Ready")) {
                 qCritical() << "SIM900 has rebooting";
             } else {
-                qDebug() << "data received: " << data;
+                qDebug() << "SIM900: " << data;
             }
         }
         break;

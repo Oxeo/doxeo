@@ -174,6 +174,10 @@ int Sensor::getLastEvent() const
     return (QDateTime::currentDateTime().toTime_t() - lastEvent.toTime_t()) / 60;
 }
 
+unsigned int Sensor::getLastEventUtc() const
+{
+    return lastEvent.toTime_t();
+}
 
 int Sensor::getLastUpdate(int index) const
 {

@@ -15,6 +15,7 @@ class Sensor : public QObject
     Q_PROPERTY(QString cmd READ getCmd)
     Q_PROPERTY(QString value READ getValue)
     Q_PROPERTY(QString lastEvent READ getLastEvent)
+    Q_PROPERTY(unsigned int lastEventUtc READ getLastEventUtc)
 
 public:
     explicit Sensor(QString id, QObject *parent = 0);
@@ -36,6 +37,7 @@ public:
     void setCmd(const QString &value);
 
     int getLastEvent() const;
+    unsigned int getLastEventUtc() const;
     int getStartTime() const;
 
     bool flush(bool newObject);
