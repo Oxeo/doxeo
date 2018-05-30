@@ -2,6 +2,7 @@
 #include "device.h"
 #include "firebasecloudmessaging.h"
 #include "messagelogger.h"
+#include "models/script.h"
 
 #include <QDate>
 #include <QTime>
@@ -34,6 +35,29 @@ int ScriptHelper::getHour()
 int ScriptHelper::getMinute()
 {
     return QTime::currentTime().minute();
+}
+
+QString ScriptHelper::getScriptStatus(int id)
+{
+    QString result;
+
+    if (Script::isIdValid(id)) {
+        result = Script::get(id).getStatus();
+    } else {
+        qWarning("id script not valid in script helper (getScriptStatus)");
+        result = "";
+    }
+
+    return result;
+}
+
+void ScriptHelper::setScriptStatus(int id, QString status)
+{
+    if (Script::isIdValid(id)) {
+        Script::get(id).setStatus(status);
+    } else {
+        qWarning("id script not valid in script helper (setScriptStatus)");
+    }
 }
 
 void ScriptHelper::sendCmd(QString cmd)

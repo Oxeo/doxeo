@@ -29,6 +29,8 @@ public slots:
     void setWarning(QString warning);
     void setAlert(QString alert);
     void sendFCM(QString type, QString name, QString body);
+    QString getScriptStatus(int id);
+    void setScriptStatus(int id, QString status);
 
     static QString getData(QString key);
     static void setData(QString key, QString value);
