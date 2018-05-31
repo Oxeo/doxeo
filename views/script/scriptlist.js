@@ -27,12 +27,6 @@ $(document).ready(function () {
             deleteAction: 'delete_script.js'
         },
         fields: {
-            id: {
-                key: true,
-                create: false,
-                edit: false,
-                list: false
-            },
             name: {
                 title: 'Name',
             },
@@ -54,6 +48,13 @@ $(document).ready(function () {
                      return '<a href="editor?id=' + data.record.id + '"><button type="button" onclick="">Edit</button></a>';
                 },
                 edit: false
+            },
+            id: {
+                title: 'Id',
+                key: true,
+                create: false,
+                edit: false,
+                list: true
             }
         }
     });
