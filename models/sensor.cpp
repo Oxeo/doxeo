@@ -16,6 +16,8 @@ Sensor::Sensor(QString id, QObject *parent) : QObject(parent)
     value = "";
     lastEvent = QDateTime::currentDateTime().addMonths(-6);
     startTime = QDateTime::currentDateTime();
+    batteryLevel = 0;
+    batteryLevelUpdate = QDateTime::currentDateTime().addMonths(-6);
 
     for (int i=0; i<5; i++) {
         lastUpdate.append(QDateTime::currentDateTime().addMonths(-6));
@@ -35,6 +37,8 @@ QJsonObject Sensor::toJson() const
     result.insert("value", value);
     result.insert("last_update", QString::number(lastUpdate.at(0).toTime_t()));
     result.insert("last_event", QString::number(lastEvent.toTime_t()));
+    result.insert("battery", batteryLevel);
+    result.insert("battery_update", QString::number(batteryLevelUpdate.toTime_t()));
 
     return result;
 }
@@ -155,7 +159,15 @@ void Sensor::updateValue(QString cmd, QString value)
     if (this->cmd == cmd) {
         lastEvent = QDateTime::currentDateTime();
 
-        if (this->value != value) {
+        if (value.startsWith("battery=")) {
+            int a = value.indexOf("v");
+            int b = value.indexOf("%");
+            if (a > 0 && b > 0) {
+                bool ok;
+                batteryLevel = value.mid(a, b-a).toInt(&ok);
+                batteryLevelUpdate = QDateTime::currentDateTime();
+            }
+        } else if (this->value != value) {
             this->value = value;
             this->lastUpdate.prepend(QDateTime::currentDateTime());
             this->lastUpdate.removeLast();

@@ -62,6 +62,8 @@ protected:
     QList<QDateTime> lastUpdate;
     QDateTime lastEvent;
     QDateTime startTime;
+    int batteryLevel;
+    QDateTime batteryLevelUpdate;
 
     static Event event;
     static QHash<QString, Sensor*> sensorList;
