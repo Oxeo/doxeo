@@ -3,6 +3,7 @@
 #include "libraries/device.h"
 
 #include <QDebug>
+#include <QRegularExpression>
 
 QHash<QString, Sensor*> Sensor::sensorList;
 Event Sensor::event;
@@ -159,14 +160,13 @@ void Sensor::updateValue(QString cmd, QString value)
     if (this->cmd == cmd) {
         lastEvent = QDateTime::currentDateTime();
 
-        if (value.startsWith("battery=")) {
-            int a = value.indexOf("v");
-            int b = value.indexOf("%");
-            if (a > 0 && b > 0) {
-                bool ok;
-                batteryLevel = value.mid(a, b-a).toInt(&ok);
-                batteryLevelUpdate = QDateTime::currentDateTime();
-            }
+        QRegularExpression rx("^battery=.+v(\\d+)%$");
+        QRegularExpressionMatch match = rx.match(value);
+        
+        if (match.hasMatch()) {
+            bool ok;
+            batteryLevel = match.captured(1).toInt(&ok);
+            batteryLevelUpdate = QDateTime::currentDateTime();
         } else if (this->value != value) {
             this->value = value;
             this->lastUpdate.prepend(QDateTime::currentDateTime());
