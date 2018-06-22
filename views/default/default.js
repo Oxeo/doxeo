@@ -175,6 +175,7 @@ function update() {
 	$.getJSON('sensor/sensor_list.js').done(function(result) {
         if (result.Result == "OK") {
             $('#sensorList').html('');
+            $('#batteryList').html('');
             result.Records.sort(function(a, b) { 
                 if (a.name < b.name) {
                     return -1;
@@ -185,18 +186,28 @@ function update() {
                 }
             })
             $.each(result.Records, function(key, val) {
+                // update sensor panel
                 var date = new Date(val.last_event * 1000);;
                 var lastUpdate = date.toLocaleTimeString() + ' ' + date.toLocaleDateString();
                 $('#sensorList').append('<tr><td class="text-right" style="width: 50%">'+val.name+'</td><td class="text-left"><span data-toggle="tooltip" data-placement="right" title="'+lastUpdate+'">'+val.value+'</span></td></tr>');
+                
+                // update battery panel
+                if (val.battery > 0) {
+                    date = new Date(val.battery_update * 1000);;
+                    lastUpdate = date.toLocaleTimeString() + ' ' + date.toLocaleDateString();
+                    $('#batteryList').append('<tr><td class="text-right" style="width: 50%">'+val.name+'</td><td class="text-left"><span data-toggle="tooltip" data-placement="right" title="'+lastUpdate+'">'+val.battery+'%</span></td></tr>');
+                }
             });
             $('[data-toggle="tooltip"]').tooltip();
         } else {
             $('#sensorList').html('<tr><td></td></tr>');
+            $('#batteryList').html('<tr><td></td></tr>');
             updateError = true;
             alert_error(result.msg);
         }
     }).fail(function(jqxhr, textStatus, error) {
-        $('#sensorList').html('<tr><td></td></tr>')
+        $('#sensorList').html('<tr><td></td></tr>');
+        $('#batteryList').html('<tr><td></td></tr>');
         updateError = true;
         alert_error("Request Failed: " + error);
     });
