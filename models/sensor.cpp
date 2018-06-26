@@ -167,6 +167,7 @@ void Sensor::updateValue(QString cmd, QString value)
             bool ok;
             batteryLevel = match.captured(1).toInt(&ok);
             batteryLevelUpdate = QDateTime::currentDateTime();
+            emit Sensor::event.valueChanged(this->id, "battery_status");
         } else if (this->value != value) {
             this->value = value;
             this->lastUpdate.prepend(QDateTime::currentDateTime());
@@ -207,3 +208,7 @@ void Sensor::setCmd(const QString &value)
     cmd = value;
 }
 
+int Sensor::getBatteryLevel() const
+{
+    return batteryLevel;
+}

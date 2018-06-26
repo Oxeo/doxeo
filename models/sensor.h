@@ -16,6 +16,7 @@ class Sensor : public QObject
     Q_PROPERTY(QString value READ getValue)
     Q_PROPERTY(QString lastEvent READ getLastEvent)
     Q_PROPERTY(unsigned int lastEventUtc READ getLastEventUtc)
+    Q_PROPERTY(int batteryLevel READ getBatteryLevel)
 
 public:
     explicit Sensor(QString id, QObject *parent = 0);
@@ -35,6 +36,8 @@ public:
 
     QString getCmd() const;
     void setCmd(const QString &value);
+    
+    int getBatteryLevel() const;
 
     int getLastEvent() const;
     unsigned int getLastEventUtc() const;
