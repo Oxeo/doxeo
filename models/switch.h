@@ -48,6 +48,7 @@ public:
 
 public slots:
     void powerOn(int timerOff = 0);
+    void powerOnAfter(int timer);
     void powerOff();
     int getLastUpdate(int index) const;
 
@@ -65,7 +66,8 @@ protected:
     int order;
 
     QList<QDateTime> lastUpdate;
-    QTimer timerPowerOff;
+    QTimer *timerPowerOff;
+    QTimer *timerPowerOn;
 
     static QHash<QString, Switch*> switchList;
     static Event event;

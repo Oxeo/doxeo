@@ -21,8 +21,14 @@ Switch::Switch(QString id, QObject *parent) : QObject(parent)
         lastUpdate.append(QDateTime::currentDateTime().addYears(-1));
     }
 
-    timerPowerOff.setSingleShot(true);
-    connect(&timerPowerOff, SIGNAL(timeout()), this, SLOT(powerOff()), Qt::QueuedConnection);
+    timerPowerOn = new QTimer(this);
+    timerPowerOn->setSingleShot(true);
+
+    timerPowerOff = new QTimer(this);
+    timerPowerOff->setSingleShot(true);
+
+    connect(timerPowerOn, SIGNAL(timeout()), this, SLOT(powerOn()), Qt::QueuedConnection);
+    connect(timerPowerOff, SIGNAL(timeout()), this, SLOT(powerOff()), Qt::QueuedConnection);
     connect(Device::Instance(), SIGNAL(dataReceived(QString, QString)), this, SLOT(updateValue(QString, QString)), Qt::QueuedConnection);
 }
 
@@ -62,10 +68,12 @@ QString Switch::getStatus() const
 
 void Switch::powerOn(int timerOff)
 {
+    timerPowerOn->stop();
+
     if (timerOff > 0) {
-        timerPowerOff.start(timerOff*1000);
+        timerPowerOff->start(timerOff * 1000);
     } else {
-        timerPowerOff.stop();
+        timerPowerOff->stop();
     }
 
     if (powerOnCmd.trimmed() != "") {
@@ -74,13 +82,20 @@ void Switch::powerOn(int timerOff)
     setStatus("on");
 }
 
+void Switch::powerOnAfter(int timer)
+{
+    timerPowerOn->start(timer * 1000);
+    timerPowerOff->stop();
+}
+
 void Switch::powerOff()
 {
     if (powerOffCmd.trimmed() != "") {
         Device::Instance()->send(powerOffCmd.split(",").value(0));
     }
     setStatus("off");
-    timerPowerOff.stop();
+    timerPowerOn->stop();
+    timerPowerOff->stop();
 }
 
 void Switch::update()
