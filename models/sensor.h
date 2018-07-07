@@ -13,7 +13,7 @@ class Sensor : public QObject
     Q_OBJECT
     Q_PROPERTY(QString id READ getId)
     Q_PROPERTY(QString cmd READ getCmd)
-    Q_PROPERTY(QString value READ getValue)
+    Q_PROPERTY(QString value READ getValue WRITE setValue)
     Q_PROPERTY(QString lastEvent READ getLastEvent)
     Q_PROPERTY(unsigned int lastEventUtc READ getLastEventUtc)
     Q_PROPERTY(int batteryLevel READ getBatteryLevel)
