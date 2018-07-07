@@ -86,6 +86,7 @@ void Switch::powerOnAfter(int timer)
 {
     timerPowerOn->start(timer * 1000);
     timerPowerOff->stop();
+    setStatus("pending");
 }
 
 void Switch::powerOff()
