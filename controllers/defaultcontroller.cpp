@@ -109,7 +109,7 @@ void DefaultController::jsonLogs()
 
         QJsonObject object;
         object.insert("id", log.id);
-        object.insert("date", log.date.toString("dd/MM/yyyy hh:mm:ss"));
+        object.insert("date", log.date.toString("dd/MM/yyyy hh:mm:ss zzz"));
         object.insert("message", log.message);
         object.insert("type", log.type);
         jsonArray.push_back(object);
