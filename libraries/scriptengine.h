@@ -24,6 +24,7 @@ protected slots:
     void switchValueChanged(QString id, QString value);
     void sensorValueChanged(QString id, QString value);
     void newSMS(QString numbers, QString msg);
+    void eventTimeout(QString name);
 
 protected:
     QScriptEngine engine;

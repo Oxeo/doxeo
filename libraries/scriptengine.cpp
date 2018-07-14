@@ -3,6 +3,7 @@
 #include "models/sensor.h"
 #include "models/switch.h"
 #include "libraries/device.h"
+#include "libraries/scripttimeevent.h"
 
 #include <QDebug>
 #include <QTime>
@@ -10,7 +11,9 @@
 ScriptEngine::ScriptEngine(Sim900 *sim900, QObject *parent) : QObject(parent)
 {
     this->sim900 = sim900;
+    ScriptTimeEvent *timeEvent = new ScriptTimeEvent(this);
     engine.globalObject().setProperty("helper", engine.newQObject(new ScriptHelper(this)));
+    engine.globalObject().setProperty("event_builder", engine.newQObject(timeEvent));
     engine.globalObject().setProperty("gsm", engine.newQObject(sim900));
 
     updateSensors();
@@ -22,6 +25,7 @@ ScriptEngine::ScriptEngine(Sim900 *sim900, QObject *parent) : QObject(parent)
     connect(Switch::getEvent(), SIGNAL(valueChanged(QString,QString)), this, SLOT(switchValueChanged(QString, QString)), Qt::QueuedConnection);
 
     connect(sim900, SIGNAL(newSMS(QString,QString)), this, SLOT(newSMS(QString,QString)), Qt::QueuedConnection);
+    connect(timeEvent, SIGNAL(eventTimeout(QString)), this, SLOT(eventTimeout(QString)), Qt::QueuedConnection);
     
     timer = new QTimer(this);
     timer->setSingleShot(true);
@@ -94,4 +98,9 @@ void ScriptEngine::newSMS(QString numbers, QString msg)
     engine.globalObject().setProperty("sms_numbers", numbers);
     engine.globalObject().setProperty("sms_message", msg);
     run("new_sms");
+}
+
+void ScriptEngine::eventTimeout(QString name)
+{
+    run("event_builder;" + name);
 }

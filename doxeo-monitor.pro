@@ -46,7 +46,8 @@ SOURCES += main.cpp\
     libraries/firebasecloudmessaging.cpp \
     core/event.cpp \
     models/command.cpp \
-    libraries/sim900.cpp
+    libraries/sim900.cpp \
+    libraries/scripttimeevent.cpp
 
 HEADERS  += \
     controllers/switchcontroller.h \
@@ -83,6 +84,7 @@ HEADERS  += \
     libraries/firebasecloudmessaging.h \
     core/event.h \
     models/command.h \
-    libraries/sim900.h
+    libraries/sim900.h \
+    libraries/scripttimeevent.h
 
 RESOURCES +=
