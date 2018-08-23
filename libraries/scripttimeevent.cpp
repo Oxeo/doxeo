@@ -39,3 +39,14 @@ void ScriptTimeEvent::stop(QString name)
         timerList.remove(name);
     }
 }
+
+bool ScriptTimeEvent::isActive(QString name)
+{
+    bool result = false;
+
+    if (timerList.contains(name) && timerList[name]->isActive()) {
+        result = true;
+    }
+
+    return result;
+}

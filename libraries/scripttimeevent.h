@@ -17,6 +17,7 @@ signals:
 public slots:
     void start(QString name, int delaySeconds);
     void stop(QString name);
+    bool isActive(QString name);
 
 protected slots:
     void timeout();
