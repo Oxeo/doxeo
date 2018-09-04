@@ -32,6 +32,10 @@ $(document).ready(function () {
             name: {
                 title: 'Name',
             },
+            value: {
+                title: 'Value',
+                edit: false
+            },
             category: {
                 title: 'Category',
                 options: { 'temperature': 'Temperature', 'speaker': 'Speaker', 'door': 'Door', 'pump': 'Pump', 'light': 'Light', 'other': 'Other'}
