@@ -177,9 +177,9 @@ function update() {
             $('#sensorList').html('');
             $('#batteryList').html('');
             result.Records.sort(function(a, b) { 
-                if (a.name < b.name) {
+                if (a.order < b.order) {
                     return -1;
-                } else if (a.name > b.name) {
+                } else if (a.order > b.order) {
                     return 1;
                 } else {
                     return 0;
@@ -187,9 +187,11 @@ function update() {
             })
             $.each(result.Records, function(key, val) {
                 // update sensor panel
-                var date = new Date(val.last_event * 1000);;
-                var lastUpdate = date.toLocaleTimeString() + ' ' + date.toLocaleDateString();
-                $('#sensorList').append('<tr><td class="text-right" style="width: 50%">'+val.name+'</td><td class="text-left"><span data-toggle="tooltip" data-placement="right" title="'+lastUpdate+'">'+val.value+'</span></td></tr>');
+                if (val.hide != "true") {
+                    var date = new Date(val.last_event * 1000);;
+                    var lastUpdate = date.toLocaleTimeString() + ' ' + date.toLocaleDateString();
+                    $('#sensorList').append('<tr><td class="text-right" style="width: 50%">'+val.name+'</td><td class="text-left"><span data-toggle="tooltip" data-placement="right" title="'+lastUpdate+'">'+val.value+'</span></td></tr>');
+                }
                 
                 // update battery panel
                 if (val.battery > 0) {

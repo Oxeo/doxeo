@@ -14,6 +14,8 @@ Sensor::Sensor(QString id, QObject *parent) : QObject(parent)
     cmd = "";
     name = "";
     category = "";
+    order = 1;
+    hide = false;
     value = "";
     lastEvent = QDateTime::currentDateTime().addMonths(-6);
     startTime = QDateTime::currentDateTime();
@@ -35,6 +37,8 @@ QJsonObject Sensor::toJson() const
     result.insert("cmd", cmd);
     result.insert("name", name);
     result.insert("category", category);
+    result.insert("order", order);
+    result.insert("hide", hide ? "true" : "false");
     result.insert("value", value);
     result.insert("last_update", QString::number(lastUpdate.at(0).toTime_t()));
     result.insert("last_event", QString::number(lastEvent.toTime_t()));
@@ -86,7 +90,7 @@ QHash<QString, Sensor*> &Sensor::getSensorList()
 void Sensor::update()
 {
     QSqlQuery query = Database::getQuery();
-    query.prepare("SELECT id, cmd, name, category FROM sensor");
+    query.prepare("SELECT id, cmd, name, category, order_by, hide FROM sensor");
 
     if(Database::exec(query))
     {
@@ -99,6 +103,8 @@ void Sensor::update()
             s->cmd = query.value(1).toString();
             s->name = query.value(2).toString();
             s->category = query.value(3).toString();
+            s->order = query.value(4).toInt();
+            s->hide = query.value(5).toBool();
             s->value = "";
 
             sensorList.insert(s->getId(), s);
@@ -119,15 +125,17 @@ bool Sensor::flush(bool newObject)
     QSqlQuery query = Database::getQuery();
 
     if (!newObject) {
-        query.prepare("UPDATE sensor SET cmd=?, name=?, category=? WHERE id=?");
+        query.prepare("UPDATE sensor SET cmd=?, name=?, category=?, order_by=?, hide=? WHERE id=?");
     } else {
-        query.prepare("INSERT INTO sensor (cmd, name, category, id) "
-                      "VALUES (?, ?, ?, ?)");
+        query.prepare("INSERT INTO sensor (cmd, name, category, order_by, hide, id) "
+                      "VALUES (?, ?, ?, ?, ?, ?)");
     }
 
     query.addBindValue(cmd);
     query.addBindValue(name);
     query.addBindValue(category);
+    query.addBindValue(order);
+    query.addBindValue(hide);
     query.addBindValue(id);
 
     if (Database::exec(query)) {
@@ -178,6 +186,26 @@ void Sensor::updateValue(QString cmd, QString value)
         }
     }
 }
+bool Sensor::getHide() const
+{
+    return hide;
+}
+
+void Sensor::setHide(bool value)
+{
+    hide = value;
+}
+
+int Sensor::getOrder() const
+{
+    return order;
+}
+
+void Sensor::setOrder(int value)
+{
+    order = value;
+}
+
 int Sensor::getStartTime() const
 {
     return (QDateTime::currentDateTime().toTime_t() - startTime.toTime_t()) / 60;

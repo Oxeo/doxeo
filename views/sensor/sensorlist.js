@@ -39,6 +39,13 @@ $(document).ready(function () {
             category: {
                 title: 'Category',
                 options: { 'temperature': 'Temperature', 'speaker': 'Speaker', 'door': 'Door', 'pump': 'Pump', 'light': 'Light', 'other': 'Other'}
+            },
+            order: {
+                title: 'Order',
+            },
+            hide: {
+                title: 'Hide',
+                options: { 'false': 'No', 'true': 'Yes'}
             }
         }
     });

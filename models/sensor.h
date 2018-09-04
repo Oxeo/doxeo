@@ -36,6 +36,12 @@ public:
 
     QString getCmd() const;
     void setCmd(const QString &value);
+
+    int getOrder() const;
+    void setOrder(int value);
+
+    bool getHide() const;
+    void setHide(bool value);
     
     int getBatteryLevel() const;
 
@@ -61,6 +67,8 @@ protected:
     QString cmd;
     QString name;
     QString category;
+    int order;
+    bool hide;
     QString value;
     QList<QDateTime> lastUpdate;
     QDateTime lastEvent;

@@ -78,6 +78,8 @@ void SensorController::jsonCreateSensor()
     sw.setCmd(query->getItem("cmd"));
     sw.setName(query->getItem("name"));
     sw.setCategory(query->getItem("category"));
+    sw.setOrder(query->getItem("order").toInt());
+    sw.setHide(query->getItem("hide") == "true" ? true : false);
     sw.setValue(query->getItem("value"));
     sw.flush(true);
 
@@ -103,6 +105,8 @@ void SensorController::jsonEditSensor()
     sw.setCmd(query->getItem("cmd"));
     sw.setName(query->getItem("name"));
     sw.setCategory(query->getItem("category"));
+    sw.setOrder(query->getItem("order").toInt());
+    sw.setHide(query->getItem("hide") == "true" ? true : false);
     sw.setValue(query->getItem("value"));
     sw.flush(false);
 
