@@ -15,7 +15,9 @@ class Sim900 : public QObject
     Q_OBJECT
 
 public:
-    explicit Sim900(QObject *parent = 0);
+    enum Type {SIM900, M590};
+
+    explicit Sim900(Type type, QObject *parent = 0);
     void connection();
     bool isConnected();
 
@@ -43,6 +45,7 @@ protected:
     QString data;
     QTimer *readTimer;
     bool systemInError;
+    Type type;
 
     QTimer *updateTimer;
     QTimer *timeoutTimer;

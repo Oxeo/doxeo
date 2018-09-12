@@ -74,7 +74,7 @@ int DoxeoMonitor::start()
     }
 
     // Initialise SIM900 GSM module
-    Sim900 *sim900 = new Sim900(this);
+    Sim900 *sim900 = new Sim900(Sim900::M590, this);
     sim900->connection();
 
     // Connect device
