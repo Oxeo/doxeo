@@ -106,6 +106,7 @@ $('a[href="#newer"]').click(function(){
     }
 }); 
 
+var _colorCmd = [['gsm', 'success'], ['sendFCM', 'warning']];
 $('#button_cmds').click(function(event){
     var list = listCmd.slice();
     
@@ -117,7 +118,16 @@ $('#button_cmds').click(function(event){
     
     $('#cmds_modal .modal-body .table').empty();
     for (i=0; i<uniqueArray.length; i++) {
-        $('#cmds_modal .modal-body .table').append('<tr><td><button type="button" class="btn btn-primary btn-xs" value="show">'+uniqueArray[i]+'</button></td><td><button type="button" class="btn btn-danger btn-xs" value="delete"><span class="glyphicon glyphicon-remove"></span></button></td></tr>');
+        var color = 'primary';
+        
+        for (j=0; j<_colorCmd.length; j++) {
+            if (uniqueArray[i].includes(_colorCmd[j][0])) {
+                color = _colorCmd[j][1];
+                break;
+            }
+        }
+        
+        $('#cmds_modal .modal-body .table').append('<tr><td><button type="button" class="btn btn-'+color+' btn-xs" value="show">'+uniqueArray[i]+'</button></td><td><button type="button" class="btn btn-danger btn-xs" value="delete"><span class="glyphicon glyphicon-remove"></span></button></td></tr>');
     }
 });
 
