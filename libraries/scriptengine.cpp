@@ -31,6 +31,7 @@ ScriptEngine::ScriptEngine(Gsm *gsm, QObject *parent) : QObject(parent)
     timer->setSingleShot(true);
     connect(timer, SIGNAL(timeout()), this, SLOT(run()), Qt::QueuedConnection);
     
+    run("system_started");
     timer->start((60 - QTime::currentTime().second() + 10) * 1000); // scheduler event at each start of minute + 10 seconds
 }
 
