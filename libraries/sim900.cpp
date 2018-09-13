@@ -244,7 +244,7 @@ void Sim900::update(QString buffer) {
             timeoutTimer->stop();
             update();
         } else if (!buffer.isEmpty()){
-            qWarning() << "Unable to send SMS (message error): " + buffer;
+            qWarning() << "Send SMS error with the message format: " + buffer;
             state += 1;
             timeoutTimer->stop();
             update();
