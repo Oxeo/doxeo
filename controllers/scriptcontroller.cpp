@@ -7,7 +7,7 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 
-ScriptController::ScriptController(Gsm *sim900, QObject *parent) : AbstractController(parent)
+ScriptController::ScriptController(Gsm *gsm, QObject *parent) : AbstractController(parent)
 {
     router.insert("list", "scriptList");
     router.insert("editor", "editor");
@@ -20,9 +20,10 @@ ScriptController::ScriptController(Gsm *sim900, QObject *parent) : AbstractContr
     router.insert("get_script.js", "jsonGetScript");
     router.insert("execute_cmd.js", "jsonExecuteCmd");
     router.insert("cmd_list.js", "jsonCmdList");
+    router.insert("delete_cmd.js", "jsonDeleteCmd");
 
     Script::update();
-    scriptEngine = new ScriptEngine(sim900, this);
+    scriptEngine = new ScriptEngine(gsm, this);
 
     Command::update();
 }
@@ -282,6 +283,27 @@ void ScriptController::jsonCmdList()
 
     result.insert("result", "OK");
     result.insert("records", array);
+
+    loadJsonView(result);
+}
+
+void ScriptController::jsonDeleteCmd()
+{
+    QJsonObject result;
+
+    if (!Authentification::auth().isConnected(header, cookie)) {
+        result.insert("Result", "ERROR");
+        result.insert("Message", "You are not logged.");
+        loadJsonView(result);
+        return;
+    }
+
+    if (Command::removeCommand(query->getItem("cmd"))) {
+        Command::update();
+        result.insert("Result", "OK");
+    } else {
+        result.insert("Result", "ERROR");
+    }
 
     loadJsonView(result);
 }

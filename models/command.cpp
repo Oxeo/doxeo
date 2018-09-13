@@ -89,6 +89,22 @@ void Command::addCommand(Command *cmd) {
     }
 }
 
+bool Command::removeCommand(QString cmd)
+{
+    QSqlQuery query = Database::getQuery();
+
+    query.prepare("DELETE FROM command WHERE cmd=?");
+    query.addBindValue(cmd);
+
+    if (Database::exec(query)) {
+        Database::release();
+        return true;
+    } else {
+        Database::release();
+        return false;
+    }
+}
+
 int Command::getId() const
 {
     return id;

@@ -23,6 +23,7 @@ public:
     static void update();
     static QList<Command *> &getAll();
     static void addCommand(Command *cmd);
+    static bool removeCommand(QString cmd);
 
 protected:
     int id;
