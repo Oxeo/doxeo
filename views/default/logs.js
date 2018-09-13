@@ -1,4 +1,4 @@
-<script>
+<script type="text/javascript">
 var updateInterval = true;
 var lastLogId = 0;
 var listCmd = [];
@@ -106,6 +106,64 @@ $('a[href="#newer"]').click(function(){
     }
 }); 
 
+$('#button_cmds').click(function(event){
+    var list = listCmd.slice();
+    
+    var uniqueArray = list.filter(function(item, pos) {
+        return list.indexOf(item) == pos;
+    })
+    
+    uniqueArray.sort();
+    
+    $('#cmds_modal .modal-body .table').empty();
+    for (i=0; i<uniqueArray.length; i++) {
+        $('#cmds_modal .modal-body .table').append('<tr><td><button type="button" class="btn btn-primary btn-xs" value="show">'+uniqueArray[i]+'</button></td><td><button type="button" class="btn btn-danger btn-xs" value="delete"><span class="glyphicon glyphicon-remove"></span></button></td></tr>');
+    }
+});
+
+var _cmdRemoved = false;
+$('#cmds_modal .modal-body').click(function(event){
+    var value = $(event.target).attr("value");
+    
+    if (value == 'show') {
+        var cmd = $(event.target).html();
+        $('#sendContent').val(cmd);
+        $('#cmds_modal').modal('hide');
+    } else if (value == 'delete') {
+        var cmd = $(event.target).parent().parent().find('button:first-child').html();
+        
+        removeCmd(cmd, function(){
+            $(event.target).parent().parent().hide();
+            _cmdRemoved = true;
+        });
+    }
+});
+
+$('#cmds_modal').on('hide.bs.modal', function (e) {
+    if (_cmdRemoved) {
+        updateCmdList();
+        console.log("update");
+        _cmdRemoved = false;
+    }
+})
+
+function removeCmd(cmd, success) {
+    var param = {
+        cmd: cmd
+    };
+    
+   $.getJSON('/script/delete_cmd.js', param)
+      .done(function(result) {
+          if (result.Result == 'OK') {
+              success();
+          } else {
+              alert_error("Unable to delete " + param.cmd);
+          }
+      }).fail(function(jqxhr, textStatus, error) {
+          alert_error("Request Failed: " + error);
+   });   
+}
+
 $('#clear_logs').click(function(event){
     var data = $(this).data();
     
@@ -116,7 +174,7 @@ $('#clear_logs').click(function(event){
 	
 	$('#logsTable').text("");
     
-    $.getJSON('clear_logs.js', param)
+    /*$.getJSON('clear_logs.js', param)
         .done(function(result) {
             if (result.success) {
                 //history.back();
@@ -125,7 +183,7 @@ $('#clear_logs').click(function(event){
             }
         }).fail(function(jqxhr, textStatus, error) {
             alert_error("Request Failed: " + error);
-    });
+    });*/
 });
 
 $('#stop_logs').click(function(event){

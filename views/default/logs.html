@@ -3,8 +3,9 @@
 <div id="alert_placeholder"></div>
 
 <div class="row">  
-    <button type="button" class="btn btn-primary" id="stop_logs">Stop</button>
-    <button type="button" class="btn btn-primary" id="clear_logs" data-clear="debug">Clear</button>
+    <button type="button" class="btn btn-info" id="button_cmds" data-toggle="modal" data-target=".modal-cmds">Cmds</button>
+    <button type="button" class="btn btn-success" id="clear_logs" data-clear="debug">Clear</button>
+    <button type="button" class="btn btn-danger" id="stop_logs">Stop</button>
 </div>
 
 <br/>
@@ -23,25 +24,42 @@
 <br/>
 
 <div class="row">
-<div class="input-group">
-  <input class="form-control" id="searchInput" type="text" placeholder="Search..">
-  <div class="input-group-btn">
-    <button type="button" class="btn btn-default" id="clearSearch"><span class="glyphicon glyphicon-remove"></span></button> 
+  <div class="input-group">
+    <input class="form-control" id="searchInput" type="text" placeholder="Search..">
+    <div class="input-group-btn">
+      <button type="button" class="btn btn-default" id="clearSearch"><span class="glyphicon glyphicon-remove"></span></button> 
+    </div>
   </div>
+  <table class="table table-condensed table-bordered">
+    <tbody id="logsTable">
+      <tr>
+        <td colspan="2" class="text-center"><img src="./assets/images/spinner.gif" alt="wait"/></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <nav aria-label="...">
+    <ul class="pager">
+      <li class="previous" id="button_older"><a href="#older"><span aria-hidden="true">&larr;</span> Older</a></li>
+      <li class="next" id="button_newer"><a href="#newer">Newer <span aria-hidden="true">&rarr;</span></a></li>
+    </ul>
+  </nav>
 </div>
-<table class="table table-condensed table-bordered">
-  <tbody id="logsTable">
-    <tr>
-      <td colspan="2" class="text-center"><img src="./assets/images/spinner.gif" alt="wait"/></td>
-    </tr>
-  </tbody>
-</table>
 
-<nav aria-label="...">
-  <ul class="pager">
-    <li class="previous" id="button_older"><a href="#older"><span aria-hidden="true">&larr;</span> Older</a></li>
-    <li class="next" id="button_newer"><a href="#newer">Newer <span aria-hidden="true">&rarr;</span></a></li>
-  </ul>
-</nav>
-
+<div class="modal fade modal-cmds" id="cmds_modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Cmds</h4>
+      </div>
+      <div class="modal-body">
+        <table class="table table-condensed">
+         </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
 </div>
