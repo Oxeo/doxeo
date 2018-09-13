@@ -13,7 +13,7 @@
 #include "libraries/authentification.h"
 #include "libraries/device.h"
 #include "libraries/firebasecloudmessaging.h"
-#include "libraries/sim900.h"
+#include "libraries/gsm.h"
 #include "core/database.h"
 
 #include <QDir>
@@ -74,8 +74,8 @@ int DoxeoMonitor::start()
     }
 
     // Initialise SIM900 GSM module
-    Sim900 *sim900 = new Sim900(Sim900::M590, this);
-    sim900->connection();
+    Gsm *gsm = new Gsm(Gsm::M590, this);
+    gsm->connection();
 
     // Connect device
     Device::initialize("Doxeoboard", this);
@@ -86,7 +86,7 @@ int DoxeoMonitor::start()
     httpServer->addController(new SensorController(this), "sensor");
     httpServer->addController(new AuthController(this), "auth");
     httpServer->addController(new ThermostatController(this), "thermostat");
-    httpServer->addController(new ScriptController(sim900, this), "script");
+    httpServer->addController(new ScriptController(gsm, this), "script");
 
     qDebug() << QCoreApplication::applicationName() + " started.";
     return this->exec();

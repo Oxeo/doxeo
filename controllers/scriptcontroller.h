@@ -3,7 +3,7 @@
 
 #include "core/abstractcontroller.h"
 #include "libraries/scriptengine.h"
-#include "libraries/sim900.h"
+#include "libraries/gsm.h"
 
 #include <QList>
 #include <QString>
@@ -13,7 +13,7 @@ class ScriptController : public AbstractController
     Q_OBJECT
 
 public:
-    ScriptController(Sim900 *sim900 = 0, QObject *parent = 0);
+    ScriptController(Gsm *sim900 = 0, QObject *parent = 0);
     void defaultAction();
     void stop();
 

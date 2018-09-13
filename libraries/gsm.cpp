@@ -1,11 +1,11 @@
-#include "sim900.h"
+#include "gsm.h"
 
 #include <QtSerialPort/QSerialPortInfo>
 #include <QtDebug>
 #include <QThread>
 #include <QRegularExpression>
 
-Sim900::Sim900(Type type, QObject *parent) : QObject(parent)
+Gsm::Gsm(Type type, QObject *parent) : QObject(parent)
 {
     this->type = type;
 
@@ -29,7 +29,7 @@ Sim900::Sim900(Type type, QObject *parent) : QObject(parent)
     data = "";
     nbInitTryMax = 0;
 
-    connect(serial, &QSerialPort::readyRead, this, &Sim900::readData);
+    connect(serial, &QSerialPort::readyRead, this, &Gsm::readData);
     connect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this,
             SLOT(handleError(QSerialPort::SerialPortError)));
 
@@ -39,7 +39,7 @@ Sim900::Sim900(Type type, QObject *parent) : QObject(parent)
     connect(sendSmsTimer, SIGNAL(timeout()), this, SLOT(sendSMSProcess()), Qt::QueuedConnection);
 }
 
-void Sim900::connection()
+void Gsm::connection()
 {
     systemInError = false;
     isInitialized = false;
@@ -62,7 +62,7 @@ void Sim900::connection()
     }
 }
 
-void Sim900::init()
+void Gsm::init()
 {
     isInitialized = false;
     state = 100;
@@ -73,7 +73,7 @@ void Sim900::init()
     updateTimer->start(100);
 }
 
-void Sim900::handleError(QSerialPort::SerialPortError error)
+void Gsm::handleError(QSerialPort::SerialPortError error)
 {
     if (error != QSerialPort::NoError && systemInError == false) {
         qCritical() << "Sim900 has been disconnected: " + serial->errorString();
@@ -81,7 +81,7 @@ void Sim900::handleError(QSerialPort::SerialPortError error)
     }
 }
 
-void Sim900::readData()
+void Gsm::readData()
 {
     readTimer->stop();
 
@@ -93,7 +93,7 @@ void Sim900::readData()
     readTimer->start(100);
 }
 
-void Sim900::parseSms(QString data)
+void Gsm::parseSms(QString data)
 {
     QRegularExpression rx("\\+CMT: \"(.*)\",\"*,\"(.*)\\+.*\r\n(.*)(\r\n)*");
     QRegularExpressionMatchIterator i = rx.globalMatch(data);
@@ -114,7 +114,7 @@ void Sim900::parseSms(QString data)
     }
 }
 
-void Sim900::dataReady()
+void Gsm::dataReady()
 {
     parseSms(data);
     update(data);
@@ -122,7 +122,7 @@ void Sim900::dataReady()
     data.clear();
 }
 
-void Sim900::send(QString data)
+void Gsm::send(QString data)
 {
     QString msg = data;
 
@@ -133,7 +133,7 @@ void Sim900::send(QString data)
     }
 }
 
-void Sim900::sendSMS(QString numbers, QString msg)
+void Gsm::sendSMS(QString numbers, QString msg)
 {
     if (isInitialized == false) {
         qWarning() << "Unable to send SMS: GSM module not initialized!";
@@ -145,7 +145,7 @@ void Sim900::sendSMS(QString numbers, QString msg)
     }
 }
 
-void Sim900::sendAtCmd(QString cmd)
+void Gsm::sendAtCmd(QString cmd)
 {
     if (isConnected() && state == 0) {
         send(cmd + "\r");
@@ -154,7 +154,7 @@ void Sim900::sendAtCmd(QString cmd)
     }
 }
 
-void Sim900::sendSMSProcess()
+void Gsm::sendSMSProcess()
 {
     if (smsToSendList.empty()) {
         sendSmsTimer->stop();
@@ -174,12 +174,12 @@ void Sim900::sendSMSProcess()
     }
 }
 
-bool Sim900::isConnected()
+bool Gsm::isConnected()
 {
     return serial->isOpen();
 }
 
-void Sim900::update(QString buffer) {
+void Gsm::update(QString buffer) {
     updateTimer->stop();
 
     //qDebug() << "Buffer: " + buffer + " state:" << state;
@@ -358,7 +358,7 @@ void Sim900::update(QString buffer) {
     }
 }
 
-void Sim900::timeout()
+void Gsm::timeout()
 {
     QString error = "";
 

@@ -1,5 +1,5 @@
-#ifndef SIM900_H
-#define SIM900_H
+#ifndef GSM_H
+#define GSM_H
 
 #include <QObject>
 #include <QTimer>
@@ -10,14 +10,14 @@ struct Sms {
   QString numbers;
 };
 
-class Sim900 : public QObject
+class Gsm : public QObject
 {
     Q_OBJECT
 
 public:
     enum Type {SIM900, M590};
 
-    explicit Sim900(Type type, QObject *parent = 0);
+    explicit Gsm(Type type, QObject *parent = 0);
     void connection();
     bool isConnected();
 
@@ -56,4 +56,4 @@ protected:
     QList<Sms> smsToSendList;
 };
 
-#endif // SIM900_H
+#endif // GSM_H

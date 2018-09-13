@@ -2,7 +2,7 @@
 #define SCRIPTENGINE_H
 
 #include <models/script.h>
-#include <libraries/sim900.h>
+#include <libraries/gsm.h>
 
 #include <QObject>
 #include <QScriptEngine>
@@ -14,7 +14,7 @@ class ScriptEngine : public QObject
     Q_OBJECT
 
 public:
-    explicit ScriptEngine(Sim900 *sim900 = 0, QObject *parent = 0);
+    explicit ScriptEngine(Gsm *gsm = 0, QObject *parent = 0);
     QString runCmd(QString cmd);
 
 protected slots:
@@ -30,7 +30,7 @@ protected:
     QScriptEngine engine;
     QTimer *timer;
     QHash<QString, uint> eventList;
-    Sim900 *sim900;
+    Gsm *gsm;
 };
 
 #endif // SCRIPTENGINE_H

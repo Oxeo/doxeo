@@ -7,7 +7,7 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 
-ScriptController::ScriptController(Sim900 *sim900, QObject *parent) : AbstractController(parent)
+ScriptController::ScriptController(Gsm *sim900, QObject *parent) : AbstractController(parent)
 {
     router.insert("list", "scriptList");
     router.insert("editor", "editor");
