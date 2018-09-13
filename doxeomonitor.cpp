@@ -95,7 +95,6 @@ int DoxeoMonitor::start()
 void DoxeoMonitor::closeApplication()
 {
     qInstallMessageHandler(0);
-    qDebug() <<applicationName() + " stopped by user.";
 
     QHash<QString, AbstractController *> controllers = httpServer->getControllers();
     foreach (AbstractController *ctrl, controllers) {

@@ -54,7 +54,6 @@ void TemperatureLogger::stop()
 {
     timer.stop();
     save();
-    qDebug() << "TemperatureLogger stopped";
 }
 
 bool TemperatureLogger::isActive()

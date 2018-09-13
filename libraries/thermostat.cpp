@@ -117,8 +117,6 @@ void Thermostat::stop()
     }
 
     logIndicators();
-
-    qDebug() << "Thermostat stopped";
 }
 
 void Thermostat::setOnBreak(int minutes)
