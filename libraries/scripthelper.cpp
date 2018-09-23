@@ -96,12 +96,12 @@ void ScriptHelper::setAlert(QString alert)
     MessageLogger::logger().addMessage("critical", alert);
 }
 
-QString ScriptHelper::getData(QString key)
+QString ScriptHelper::value(QString key)
 {
     return data.value(key, "");
 }
 
-void ScriptHelper::setData(QString key, QString value)
+void ScriptHelper::setValue(QString key, QString value)
 {
     data.insert(key, value);
 }

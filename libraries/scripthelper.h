@@ -32,8 +32,8 @@ public slots:
     QString getScriptStatus(int id);
     void setScriptStatus(int id, QString status);
 
-    static QString getData(QString key);
-    static void setData(QString key, QString value);
+    static QString value(QString key);
+    static void setValue(QString key, QString value);
 
 protected:
     static QHash<QString, QString> data;
