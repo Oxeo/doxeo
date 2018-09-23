@@ -10,7 +10,7 @@ public:
     explicit Event(QObject *parent = 0);
 
 signals:
-    void valueChanged(QString id, QString newValue);
+    void valueUpdated(QString id, QString newValue);
     void dataChanged();
 };
 

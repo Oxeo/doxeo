@@ -20,9 +20,9 @@ ScriptEngine::ScriptEngine(Gsm *gsm, QObject *parent) : QObject(parent)
     updateSwitches();
 
     connect(Sensor::getEvent(), SIGNAL(dataChanged()), this, SLOT(updateSensors()), Qt::QueuedConnection);
-    connect(Sensor::getEvent(), SIGNAL(valueChanged(QString,QString)), this, SLOT(sensorValueChanged(QString, QString)), Qt::QueuedConnection);
+    connect(Sensor::getEvent(), SIGNAL(valueUpdated(QString,QString)), this, SLOT(sensorValueUpdated(QString, QString)), Qt::QueuedConnection);
     connect(Switch::getEvent(), SIGNAL(dataChanged()), this, SLOT(updateSwitches()), Qt::QueuedConnection);
-    connect(Switch::getEvent(), SIGNAL(valueChanged(QString,QString)), this, SLOT(switchValueChanged(QString, QString)), Qt::QueuedConnection);
+    connect(Switch::getEvent(), SIGNAL(valueUpdated(QString,QString)), this, SLOT(switchValueUpdated(QString, QString)), Qt::QueuedConnection);
 
     connect(gsm, SIGNAL(newSMS(QString,QString)), this, SLOT(newSMS(QString,QString)), Qt::QueuedConnection);
     connect(timeEvent, SIGNAL(eventTimeout(QString)), this, SLOT(eventTimeout(QString)), Qt::QueuedConnection);
@@ -84,12 +84,12 @@ void ScriptEngine::updateSwitches()
     }
 }
 
-void ScriptEngine::switchValueChanged(QString id, QString value)
+void ScriptEngine::switchValueUpdated(QString id, QString value)
 {
     run("switch_" + id + ";" + value);
 }
 
-void ScriptEngine::sensorValueChanged(QString id, QString value)
+void ScriptEngine::sensorValueUpdated(QString id, QString value)
 {
     run("sensor_" + id + ";" + value);
 }

@@ -173,16 +173,16 @@ void Sensor::updateValue(QString cmd, QString value)
             bool ok;
             batteryLevel = match.captured(1).toInt(&ok);
             batteryLevelUpdate = QDateTime::currentDateTime();
-            emit Sensor::event.valueChanged(this->id, "battery_status");
+            emit Sensor::event.valueUpdated(this->id, "battery_status");
         } else {
             if (this->value != value) {
                 this->value = value;
                 this->lastUpdate.prepend(QDateTime::currentDateTime());
                 this->lastUpdate.removeLast();
-                emit Sensor::event.valueChanged(this->id, value);
             }
             
             this->lastEvent = QDateTime::currentDateTime();
+            emit Sensor::event.valueUpdated(this->id, value);
         }
     }
 }

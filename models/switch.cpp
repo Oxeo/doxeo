@@ -53,7 +53,7 @@ void Switch::setStatus(QString status)
 
     qDebug() << "Switch status " + id + " set to " + status;
 
-    emit Switch::event.valueChanged(this->id, status);
+    emit Switch::event.valueUpdated(this->id, status);
 }
 
 QString Switch::getId() const
