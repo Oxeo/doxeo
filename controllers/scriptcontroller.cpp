@@ -81,9 +81,11 @@ void ScriptController::exportScripts()
         result += sw.getContent() + "\n\n\n";
     }
 
+    QString filename = "doxeo_scripts_" + QDate::currentDate().toString("yyMMdd") + ".js";
+
     *output << "HTTP/1.0 200 Ok\r\n";
     *output << "Content-Type: application/octet-stream\r\n";
-    *output << "Content-Disposition: attachment; filename=\"doxeo_scripts.js\"\r\n\r\n";
+    *output << "Content-Disposition: attachment; filename=\"" + filename + "\"\r\n\r\n";
     output->flush();
 
     // Streaming the file
