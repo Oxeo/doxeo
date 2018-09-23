@@ -2,7 +2,7 @@
 #define SCRIPT_H
 
 #include <QString>
-#include <QHash>
+#include <QMap>
 #include <QJsonObject>
 
 class Script
@@ -20,7 +20,7 @@ public:
     static void update();
     static bool isIdValid(int id);
     static Script& get(int id);
-    static QHash<int, Script>& getScriptList();
+    static QMap<int, Script> &getScriptList();
 
     QString getName() const;
     void setName(const QString &value);
@@ -42,7 +42,7 @@ protected:
     QString description;
     QString content;
 
-    static QHash<int, Script> scriptList;
+    static QMap<int, Script> scriptList;
 };
 
 #endif // SCRIPT_H

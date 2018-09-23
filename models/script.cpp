@@ -6,7 +6,7 @@
 #include <QDebug>
 #include <QSqlError>
 
-QHash<int, Script> Script::scriptList;
+QMap<int, Script> Script::scriptList;
 
 Script::Script()
 {
@@ -70,7 +70,7 @@ QJsonObject Script::toJson() const
     return result;
 }
 
-QHash<int, Script> &Script::getScriptList()
+QMap<int, Script> &Script::getScriptList()
 {
     return scriptList;
 }
