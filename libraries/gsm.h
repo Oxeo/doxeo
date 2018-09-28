@@ -27,9 +27,9 @@ signals:
 public slots:
     void sendSMS(QString numbers, QString msg);
     void sendAtCmd(QString cmd);
+    void init();
 
 protected slots:
-    void init();
     void update(QString buffer = "");
     void dataReady();
     void sendSMSProcess();
@@ -52,6 +52,7 @@ protected:
     QTimer *sendSmsTimer;
     int state;
     int nbInitTryMax;
+    int nbSendSmsTryMax;
     bool isInitialized;
     QList<Sms> smsToSendList;
 };

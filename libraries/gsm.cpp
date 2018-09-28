@@ -28,6 +28,7 @@ Gsm::Gsm(Type type, QObject *parent) : QObject(parent)
     isInitialized = false;
     data = "";
     nbInitTryMax = 0;
+    nbSendSmsTryMax = 0;
 
     connect(serial, &QSerialPort::readyRead, this, &Gsm::readData);
     connect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this,
@@ -141,6 +142,7 @@ void Gsm::sendSMS(QString numbers, QString msg)
         Sms sms = {msg, numbers};
         smsToSendList.append(sms);
 
+        nbSendSmsTryMax += 5;
         sendSMSProcess();
     }
 }
@@ -158,6 +160,9 @@ void Gsm::sendSMSProcess()
 {
     if (smsToSendList.empty()) {
         sendSmsTimer->stop();
+        nbSendSmsTryMax = 0;
+    } else if (nbSendSmsTryMax < 1) {
+        smsToSendList.clear();
     } else if (state == 0) {
         qDebug() << "Sending SMS... (" + smsToSendList.first().numbers + ": " + smsToSendList.first().msg + ")";
         state = 1;
@@ -165,10 +170,7 @@ void Gsm::sendSMSProcess()
             send("WAKEUP\r");
         }
         updateTimer->start(100);
-
-        if (smsToSendList.size() > 1) {
-            sendSmsTimer->start(15000);
-        }
+        sendSmsTimer->start(15000);
     } else {
         sendSmsTimer->start(15000);
     }
@@ -210,6 +212,7 @@ void Gsm::update(QString buffer) {
             update();
         } else if (!buffer.isEmpty()) {
             qWarning() << "Unable to send SMS (mode error): " + buffer;
+            nbSendSmsTryMax--;
             timeoutTimer->stop();
             state = 0;
         }
@@ -230,6 +233,7 @@ void Gsm::update(QString buffer) {
             qWarning() << "Unable to send SMS (numbers error): " + buffer;
             state = 0;
             timeoutTimer->stop();
+            nbSendSmsTryMax--;
         }
         break;
     case 5:
@@ -270,6 +274,7 @@ void Gsm::update(QString buffer) {
             qWarning() << "Unable to send SMS (send AT): " + buffer;
             state = 0;
             timeoutTimer->stop();
+            nbSendSmsTryMax--;
         }
         break;
     case 100:
