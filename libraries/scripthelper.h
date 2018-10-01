@@ -13,7 +13,6 @@ class ScriptHelper : public QObject
     Q_PROPERTY(int hour READ getHour)
     Q_PROPERTY(int minute READ getMinute)
     Q_PROPERTY(int numberOfWarning READ getWarningNumber())
-    Q_PROPERTY(QList<QString> warnings READ getWarnings())
 
 public:
     explicit ScriptHelper(QObject *parent = 0);
@@ -22,7 +21,6 @@ public:
     int getHour();
     int getMinute();
     int getWarningNumber();
-    QList<QString> getWarnings();
 
 signals:
 
@@ -31,6 +29,7 @@ public slots:
     QString execute(QString cmd);
     void setLog(QString log);
     void setWarning(QString warning);
+    QString getWarning(int number);
     void setAlert(QString alert);
     void sendFCM(QString type, QString name, QString body);
     QString getScriptStatus(int id);
