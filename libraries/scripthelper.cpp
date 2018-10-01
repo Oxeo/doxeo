@@ -37,6 +37,34 @@ int ScriptHelper::getMinute()
     return QTime::currentTime().minute();
 }
 
+int ScriptHelper::getWarningNumber()
+{
+    QList<MessageLogger::Log> &logs = MessageLogger::logger().getMessages();
+
+    int cpt = 0;
+    foreach (const MessageLogger::Log &log, logs) {
+        if (log.type == "warning" || log.type == "critical") {
+            cpt++;
+        }
+    }
+
+    return cpt;
+}
+
+QList<QString> ScriptHelper::getWarnings()
+{
+    QList<QString> result;
+    QList<MessageLogger::Log> &logs = MessageLogger::logger().getMessages();
+
+    foreach (const MessageLogger::Log &log, logs) {
+        if (log.type == "warning" || log.type == "critical") {
+            result.append(log.message);
+        }
+    }
+
+    return result;
+}
+
 QString ScriptHelper::getScriptStatus(int id)
 {
     QString result;

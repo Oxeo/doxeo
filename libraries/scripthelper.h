@@ -12,6 +12,8 @@ class ScriptHelper : public QObject
     Q_PROPERTY(int dayOfWeek READ getDayOfWeek)
     Q_PROPERTY(int hour READ getHour)
     Q_PROPERTY(int minute READ getMinute)
+    Q_PROPERTY(int numberOfWarning READ getWarningNumber())
+    Q_PROPERTY(QList<QString> warnings READ getWarnings())
 
 public:
     explicit ScriptHelper(QObject *parent = 0);
@@ -19,6 +21,8 @@ public:
     int getDayOfWeek();
     int getHour();
     int getMinute();
+    int getWarningNumber();
+    QList<QString> getWarnings();
 
 signals:
 
