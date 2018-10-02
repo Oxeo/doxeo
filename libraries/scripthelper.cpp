@@ -68,7 +68,7 @@ QString ScriptHelper::getWarning(int number)
 
     QString msg = "";
     if (number < result.size()) {
-        result[number];
+        msg = result.at(number);
     }
 
     return msg;
