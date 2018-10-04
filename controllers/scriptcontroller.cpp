@@ -7,7 +7,7 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 
-ScriptController::ScriptController(Gsm *gsm, QObject *parent) : AbstractController(parent)
+ScriptController::ScriptController(ScriptEngine *scriptEngine, QObject *parent) : AbstractController(parent)
 {
     router.insert("list", "scriptList");
     router.insert("editor", "editor");
@@ -22,9 +22,9 @@ ScriptController::ScriptController(Gsm *gsm, QObject *parent) : AbstractControll
     router.insert("cmd_list.js", "jsonCmdList");
     router.insert("delete_cmd.js", "jsonDeleteCmd");
 
-    Script::update();
-    scriptEngine = new ScriptEngine(gsm, this);
+    this->scriptEngine = scriptEngine;
 
+    Script::update();
     Command::update();
 }
 

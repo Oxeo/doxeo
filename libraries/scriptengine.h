@@ -17,8 +17,10 @@ public:
     explicit ScriptEngine(Gsm *gsm = 0, QObject *parent = 0);
     QString runCmd(QString cmd);
 
-protected slots:
+public slots:
     void run(QString event = "scheduler");
+
+protected slots:
     void updateSensors();
     void updateSwitches();
     void switchValueUpdated(QString id, QString value);

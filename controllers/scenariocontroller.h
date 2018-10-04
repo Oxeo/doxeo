@@ -13,7 +13,7 @@ class ScenarioController : public AbstractController
     Q_OBJECT
 
 public:
-    ScenarioController(QObject *parent = 0);
+    ScenarioController(ScriptEngine *scriptEngine, QObject *parent = 0);
     void defaultAction();
     void stop();
 
@@ -23,7 +23,10 @@ public slots:
     void jsonEditScenario();
     void jsonDeleteScenario();
     void jsonGetScenario();
+    void jsonStartScenario();
 
+protected:
+    ScriptEngine *scriptEngine;
 };
 
 

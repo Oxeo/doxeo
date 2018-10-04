@@ -15,6 +15,7 @@
 #include "libraries/device.h"
 #include "libraries/firebasecloudmessaging.h"
 #include "libraries/gsm.h"
+#include "libraries/scriptengine.h"
 #include "core/database.h"
 
 #include <QDir>
@@ -78,6 +79,9 @@ int DoxeoMonitor::start()
     Gsm *gsm = new Gsm(Gsm::M590, this);
     gsm->connection();
 
+    // Initialise Script Engine
+    ScriptEngine *scriptEngine = new ScriptEngine(gsm, this);
+
     // Connect device
     Device::initialize("Doxeoboard", this);
 
@@ -87,8 +91,8 @@ int DoxeoMonitor::start()
     httpServer->addController(new SensorController(this), "sensor");
     httpServer->addController(new AuthController(this), "auth");
     httpServer->addController(new ThermostatController(this), "thermostat");
-    httpServer->addController(new ScriptController(gsm, this), "script");
-    httpServer->addController(new ScenarioController(this), "scenario");
+    httpServer->addController(new ScriptController(scriptEngine, this), "script");
+    httpServer->addController(new ScenarioController(scriptEngine, this), "scenario");
 
     qDebug() << QCoreApplication::applicationName() + " started.";
     return this->exec();

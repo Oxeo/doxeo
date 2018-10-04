@@ -5,7 +5,7 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 
-ScenarioController::ScenarioController(QObject *parent) : AbstractController(parent)
+ScenarioController::ScenarioController(ScriptEngine *scriptEngine, QObject *parent) : AbstractController(parent)
 {
     router.insert("list", "scenarioList");
     router.insert("editor", "editor");
@@ -13,7 +13,9 @@ ScenarioController::ScenarioController(QObject *parent) : AbstractController(par
     router.insert("edit_scenario.js", "jsonEditScenario");
     router.insert("delete_scenario.js", "jsonDeleteScenario");
     router.insert("get_scenario.js", "jsonGetScenario");
+    router.insert("start_scenario.js", "jsonStartScenario");
 
+    this->scriptEngine = scriptEngine;
     Scenario::update();
 }
 
@@ -131,5 +133,30 @@ void ScenarioController::jsonGetScenario()
        result.insert("success", false);
     }
 
+    loadJsonView(result);
+}
+
+void ScenarioController::jsonStartScenario()
+{
+    QJsonObject result;
+
+    if (!Authentification::auth().isConnected(header, cookie)) {
+        result.insert("Result", "ERROR");
+        result.insert("Message", "You are not logged.");
+        loadJsonView(result);
+        return;
+    }
+
+    if (!Scenario::isIdValid(query->getItem("id").toInt())) {
+        result.insert("Result", "ERROR");
+        result.insert("Message", "Id not valid.");
+        loadJsonView(result);
+        return;
+    }
+
+    Scenario scenario(query->getItem("id").toInt());
+    scriptEngine->run("scenario_" + scenario.getId());
+
+    result.insert("Result", "OK");
     loadJsonView(result);
 }

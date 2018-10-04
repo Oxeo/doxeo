@@ -13,7 +13,7 @@ class ScriptController : public AbstractController
     Q_OBJECT
 
 public:
-    ScriptController(Gsm *sim900 = 0, QObject *parent = 0);
+    ScriptController(ScriptEngine *scriptEngine, QObject *parent = 0);
     void defaultAction();
     void stop();
 
