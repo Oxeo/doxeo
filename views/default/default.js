@@ -213,6 +213,34 @@ function update() {
         updateError = true;
         alert_error("Request Failed: " + error);
     });
+    
+    $.getJSON('scenario/scenario_list.js').done(function(result) {
+        if (result.Result == "OK") {
+            $('#scenarioList').html('');
+            result.Records.sort(function(a, b) { 
+                if (a.order < b.order) {
+                    return -1;
+                } else if (a.order > b.order) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            })
+            $.each(result.Records, function(key, val) {
+                if (val.hide != "true") {
+                    $('#scenarioList').append('<tr><td class="text-right" style="width: 50%">'+val.name+'</td><td class="text-left"></td></tr>');
+                }
+            });
+        } else {
+            $('#scenarioList').html('<tr><td></td></tr>');
+            updateError = true;
+            alert_error(result.msg);
+        }
+    }).fail(function(jqxhr, textStatus, error) {
+        $('#scenarioList').html('<tr><td></td></tr>');
+        updateError = true;
+        alert_error("Request Failed: " + error);
+    });
 	
 	$.getJSON('script/script_list.js').done(function(result) {
         if (result.Result == "OK") {

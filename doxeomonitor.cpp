@@ -9,6 +9,7 @@
 #include "controllers/thermostatcontroller.h"
 #include "controllers/sensorcontroller.h"
 #include "controllers/scriptcontroller.h"
+#include "controllers/scenariocontroller.h"
 #include "libraries/messagelogger.h"
 #include "libraries/authentification.h"
 #include "libraries/device.h"
@@ -87,6 +88,7 @@ int DoxeoMonitor::start()
     httpServer->addController(new AuthController(this), "auth");
     httpServer->addController(new ThermostatController(this), "thermostat");
     httpServer->addController(new ScriptController(gsm, this), "script");
+    httpServer->addController(new ScenarioController(this), "scenario");
 
     qDebug() << QCoreApplication::applicationName() + " started.";
     return this->exec();

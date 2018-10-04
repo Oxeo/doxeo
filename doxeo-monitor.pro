@@ -40,7 +40,9 @@ SOURCES += main.cpp\
     models/sensor.cpp \
     controllers/sensorcontroller.cpp \
     controllers/scriptcontroller.cpp \
+    controllers/scenariocontroller.cpp \
     models/script.cpp \
+    models/scenario.cpp \
     libraries/scriptengine.cpp \
     libraries/scripthelper.cpp \
     libraries/firebasecloudmessaging.cpp \
@@ -78,7 +80,9 @@ HEADERS  += \
     models/sensor.h \
     controllers/sensorcontroller.h \
     controllers/scriptcontroller.h \
+    controllers/scenariocontroller.h \
     models/script.h \
+    models/scenario.h \
     libraries/scriptengine.h \
     libraries/scripthelper.h \
     libraries/firebasecloudmessaging.h \
