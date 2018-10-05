@@ -122,3 +122,28 @@ dyn.nomdedomaine.net
 ```
 3. sudo service ddclient restart
 
+### Enable ServerName for Apache2
+
+1. do: sudo apt-get install mod_proxy
+2. do: sudo a2enmod proxy_http
+3. edit the file /etc/apache2/sites-enabled/000-default.conf like
+```
+NameVirtualHost *:80
+
+<VirtualHost *:80>
+    ServerAdmin webmaster@localhost
+    ServerName mysite1.fr
+    DocumentRoot /var/www/html
+    ErrorLog /var/www/html/log/http.error
+</VirtualHost>
+
+<VirtualHost *:80>
+    ServerAdmin webmaster@localhost
+    ServerName mysitedoxeo.fr
+    ProxyPass / http://localhost:8080/
+    ProxyPassReverse / http://localhost:8080/
+    ProxyPreserveHost On
+</VirtualHost>
+```
+4. do: sudo /etc/init.d/apache2 restart
+
