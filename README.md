@@ -1,6 +1,8 @@
 # Web connected thermostat with Raspberry Pi
 
 ![Home](/pictures/web_presentation.png)
+![Home](/pictures/android_presentation2.png)
+![Home](/pictures/android_presentation.png)
 
 ## Requirements
 
@@ -16,11 +18,6 @@
 * Run : ./doxeo-monitor
 * Go the web page: http://localhost:8080
 * To get somme help : ./doxeo-monitor --help
-
-## Work also with Doxeo-Android
-
-![Home](/pictures/android_presentation2.png)
-![Home](/pictures/android_presentation.png)
 
 ## Extras
 
@@ -52,6 +49,7 @@ PKG_CONFIG_SYSROOT_DIR=/ \
 ```
  11. do: make
  12. do: sudo make install
+ 13. do: sudo ln -s /opt/Qt5.11/bin/qmake /usr/local/bin/qmake
 
 You now have Qt installed in /opt/Qt5.11 ready to be used. To configure your Qt project(s) to build with this version run qmake from the installation directory:
 ```
