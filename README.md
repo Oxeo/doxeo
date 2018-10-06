@@ -86,6 +86,10 @@ More details [here](http://www.tal.org/tutorials/building-qt-510-raspberry-pi-de
  1. ls -la /dev/ttyUSB0
  2. sudo usermod -a -G dialout myUserName
  
+### Permission denied /dev/ttyAMA0
+
+Disable the login shell on the serial port in the interfacing options of "sudo raspi-config", and reboot.
+ 
 ### Run Doxeo at startup
 
  1. do: sudo vim /etc/rc.local
