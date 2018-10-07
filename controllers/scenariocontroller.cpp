@@ -13,7 +13,7 @@ ScenarioController::ScenarioController(ScriptEngine *scriptEngine, QObject *pare
     router.insert("edit_scenario.js", "jsonEditScenario");
     router.insert("delete_scenario.js", "jsonDeleteScenario");
     router.insert("get_scenario.js", "jsonGetScenario");
-    router.insert("start_scenario.js", "jsonStartScenario");
+    router.insert("change_scenario_status.js", "jsonStartScenario");
 
     this->scriptEngine = scriptEngine;
     Scenario::update();
