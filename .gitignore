@@ -10,4 +10,5 @@ nbproject/*
 /views/nbproject/*
 object_script.*
 *.log
+.qmake.stash
 
