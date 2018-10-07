@@ -42,13 +42,12 @@ void DefaultController::stopApplication()
     QJsonObject result;
 
     if (Authentification::auth().isConnected(header, cookie) ||
-            socket->peerAddress() == QHostAddress::LocalHost ||
-            socket->peerAddress() == QHostAddress::LocalHostIPv6)
+            socket->peerAddress().toString().contains("127.0.0.1"))
     {
        QTimer::singleShot(100, QCoreApplication::instance(), SLOT(quit()));
        result.insert("success", true);
     } else {
-        result.insert("msg", "You are not logged. " + socket->peerAddress().toString());
+        result.insert("msg", "You are not logged.");
         result.insert("success", false);
     }
 
