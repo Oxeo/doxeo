@@ -1,6 +1,8 @@
 # Web connected thermostat with Raspberry Pi
 
 ![Home](/pictures/web_presentation.png)
+![Home](/pictures/android_presentation2.png)
+![Home](/pictures/android_presentation.png)
 
 ## Requirements
 
@@ -17,53 +19,43 @@
 * Go the web page: http://localhost:8080
 * To get somme help : ./doxeo-monitor --help
 
-## Work also with Doxeo-Android
-
-![Home](/pictures/android_presentation2.png)
-![Home](/pictures/android_presentation.png)
-
 ## Extras
 
-### Install Mysql driver on windows
-
- 1. Download the driver [here](https://dev.mysql.com/downloads/connector/c/).
- 2. Copy libmysql.dll into C:\Program Files\Qt\5.5\mingw492_32\bin
- 
- ### Install SSL driver on windows
-
- 1. Download Win32 OpenSSL v1.0.2n [here](http://slproweb.com/products/Win32OpenSSL.html).
- 2. Install openSLL
- 2. Copy libeay32.dll and ssleay32.dll into your executable folder
- 
- ### Install SSL driver on raspbian
+### Install Qt 5.11
+ 1. do: sudo apt-get update
+ 2. do: sudo rpi-update
+ 3. Install required development packages
 ```
- sudo apt-get install openssl
- ```
+ sudo apt-get install build-essential libfontconfig1-dev libdbus-1-dev libfreetype6-dev libicu-dev libinput-dev libxkbcommon-dev libsqlite3-dev libssl1.0-dev libpng-dev libjpeg-dev libglib2.0-dev libraspberrypi-dev
+```
+ 4. Support for various databases (PostgreSQL, MariaDB/MySQL)
+```
+sudo apt-get install libpq-dev libmariadbclient-dev
+```
+ 5. Install SSL driver on raspbian: sudo apt-get install openssl
+ 6. Download Qt [here](http://download.qt.io/archive/qt/5.11/5.11.2/single/qt-everywhere-src-5.11.2.tar.xz).
+ 7. Copy the folder qtbase into your raspberry pi
+ 8. create a folder qtbase-build next to qtbase folder
+ 9. go to qtbase-build folder
+ 10. configure the build
+```
+PKG_CONFIG_LIBDIR=/usr/lib/arm-linux-gnueabihf/pkgconfig:/usr/share/pkgconfig \
+PKG_CONFIG_SYSROOT_DIR=/ \
+../qtbase/configure -v -opengl es2 -eglfs -no-gtk \
+-device linux-rasp-pi-g++ -device-option CROSS_COMPILE=/usr/bin/ \
+-opensource -confirm-license -release -reduce-exports \
+-force-pkg-config -no-kms -nomake examples -no-compile-examples -no-pch \
+-qt-pcre -ssl -evdev -system-freetype -fontconfig -glib -prefix /opt/Qt5.11
+```
+ 11. do: make
+ 12. do: sudo make install
+ 13. do: sudo ln -s /opt/Qt5.11/bin/qmake /usr/local/bin/qmake
 
-### Install Qt 5.5
-
- 1. Download Qt [here](http://download.qt.io/archive/qt/5.5/5.5.1/single/qt-everywhere-opensource-src-5.5.1.tar.xz).
- 2. Copy the folder qtbase into your raspberry pi
- 4. create a folder qtbase-build next to qtbase folder
- 3. go to qtbase-build folder
- 3. configure the build
+You now have Qt installed in /opt/Qt5.11 ready to be used. To configure your Qt project(s) to build with this version run qmake from the installation directory:
 ```
-../qtbase/configure \
- -v -opengl es2 \
- -device linux-rasp-pi-g++ \
- -device-option CROSS_COMPILE=/usr/bin/ \
- -opensource -confirm-license \
- -optimized-qmake -reduce-exports -force-pkg-config \
- -nomake examples -no-compile-examples \
- -release -qt-pcre -openssl -prefix /opt/Qt5.5
+/opt/Qt5.11/bin/qmake
 ```
- 5. do: make
- 6. do: sudo make install
-
-You now have Qt installed in /opt/Qt5.5 ready to be used. To configure your Qt project(s) to build with this version run qmake from the installation directory:
-```
-/opt/Qt5.5/bin/qmake
-```
+More details [here](http://www.tal.org/tutorials/building-qt-510-raspberry-pi-debian-stretch).
  
 ### Install QtSerialPort
 
@@ -94,6 +86,10 @@ You now have Qt installed in /opt/Qt5.5 ready to be used. To configure your Qt p
  1. ls -la /dev/ttyUSB0
  2. sudo usermod -a -G dialout myUserName
  
+### Permission denied /dev/ttyAMA0
+
+Disable the login shell on the serial port in the interfacing options of "sudo raspi-config", and reboot.
+ 
 ### Run Doxeo at startup
 
  1. do: sudo vim /etc/rc.local
@@ -122,3 +118,38 @@ dyn.nomdedomaine.net
 ```
 3. sudo service ddclient restart
 
+### Enable ServerName for Apache2
+
+1. do: sudo apt-get install mod_proxy
+2. do: sudo a2enmod proxy_http
+3. edit the file /etc/apache2/sites-enabled/000-default.conf like
+```
+NameVirtualHost *:80
+
+<VirtualHost *:80>
+    ServerAdmin webmaster@localhost
+    ServerName mysite1.fr
+    DocumentRoot /var/www/html
+    ErrorLog /var/www/html/log/http.error
+</VirtualHost>
+
+<VirtualHost *:80>
+    ServerAdmin webmaster@localhost
+    ServerName mysitedoxeo.fr
+    ProxyPass / http://localhost:8080/
+    ProxyPassReverse / http://localhost:8080/
+    ProxyPreserveHost On
+</VirtualHost>
+```
+4. do: sudo /etc/init.d/apache2 restart
+
+### Install Mysql driver on windows
+
+ 1. Download the driver [here](https://dev.mysql.com/downloads/connector/c/).
+ 2. Copy libmysql.dll into C:\Program Files\Qt\5.5\mingw492_32\bin
+ 
+ ### Install SSL driver on windows
+
+ 1. Download Win32 OpenSSL v1.0.2n [here](http://slproweb.com/products/Win32OpenSSL.html).
+ 2. Install openSLL
+ 2. Copy libeay32.dll and ssleay32.dll into your executable folder
