@@ -1,4 +1,4 @@
-#include "Scenario.h"
+#include "scenario.h"
 #include "core/database.h"
 #include "libraries/device.h"
 #include <QSqlQuery>
