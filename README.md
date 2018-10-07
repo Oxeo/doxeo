@@ -102,7 +102,18 @@ Disable the login shell on the serial port in the interfacing options of "sudo r
  
 ### Send mail with raspberry
 
-http://www.pihomeserver.fr/2015/08/13/envoyer-un-email-depuis-votre-raspberry-pi/
+* http://www.pihomeserver.fr/2015/08/13/envoyer-un-email-depuis-votre-raspberry-pi/
+* sudo ln -s /home/pi/doxeo/script/email.sh /usr/local/bin/email
+
+### Increase Apache2 uri length limit
+
+1. open /etc/apache2/apache2.conf
+2. insert under AccessFileName .htaccess:
+```
+LimitRequestLine 1000000
+LimitRequestFieldSize 1000000
+```
+3. sudo service apache2 restart
 
 ### Install ddclient for DynHost OVH
 
