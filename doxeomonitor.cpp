@@ -94,7 +94,7 @@ int DoxeoMonitor::start()
     httpServer->addController(new ScriptController(scriptEngine, this), "script");
     httpServer->addController(new ScenarioController(scriptEngine, this), "scenario");
 
-    scriptEngine->start();
+    scriptEngine->init();
 
     qDebug() << QCoreApplication::applicationName() + " started.";
     return this->exec();

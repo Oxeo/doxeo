@@ -48,7 +48,7 @@ void DefaultController::stopApplication()
        QTimer::singleShot(100, QCoreApplication::instance(), SLOT(quit()));
        result.insert("success", true);
     } else {
-        result.insert("msg", "You are not logged.");
+        result.insert("msg", "You are not logged. " + socket->peerAddress().toString());
         result.insert("success", false);
     }
 

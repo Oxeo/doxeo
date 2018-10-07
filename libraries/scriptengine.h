@@ -15,7 +15,7 @@ class ScriptEngine : public QObject
 
 public:
     explicit ScriptEngine(Gsm *gsm = 0, QObject *parent = 0);
-    void start();
+    void init();
     QString runCmd(QString cmd);
 
 public slots:

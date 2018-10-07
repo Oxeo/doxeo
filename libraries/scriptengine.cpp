@@ -11,6 +11,10 @@
 ScriptEngine::ScriptEngine(Gsm *gsm, QObject *parent) : QObject(parent)
 {
     this->gsm = gsm;
+}
+
+void ScriptEngine::init()
+{
     ScriptTimeEvent *timeEvent = new ScriptTimeEvent(this);
     engine.globalObject().setProperty("helper", engine.newQObject(new ScriptHelper(this)));
     engine.globalObject().setProperty("event_builder", engine.newQObject(timeEvent));
@@ -26,14 +30,11 @@ ScriptEngine::ScriptEngine(Gsm *gsm, QObject *parent) : QObject(parent)
 
     connect(gsm, SIGNAL(newSMS(QString,QString)), this, SLOT(newSMS(QString,QString)), Qt::QueuedConnection);
     connect(timeEvent, SIGNAL(eventTimeout(QString)), this, SLOT(eventTimeout(QString)), Qt::QueuedConnection);
-    
+
     timer = new QTimer(this);
     timer->setSingleShot(true);
     connect(timer, SIGNAL(timeout()), this, SLOT(run()), Qt::QueuedConnection);
-}
 
-void ScriptEngine::start()
-{
     run("system_started");
     timer->start((60 - QTime::currentTime().second() + 10) * 1000); // scheduler event at each start of minute + 10 seconds
 }
