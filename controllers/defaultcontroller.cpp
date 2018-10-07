@@ -42,7 +42,8 @@ void DefaultController::stopApplication()
     QJsonObject result;
 
     if (Authentification::auth().isConnected(header, cookie) ||
-            socket->peerAddress() == QHostAddress::LocalHost)
+            socket->peerAddress() == QHostAddress::LocalHost ||
+            socket->peerAddress() == QHostAddress::LocalHostIPv6)
     {
        QTimer::singleShot(100, QCoreApplication::instance(), SLOT(quit()));
        result.insert("success", true);
