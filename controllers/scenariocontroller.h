@@ -20,12 +20,15 @@ public:
 public slots:
     void scenarioList();
     void jsonScenarioList();
+    void jsonCreateScenario();
     void jsonEditScenario();
     void jsonDeleteScenario();
     void jsonGetScenario();
-    void jsonStartScenario();
+    void jsonChangeStatus();
 
 protected:
+    void editCreate(bool newObject);
+
     ScriptEngine *scriptEngine;
 };
 

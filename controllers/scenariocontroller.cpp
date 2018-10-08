@@ -10,10 +10,11 @@ ScenarioController::ScenarioController(ScriptEngine *scriptEngine, QObject *pare
     router.insert("list", "scenarioList");
     router.insert("editor", "editor");
     router.insert("scenario_list.js", "jsonScenarioList");
+    router.insert("create_scenario.js", "jsonCreateScenario");
     router.insert("edit_scenario.js", "jsonEditScenario");
     router.insert("delete_scenario.js", "jsonDeleteScenario");
     router.insert("get_scenario.js", "jsonGetScenario");
-    router.insert("change_scenario_status.js", "jsonStartScenario");
+    router.insert("change_scenario_status.js", "jsonChangeStatus");
 
     this->scriptEngine = scriptEngine;
     Scenario::update();
@@ -66,7 +67,17 @@ void ScenarioController::jsonScenarioList()
     loadJsonView(result);
 }
 
+void ScenarioController::jsonCreateScenario()
+{
+    editCreate(true);
+}
+
 void ScenarioController::jsonEditScenario()
+{
+    editCreate(false);
+}
+
+void ScenarioController::editCreate(bool newObject)
 {
     QJsonObject result;
 
@@ -77,14 +88,15 @@ void ScenarioController::jsonEditScenario()
         return;
     }
 
-    Scenario s(query->getItem("id").toInt());
+    Scenario s(query->getItem("id"));
 
     s.setName(query->getItem("name"));
     s.setDescription(query->getItem("description"));
     s.setContent(query->getItem("content"));
+    s.setStatus(query->getItem("status"));
     s.setOrder(query->getItem("order").toInt());
     s.setHide(query->getItem("hide") == "true" ? true : false);
-    s.flush();
+    s.flush(newObject);
 
     Scenario::update();
     result.insert("Result", "OK");
@@ -104,7 +116,7 @@ void ScenarioController::jsonDeleteScenario()
         return;
     }
 
-    Scenario s(query->getItem("id").toInt());
+    Scenario s(query->getItem("id"));
 
     if (s.remove()) {
         Scenario::update();
@@ -124,8 +136,8 @@ void ScenarioController::jsonGetScenario()
         result.insert("msg", "You are not logged.");
         result.insert("success", false);
     }
-    else if (Scenario::isIdValid(query->getItem("id").toInt())) {
-        Scenario &s = Scenario::get(query->getItem("id").toInt());
+    else if (Scenario::isIdValid(query->getItem("id"))) {
+        Scenario &s = Scenario::get(query->getItem("id"));
         result.insert("scenario", s.toJson());
         result.insert("success", true);
     } else {
@@ -136,7 +148,7 @@ void ScenarioController::jsonGetScenario()
     loadJsonView(result);
 }
 
-void ScenarioController::jsonStartScenario()
+void ScenarioController::jsonChangeStatus()
 {
     QJsonObject result;
 
@@ -147,15 +159,27 @@ void ScenarioController::jsonStartScenario()
         return;
     }
 
-    if (!Scenario::isIdValid(query->getItem("id").toInt())) {
+    if (!Scenario::isIdValid(query->getItem("id"))) {
         result.insert("Result", "ERROR");
         result.insert("Message", "Id not valid.");
         loadJsonView(result);
         return;
     }
 
-    Scenario scenario(query->getItem("id").toInt());
-    scriptEngine->run("scenario_" + scenario.getId());
+    if (query->getItem("status") == "start" || query->getItem("status") == "stop") {
+        result.insert("Result", "ERROR");
+        result.insert("Message", "Status not valid.");
+        loadJsonView(result);
+        return;
+    }
+
+    Scenario scenario(query->getItem("id"));
+
+    if (query->getItem("status") == "start") {
+        scriptEngine->run("scenario_" + scenario.getId() + "_start");
+    } else {
+        scriptEngine->run("scenario_" + scenario.getId() + "_stop");
+    }
 
     result.insert("Result", "OK");
     loadJsonView(result);

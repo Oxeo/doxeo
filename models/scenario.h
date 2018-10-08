@@ -10,17 +10,17 @@ class Scenario
 
 public:
     Scenario();
-    Scenario(int id);
+    Scenario(QString id);
 
-    int getId()  const;
+    QString getId()  const;
     QJsonObject toJson() const;
-    bool flush();
+    bool flush(bool newObject);
     bool remove();
 
     static void update();
-    static bool isIdValid(int id);
-    static Scenario& get(int id);
-    static QMap<int, Scenario> &getScenarioList();
+    static bool isIdValid(QString id);
+    static Scenario& get(QString id);
+    static QMap<QString, Scenario> &getScenarioList();
 
     QString getName() const;
     void setName(const QString &value);
@@ -37,16 +37,20 @@ public:
     bool getHide() const;
     void setHide(bool value);
 
+    QString getStatus() const;
+    void setStatus(const QString &value);
+
 protected:
 
-    int id;
+    QString id;
     QString name;
     QString description;
     QString content;
+    QString status;
     int order;
     bool hide;
 
-    static QMap<int, Scenario> scenarioList;
+    static QMap<QString, Scenario> scenarioList;
 };
 
 #endif // Scenario_H

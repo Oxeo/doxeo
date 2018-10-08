@@ -6,19 +6,32 @@
 #include <QDebug>
 #include <QSqlError>
 
-QMap<int, Scenario> Scenario::scenarioList;
+QMap<QString, Scenario> Scenario::scenarioList;
 
 Scenario::Scenario()
 {
-    this->id = 0;
+    id = "";
+    name = "";
+    description = "";
+    content = "";
+    status = "";
+    order = 1;
+    hide = false;
 }
 
-Scenario::Scenario(int id)
+Scenario::Scenario(QString id)
 {
+
     this->id = id;
+    name = "";
+    description = "";
+    content = "";
+    status = "";
+    order = 1;
+    hide = false;
 }
 
-int Scenario::getId() const
+QString Scenario::getId() const
 {
     return id;
 }
@@ -26,20 +39,21 @@ int Scenario::getId() const
 void Scenario::update()
 {
     QSqlQuery query = Database::getQuery();
-    query.prepare("SELECT id, name, description, content, order_by, hide FROM scenario");
+    query.prepare("SELECT id, name, description, content, status, order_by, hide FROM scenario");
 
     if(Database::exec(query))
     {
         scenarioList.clear();
         while(query.next())
         {
-            Scenario s(query.value(0).toInt());
+            Scenario s(query.value(0).toString());
 
             s.name = query.value(1).toString();
             s.description = query.value(2).toString();
             s.content = query.value(3).toString();
-            s.order = query.value(4).toInt();
-            s.hide = query.value(5).toBool();
+            s.status = query.value(4).toString();
+            s.order = query.value(5).toInt();
+            s.hide = query.value(6).toBool();
 
             scenarioList.insert(s.id, s);
         }
@@ -48,12 +62,12 @@ void Scenario::update()
     Database::release();
 }
 
-bool Scenario::isIdValid(int id)
+bool Scenario::isIdValid(QString id)
 {
     return scenarioList.contains(id);
 }
 
-Scenario &Scenario::get(int id)
+Scenario &Scenario::get(QString id)
 {
     return scenarioList[id];
 }
@@ -66,20 +80,23 @@ QJsonObject Scenario::toJson() const
     result.insert("name", name);
     result.insert("description", description);
     result.insert("content", content);
+    result.insert("status", status);
     result.insert("order", order);
     result.insert("hide", hide ? "true" : "false");
 
     return result;
 }
 
-QMap<int, Scenario> &Scenario::getScenarioList()
+QMap<QString, Scenario> &Scenario::getScenarioList()
 {
     return scenarioList;
 }
+
 QString Scenario::getName() const
 {
     return name;
 }
+
 void Scenario::setName(const QString &value)
 {
     name = value;
@@ -99,6 +116,7 @@ QString Scenario::getContent() const
 {
     return content;
 }
+
 void Scenario::setContent(const QString &value)
 {
     content = value;
@@ -114,6 +132,17 @@ void Scenario::setHide(bool value)
     hide = value;
 }
 
+QString Scenario::getStatus() const
+{
+    return status;
+}
+
+void Scenario::setStatus(const QString &value)
+{
+    status = value;
+}
+
+
 int Scenario::getOrder() const
 {
     return order;
@@ -124,33 +153,25 @@ void Scenario::setOrder(int value)
     order = value;
 }
 
-bool Scenario::flush()
+bool Scenario::flush(bool newObject)
 {
     QSqlQuery query = Database::getQuery();
 
-    if (id > 0) {
-        query.prepare("UPDATE scenario SET name=?, description=?, content=?, order_by=?, hide=? WHERE id=?");
+    if (!newObject) {
+        query.prepare("UPDATE scenario SET name=?, description=?, content=?, status=?, order_by=?, hide=? WHERE id=?");
     } else {
-        query.prepare("INSERT INTO Scenario (name, description, content, order_by, hide) "
-                      "VALUES (?, ?, ?, ?, ?)");
+        query.prepare("INSERT INTO Scenario (name, description, content, status, order_by, hide, id) "
+                      "VALUES (?, ?, ?, ?, ?, ?, ?)");
     }
     query.addBindValue(name);
     query.addBindValue(description);
     query.addBindValue(content);
+    query.addBindValue(status);
     query.addBindValue(order);
     query.addBindValue(hide);
-
-    if (id > 0) {
-        query.addBindValue(id);
-    }
+    query.addBindValue(id);
 
     if (Database::exec(query)) {
-        if (id < 1) {
-            query.prepare("SELECT id FROM scenario WHERE id = LAST_INSERT_ID();");
-            Database::exec(query);
-            query.next();
-            id = query.value("id").toInt();
-        }
         Database::release();
         return true;
     } else {

@@ -6,7 +6,7 @@ $(document).ready(function () {
 
     $('#ScenarioListContainer').jtable({
         title: 'Scenario',
-        sorting: false,
+        sorting: true,
         defaultSorting: 'id ASC',
         ajaxSettings: {
             type: 'GET',
@@ -14,7 +14,7 @@ $(document).ready(function () {
         },
         actions: {
             listAction: 'scenario_list.js',
-            createAction: 'edit_scenario.js',
+            createAction: 'create_scenario.js',
             updateAction: 'edit_scenario.js',
             deleteAction: 'delete_scenario.js'
         },
@@ -22,7 +22,7 @@ $(document).ready(function () {
             id: {
 				title: 'Id',
                 key: true,
-                create: false,
+                create: true,
                 edit: false,
                 list: true
             },
@@ -36,6 +36,10 @@ $(document).ready(function () {
                 title: 'Content',
 				type: 'textarea',
 				list: false,
+            },
+            status: {
+                title: 'Status',
+                options: { 'stop': 'Stop', 'start': 'Start'}
             },
             order: {
                 title: 'Order',
