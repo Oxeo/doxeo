@@ -21,7 +21,6 @@ Scenario::Scenario()
 
 Scenario::Scenario(QString id)
 {
-
     this->id = id;
     name = "";
     description = "";

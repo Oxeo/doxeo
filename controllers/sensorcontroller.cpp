@@ -53,7 +53,7 @@ void SensorController::jsonSensorList()
     }
 
     QJsonArray array;
-    foreach (const Sensor *s, Sensor::getSensorList()) {
+    foreach (const Sensor *s, Sensor::getSortedSensorList(Sensor::orderByOrder)) {
         array.push_back(s->toJson());
     }
 

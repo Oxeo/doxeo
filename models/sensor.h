@@ -19,6 +19,12 @@ class Sensor : public QObject
     Q_PROPERTY(int batteryLevel READ getBatteryLevel)
 
 public:
+
+    enum OrderBy {
+        orderById,
+        orderByOrder
+    };
+
     explicit Sensor(QString id, QObject *parent = 0);
 
     QJsonObject toJson() const;
@@ -53,6 +59,7 @@ public:
     bool remove();
 
     static QHash<QString, Sensor *> &getSensorList();
+    static QList<Sensor *> getSortedSensorList(OrderBy orderBy);
     static void update();
     static Event* getEvent();
 
@@ -61,6 +68,8 @@ public slots:
 
 protected slots:
     void updateValue(QString cmd, QString value);
+    static bool compareById(Sensor *s1, Sensor *s2);
+    static bool compareByOrder(Sensor *s1, Sensor *s2);
 
 protected:
     QString id;

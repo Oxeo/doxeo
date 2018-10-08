@@ -87,6 +87,19 @@ QHash<QString, Sensor*> &Sensor::getSensorList()
     return sensorList;
 }
 
+QList<Sensor *> Sensor::getSortedSensorList(OrderBy orderBy)
+{
+    QList<Sensor *> result = sensorList.values();
+
+    if (orderBy == orderById) {
+        qSort(result.begin(), result.end(), Sensor::compareById);
+    } else {
+        qSort(result.begin(), result.end(), Sensor::compareByOrder);
+    }
+
+    return result;
+}
+
 void Sensor::update()
 {
     QSqlQuery query = Database::getQuery();
@@ -186,6 +199,21 @@ void Sensor::updateValue(QString cmd, QString value)
         }
     }
 }
+
+bool Sensor::compareById(Sensor *s1, Sensor *s2)
+{
+    return s1->id < s2->id;
+}
+
+bool Sensor::compareByOrder(Sensor *s1, Sensor *s2)
+{
+    if (s1->order == s2->order) {
+        return Sensor::compareById(s1, s2);
+    } else {
+        return s1->order < s2->order;
+    }
+}
+
 bool Sensor::getHide() const
 {
     return hide;
