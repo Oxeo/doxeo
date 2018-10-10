@@ -7,6 +7,7 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonArray>
+#include <QHostAddress>
 
 SwitchController::SwitchController(QObject *parent) : AbstractController(parent)
 {
@@ -148,7 +149,8 @@ void SwitchController::jsonChangeSwitchStatus()
 {
     QJsonObject result;
 
-    if (!Authentification::auth().isConnected(header, cookie)) {
+    if (!Authentification::auth().isConnected(header, cookie) &&
+            !socket->peerAddress().toString().contains("127.0.0.1")) {
         result.insert("msg", "You are not logged.");
         result.insert("success", false);
     }
