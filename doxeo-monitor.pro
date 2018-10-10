@@ -48,7 +48,8 @@ SOURCES += main.cpp\
     core/event.cpp \
     models/command.cpp \
     libraries/scripttimeevent.cpp \
-    libraries/gsm.cpp
+    libraries/gsm.cpp \
+    libraries/jeedom.cpp
 
 HEADERS  += \
     controllers/switchcontroller.h \
@@ -87,6 +88,7 @@ HEADERS  += \
     core/event.h \
     models/command.h \
     libraries/scripttimeevent.h \
-    libraries/gsm.h
+    libraries/gsm.h \
+    libraries/jeedom.h
 
 RESOURCES +=

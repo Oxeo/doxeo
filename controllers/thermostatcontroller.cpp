@@ -4,11 +4,10 @@
 
 #include <QJsonArray>
 #include <QSettings>
-#include <QCoreApplication>
 
 ThermostatController::ThermostatController(QObject *parent) : AbstractController(parent)
 {
-    QSettings settings(QSettings::SystemScope, QCoreApplication::organizationName());
+    QSettings settings;
 
     thermostat = new Thermostat(this);
 
@@ -458,7 +457,7 @@ void ThermostatController::jsonSetEventTime()
 
 void ThermostatController::jsonSetStatus()
 {
-    QSettings settings(QSettings::SystemScope, QCoreApplication::organizationName());
+    QSettings settings;
     QJsonObject result;
 
     if (!Authentification::auth().isConnected(header, cookie)) {
