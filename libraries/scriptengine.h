@@ -3,6 +3,7 @@
 
 #include <models/script.h>
 #include <libraries/gsm.h>
+#include <libraries/jeedom.h>
 
 #include <QObject>
 #include <QScriptEngine>
@@ -34,6 +35,7 @@ protected:
     QTimer *timer;
     QHash<QString, uint> eventList;
     Gsm *gsm;
+    Jeedom *jeedom;
 };
 
 #endif // SCRIPTENGINE_H

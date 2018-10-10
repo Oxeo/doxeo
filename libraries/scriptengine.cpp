@@ -7,10 +7,12 @@
 
 #include <QDebug>
 #include <QTime>
+#include <QJsonObject>
 
 ScriptEngine::ScriptEngine(Gsm *gsm, QObject *parent) : QObject(parent)
 {
     this->gsm = gsm;
+    this->jeedom = new Jeedom(this);
 }
 
 void ScriptEngine::init()
@@ -91,11 +93,25 @@ void ScriptEngine::updateSwitches()
 void ScriptEngine::switchValueUpdated(QString id, QString value)
 {
     run("switch_" + id + ";" + value);
+
+    QJsonObject json;
+    json.insert("type", "switch");
+    json.insert("id", id);
+    json.insert("value", value);
+
+    jeedom->sendJson(json);
 }
 
 void ScriptEngine::sensorValueUpdated(QString id, QString value)
 {
     run("sensor_" + id + ";" + value);
+
+    QJsonObject json;
+    json.insert("type", "sensor");
+    json.insert("id", id);
+    json.insert("value", value);
+
+    jeedom->sendJson(json);
 }
 
 void ScriptEngine::newSMS(QString numbers, QString msg)
