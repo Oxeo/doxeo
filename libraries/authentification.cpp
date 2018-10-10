@@ -4,10 +4,11 @@
 
 #include <QSettings>
 #include <QDebug>
+#include <QCoreApplication>
 
 Authentification::Authentification()
 {
-    QSettings settings;
+    QSettings settings(QSettings::SystemScope, QCoreApplication::organizationName());
     settings.beginGroup("authentification/rememberCode");
 
     foreach (QString key, settings.childKeys()) {
@@ -155,7 +156,7 @@ void Authentification::clearCookies(QString &cookie)
 
 void Authentification::insertRememberCode(QString id, Remember remember)
 {
-    QSettings settings;
+    QSettings settings(QSettings::SystemScope, QCoreApplication::organizationName());
 
     settings.beginGroup("authentification/rememberCode");
     settings.setValue(id, QStringList() << remember.login << remember.code);
@@ -166,7 +167,7 @@ void Authentification::insertRememberCode(QString id, Remember remember)
 
 void Authentification::removeRememberCode(QString id)
 {
-    QSettings settings;
+    QSettings settings(QSettings::SystemScope, QCoreApplication::organizationName());
 
     settings.beginGroup("authentification/rememberCode");
     settings.remove(id);

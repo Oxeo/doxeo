@@ -43,7 +43,7 @@ DoxeoMonitor::DoxeoMonitor(int &argc, char **argv) : QCoreApplication(argc, argv
 
 int DoxeoMonitor::start()
 {
-    QSettings settings;
+    QSettings settings(QSettings::SystemScope, QCoreApplication::organizationName());
     bool error;
     
     // Command line parser
@@ -134,7 +134,7 @@ QString DoxeoMonitor::commandLine(QString title)
 
 void DoxeoMonitor::configure()
 {
-    QSettings settings;
+    QSettings settings(QSettings::SystemScope, QCoreApplication::organizationName());
     QString userInput;
     QString oldValue;
 

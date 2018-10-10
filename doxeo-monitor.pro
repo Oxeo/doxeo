@@ -24,7 +24,6 @@ SOURCES += main.cpp\
     models/user.cpp \
     core/tools.cpp \
     libraries/authentification.cpp \
-    libraries/freeboxctrl.cpp \
     core/weektime.cpp \
     libraries/messagelogger.cpp \
     doxeomonitor.cpp \
@@ -64,7 +63,6 @@ HEADERS  += \
     models/user.h \
     core/tools.h \
     libraries/authentification.h \
-    libraries/freeboxctrl.h \
     core/weektime.h \
     libraries/messagelogger.h \
     doxeomonitor.h \

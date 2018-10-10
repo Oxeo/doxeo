@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <QSqlError>
 #include <QSettings>
+#include <QCoreApplication>
 
 QMutex Database::mutex;
 
@@ -12,7 +13,7 @@ Database::Database()
 
 void Database::initialize(const QString& type)
 {
-    QSettings settings;
+    QSettings settings(QSettings::SystemScope, QCoreApplication::organizationName());
     QSqlDatabase db = QSqlDatabase::addDatabase(type);
 
     db.setHostName(settings.value("database/hostname", "").toString());
