@@ -4,6 +4,9 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 
+QString Jeedom::apikey = "";
+QString Jeedom::callback = "";
+
 Jeedom::Jeedom(QObject *parent) : QObject(parent)
 {
     manager = new QNetworkAccessManager(this);
@@ -12,7 +15,7 @@ Jeedom::Jeedom(QObject *parent) : QObject(parent)
 
 void Jeedom::sendJson(QJsonObject json) {
     QNetworkRequest request;
-    request.setUrl(QUrl("http://127.0.0.1/plugins/doxeo/core/php/jeeDoxeo.php"));
+    request.setUrl(QUrl(callback + "?apikey=" + apikey));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
     manager->post(request, QJsonDocument(json).toJson());
@@ -28,3 +31,23 @@ void Jeedom::replyFinished(QNetworkReply *reply)
 
     reply->deleteLater();
 }
+QString Jeedom::getCallback()
+{
+    return callback;
+}
+
+void Jeedom::setCallback(const QString &value)
+{
+    callback = value;
+}
+
+QString Jeedom::getApikey()
+{
+    return apikey;
+}
+
+void Jeedom::setApikey(const QString &value)
+{
+    apikey = value;
+}
+

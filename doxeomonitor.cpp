@@ -16,6 +16,7 @@
 #include "libraries/firebasecloudmessaging.h"
 #include "libraries/gsm.h"
 #include "libraries/scriptengine.h"
+#include "libraries/jeedom.h"
 #include "core/database.h"
 
 #include <QDir>
@@ -45,6 +46,12 @@ int DoxeoMonitor::start()
 {
     QSettings settings(QSettings::SystemScope, QCoreApplication::organizationName());
     bool error;
+
+    // Set application path
+    QString appDir = settings.value("application/path", "").toString();
+    if (appDir != "" && appDir != "none") {
+        QDir::setCurrent(appDir);
+    }
     
     // Command line parser
     if (commandLineParser(&error)) {
@@ -137,6 +144,12 @@ void DoxeoMonitor::configure()
     QSettings settings(QSettings::SystemScope, QCoreApplication::organizationName());
     QString userInput;
     QString oldValue;
+
+    oldValue = settings.value("application/path", "").toString();
+    userInput = commandLine("Enter absolute path of the application directory (" + oldValue + "):");
+    if (userInput != "") {
+        settings.setValue("application/path", userInput);
+    }
 
     oldValue = settings.value("database/hostname", "").toString();
     userInput = commandLine("Enter database host name (" + oldValue + "):");
@@ -232,6 +245,14 @@ bool DoxeoMonitor::commandLineParser(bool *error)
                                          "Set the absolute path of the application directory.", "path");
     parser.addOption(applicationPathOption);
 
+    QCommandLineOption apikeyOption(QStringList() << "a" << "apikey",
+                                         "Set the API key of Jeedom.", "apikey");
+    parser.addOption(applicationPathOption);
+
+    QCommandLineOption callbackOption(QStringList() << "b" << "callback",
+                                         "Set Jeedom callback.", "callback");
+    parser.addOption(applicationPathOption);
+
     parser.process(*this);
 
     if (parser.isSet(configureOption)) {
@@ -253,6 +274,14 @@ bool DoxeoMonitor::commandLineParser(bool *error)
 
     if (parser.value(applicationPathOption) != "") {
         QDir::setCurrent(parser.value(applicationPathOption));
+    }
+
+    if (parser.value(apikeyOption) != "") {
+        Jeedom::setApikey(parser.value(apikeyOption));
+    }
+
+    if (parser.value(callbackOption) != "") {
+        Jeedom::setCallback(parser.value(callbackOption));
     }
 
     verbose = parser.isSet(debugOption);
