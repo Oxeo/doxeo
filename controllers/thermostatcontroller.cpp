@@ -461,7 +461,7 @@ void ThermostatController::jsonSetStatus()
         result.insert("msg", "You are not logged.");
     } else if (query->getItem("thermostat").toLower() == "running") {
         thermostat->start();
-        if (Setting::isIdValid("start_thermostat")) {
+        if (!Setting::isIdValid("start_thermostat")) {
             Setting setting("start_thermostat");
             setting.flush(true);
         }
@@ -473,7 +473,7 @@ void ThermostatController::jsonSetStatus()
     } else if (query->getItem("thermostat").toLower() == "onbreak") {
         if (query->getItem("time").toInt() > 0) {
             thermostat->setOnBreak(query->getItem("time").toInt());
-            if (Setting::isIdValid("start_thermostat")) {
+            if (!Setting::isIdValid("start_thermostat")) {
                 Setting setting("start_thermostat");
                 setting.flush(true);
             }
@@ -482,7 +482,7 @@ void ThermostatController::jsonSetStatus()
         }
     } else if (query->getItem("temperature_logger").toLower() == "running") {
         temperatureLogger->start();
-        if (Setting::isIdValid("temperature_logger")) {
+        if (!Setting::isIdValid("temperature_logger")) {
             Setting setting("temperature_logger");
             setting.flush(true);
         }
