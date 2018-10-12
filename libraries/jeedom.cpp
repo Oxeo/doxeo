@@ -25,8 +25,6 @@ void Jeedom::replyFinished(QNetworkReply *reply)
 {
     if (reply->error() != QNetworkReply::NoError) {
         qWarning() << "Jeedom - Unable to send the request: " << reply->errorString();
-    } else {
-        qDebug() << "Jeedom - send with success";
     }
 
     reply->deleteLater();
