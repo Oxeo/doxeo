@@ -71,16 +71,16 @@ int DoxeoMonitor::start()
         qCritical() << applicationName() + " stopped: Mysql connection failed";
         return -1;
     }
-    
-    // Initialize Firebase Cloud Messaging
-    FirebaseCloudMessaging *fcm = new FirebaseCloudMessaging(settings.value("firebasecloudmessaging/projectname", "doxeo").toString(), this);
-    fcm->setServerKey(settings.value("firebasecloudmessaging/serverkey", "").toString());
-    MessageLogger::logger().setFirebaseCloudMessaging(fcm);
 
     // Initialize logger messages
     if (!verbose) {
         qInstallMessageHandler(MessageLogger::messageHandler);
     }
+
+    // Initialize Firebase Cloud Messaging
+    FirebaseCloudMessaging *fcm = new FirebaseCloudMessaging(settings.value("firebasecloudmessaging/projectname", "doxeo").toString(), this);
+    fcm->setServerKey(settings.value("firebasecloudmessaging/serverkey", "").toString());
+    MessageLogger::logger().setFirebaseCloudMessaging(fcm);
 
     // Initialise SIM900 GSM module
     Gsm *gsm = new Gsm(Gsm::M590, this);
