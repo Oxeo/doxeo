@@ -159,7 +159,7 @@ bool Scenario::flush(bool newObject)
     if (!newObject) {
         query.prepare("UPDATE scenario SET name=?, description=?, content=?, status=?, order_by=?, hide=? WHERE id=?");
     } else {
-        query.prepare("INSERT INTO Scenario (name, description, content, status, order_by, hide, id) "
+        query.prepare("INSERT INTO scenario (name, description, content, status, order_by, hide, id) "
                       "VALUES (?, ?, ?, ?, ?, ?, ?)");
     }
     query.addBindValue(name);

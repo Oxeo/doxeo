@@ -1,28 +1,19 @@
 #include "authentification.h"
 #include "models/user.h"
+#include "models/setting.h"
 #include "core/tools.h"
 
-#include <QSettings>
+#include <QList>
 #include <QDebug>
 
 Authentification::Authentification()
 {
-    QSettings settings;
-    settings.beginGroup("authentification/rememberCode");
-
-    foreach (QString key, settings.childKeys()) {
-         QStringList result = settings.value(key).toStringList();
-         if (result.length() == 2) {
-             Authentification::Remember remember;
-             remember.login = result.at(0);
-             remember.code = result.at(1);
-             rememberList.insert(key, remember);
-         } else {
-             settings.remove(key);
-         }
+    foreach (Setting setting, Setting::getFromGroup("code_auth")) {
+         Authentification::Remember remember;
+         remember.login = setting.getValue1();
+         remember.code = setting.getValue2();
+         rememberList.insert(setting.getId(), remember);
     }
-
-    settings.endGroup();
 }
 
 Authentification::~Authentification()
@@ -58,7 +49,7 @@ bool Authentification::connection(QString &login, QString &password, QString &co
         remember.login = login;
         remember.code = Tools::randomString(30);
 
-        QString id = Tools::randomString(6);
+        QString id = "code_auth_" + Tools::randomString(6);
 
         insertRememberCode(id, remember);
 
@@ -155,22 +146,20 @@ void Authentification::clearCookies(QString &cookie)
 
 void Authentification::insertRememberCode(QString id, Remember remember)
 {
-    QSettings settings;
-
-    settings.beginGroup("authentification/rememberCode");
-    settings.setValue(id, QStringList() << remember.login << remember.code);
-    settings.endGroup();
+    Setting setting(id);
+    setting.setGroup("code_auth");
+    setting.setValue1(remember.login);
+    setting.setValue2(remember.code);
+    setting.flush(true);
 
     rememberList.insert(id, remember);
 }
 
 void Authentification::removeRememberCode(QString id)
 {
-    QSettings settings;
-
-    settings.beginGroup("authentification/rememberCode");
-    settings.remove(id);
-    settings.endGroup();
+    if (Setting::isIdValid(id)) {
+        Setting::get(id).remove();
+    }
 
     rememberList.remove(id);
 }

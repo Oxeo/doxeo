@@ -1,7 +1,6 @@
 #include "firebasecloudmessaging.h"
 
 #include <QtDebug>
-#include <QSettings>
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QJsonDocument>

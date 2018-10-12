@@ -17,6 +17,7 @@
 #include "libraries/gsm.h"
 #include "libraries/scriptengine.h"
 #include "libraries/jeedom.h"
+#include "models/setting.h"
 #include "core/database.h"
 
 #include <QDir>
@@ -76,6 +77,9 @@ int DoxeoMonitor::start()
     if (!verbose) {
         qInstallMessageHandler(MessageLogger::messageHandler);
     }
+
+    // Update settings
+    Setting::update();
 
     // Initialize Firebase Cloud Messaging
     FirebaseCloudMessaging *fcm = new FirebaseCloudMessaging(settings.value("firebasecloudmessaging/projectname", "doxeo").toString(), this);
