@@ -11,6 +11,7 @@ public:
 
 signals:
     void valueUpdated(QString id, QString newValue);
+    void batteryUpdated(QString id, int batteryLevel);
     void dataChanged();
 };
 
