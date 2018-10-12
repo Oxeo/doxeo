@@ -247,11 +247,11 @@ bool DoxeoMonitor::commandLineParser(bool *error)
 
     QCommandLineOption apikeyOption(QStringList() << "a" << "apikey",
                                          "Set the API key of Jeedom.", "apikey");
-    parser.addOption(applicationPathOption);
+    parser.addOption(apikeyOption);
 
     QCommandLineOption callbackOption(QStringList() << "b" << "callback",
                                          "Set Jeedom callback.", "callback");
-    parser.addOption(applicationPathOption);
+    parser.addOption(callbackOption);
 
     parser.process(*this);
 
