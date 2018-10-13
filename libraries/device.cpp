@@ -25,6 +25,10 @@ Device::Device(QString deviceName, QObject *parent) : QObject(parent)
     serial = new QSerialPort(this);
     serial->setBaudRate(QSerialPort::Baud9600);
 
+    sendTimer = new QTimer(this);
+    sendTimer->setSingleShot(true);
+    connect(sendTimer, SIGNAL(timeout()), this, SLOT(sendProcess()), Qt::QueuedConnection);
+
     connectionTimer.setSingleShot(true);
     waitRegisterMsgTimer.setSingleShot(true);
 
@@ -119,12 +123,26 @@ void Device::send(QString id, QString value)
 
 void Device::send(QString data)
 {
-    QString msg = data + "\n";
+    msgToSend.append(data + "\n");
 
-    if (serial->isOpen()) {
-        serial->write(msg.toLatin1());
-    } else {
-        qCritical() << deviceName + " not connected to send the message: " + msg;
+    if (!sendTimer->isActive()) {
+        sendTimer->start(50);
+    }
+}
+
+void Device::sendProcess()
+{
+    if (msgToSend.size() > 0) {
+        if (serial->isOpen()) {
+            serial->write(msgToSend.first().toLatin1());
+        } else {
+            qCritical() << deviceName + " not connected to send the message: " + msgToSend.first();
+        }
+        msgToSend.removeFirst();
+
+        if (msgToSend.size() > 0) {
+            sendTimer->start(50);
+        }
     }
 }
 

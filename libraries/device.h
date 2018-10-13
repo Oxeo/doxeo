@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QTimer>
+#include <QList>
 #include <QtSerialPort/QSerialPort>
 
 class Device : public QObject
@@ -23,6 +24,7 @@ signals:
 protected slots:
     void connection();
     void handleError(QSerialPort::SerialPortError error);
+    void sendProcess();
 
 protected:
     explicit Device(QString deviceName, QObject *parent = 0);
@@ -35,6 +37,8 @@ protected:
     QTimer waitRegisterMsgTimer;
     QString currentPortTested;
     bool systemInError;
+    QList<QString> msgToSend;
+    QTimer *sendTimer;
 
     static Device *instance;
 
