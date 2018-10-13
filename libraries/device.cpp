@@ -126,7 +126,7 @@ void Device::send(QString data)
     msgToSend.append(data + "\n");
 
     if (!sendTimer->isActive()) {
-        sendTimer->start(50);
+        sendTimer->start(100);
     }
 }
 
@@ -141,7 +141,7 @@ void Device::sendProcess()
         msgToSend.removeFirst();
 
         if (msgToSend.size() > 0) {
-            sendTimer->start(50);
+            sendTimer->start(100);
         }
     }
 }
