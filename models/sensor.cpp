@@ -178,7 +178,7 @@ bool Sensor::remove()
 
 void Sensor::updateValue(QString cmd, QString value)
 {
-    if (this->cmd == cmd) {
+    if (this->cmd == cmd.split(",").value(0)) {
         QRegularExpression rx("^battery=.+v(\\d+)%$");
         QRegularExpressionMatch match = rx.match(value);
         
@@ -188,6 +188,11 @@ void Sensor::updateValue(QString cmd, QString value)
             batteryLevelUpdate = QDateTime::currentDateTime();
             emit Sensor::event.batteryUpdated(this->id, batteryLevel);
         } else {
+
+            if (cmd.split(",").size() > 1) {
+                value = cmd.split(",").indexOf(this->cmd) + 1;
+            }
+
             if (this->value != value) {
                 this->value = value;
                 this->lastUpdate.prepend(QDateTime::currentDateTime());

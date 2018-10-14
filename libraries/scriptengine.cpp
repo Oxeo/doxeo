@@ -30,7 +30,7 @@ void ScriptEngine::init()
     connect(Sensor::getEvent(), SIGNAL(batteryUpdated(QString,int)), this, SLOT(batteryUpdated(QString, int)), Qt::QueuedConnection);
     connect(Switch::getEvent(), SIGNAL(dataChanged()), this, SLOT(updateSwitches()), Qt::QueuedConnection);
     connect(Switch::getEvent(), SIGNAL(valueUpdated(QString,QString)), this, SLOT(switchValueUpdated(QString, QString)), Qt::QueuedConnection);
-    connect(Device::Instance(), SIGNAL(dataReceived(QString, QString)), this, SLOT(deviceDataReceived(QString, QString)), Qt::QueuedConnection);
+    //connect(Device::Instance(), SIGNAL(dataReceived(QString, QString)), this, SLOT(deviceDataReceived(QString, QString)), Qt::QueuedConnection);
 
     connect(gsm, SIGNAL(newSMS(QString,QString)), this, SLOT(newSMS(QString,QString)), Qt::QueuedConnection);
     connect(timeEvent, SIGNAL(eventTimeout(QString)), this, SLOT(eventTimeout(QString)), Qt::QueuedConnection);
