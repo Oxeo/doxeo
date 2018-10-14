@@ -30,6 +30,7 @@ void ScriptEngine::init()
     connect(Sensor::getEvent(), SIGNAL(batteryUpdated(QString,int)), this, SLOT(batteryUpdated(QString, int)), Qt::QueuedConnection);
     connect(Switch::getEvent(), SIGNAL(dataChanged()), this, SLOT(updateSwitches()), Qt::QueuedConnection);
     connect(Switch::getEvent(), SIGNAL(valueUpdated(QString,QString)), this, SLOT(switchValueUpdated(QString, QString)), Qt::QueuedConnection);
+    connect(Device::Instance(), SIGNAL(dataReceived(QString, QString)), this, SLOT(deviceDataReceived(QString, QString)), Qt::QueuedConnection);
 
     connect(gsm, SIGNAL(newSMS(QString,QString)), this, SLOT(newSMS(QString,QString)), Qt::QueuedConnection);
     connect(timeEvent, SIGNAL(eventTimeout(QString)), this, SLOT(eventTimeout(QString)), Qt::QueuedConnection);
@@ -110,6 +111,20 @@ void ScriptEngine::sensorValueUpdated(QString id, QString value)
     QJsonObject json;
     json.insert("type", "sensor");
     json.insert("id", id);
+    json.insert("value", value);
+
+    jeedom->sendJson(json);
+}
+
+void ScriptEngine::deviceDataReceived(QString cmd, QString value)
+{
+    QJsonObject json;
+
+    json.insert("type", cmd.split(";").value(0));
+    if (cmd.split(";").size() > 1) {
+        json.insert("id", cmd.split(";").value(1));
+    }
+
     json.insert("value", value);
 
     jeedom->sendJson(json);

@@ -28,6 +28,7 @@ protected slots:
     void switchValueUpdated(QString id, QString value);
     void sensorValueUpdated(QString id, QString value);
     void batteryUpdated(QString id, int value);
+    void deviceDataReceived(QString cmd, QString value);
     void newSMS(QString numbers, QString msg);
     void eventTimeout(QString name);
 
