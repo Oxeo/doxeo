@@ -100,6 +100,16 @@ QList<Sensor *> Sensor::getSortedSensorList(OrderBy orderBy)
     return result;
 }
 
+bool Sensor::isIdValid(QString id)
+{
+    return sensorList.contains(id);
+}
+
+Sensor *Sensor::get(QString id)
+{
+    return sensorList[id];
+}
+
 void Sensor::update()
 {
     QSqlQuery query = Database::getQuery();
@@ -193,16 +203,21 @@ void Sensor::updateValue(QString cmd, QString value)
                 value = QString::number(this->cmd.split(",").indexOf(cmd));
             }
 
-            if (this->value != value) {
-                this->value = value;
-                this->lastUpdate.prepend(QDateTime::currentDateTime());
-                this->lastUpdate.removeLast();
-            }
-            
-            this->lastEvent = QDateTime::currentDateTime();
-            emit Sensor::event.valueUpdated(this->id, value);
+            updateValue(value);
         }
     }
+}
+
+void Sensor::updateValue(QString value)
+{
+    if (this->value != value) {
+        this->value = value;
+        this->lastUpdate.prepend(QDateTime::currentDateTime());
+        this->lastUpdate.removeLast();
+    }
+
+    this->lastEvent = QDateTime::currentDateTime();
+    emit Sensor::event.valueUpdated(this->id, value);
 }
 
 bool Sensor::compareById(Sensor *s1, Sensor *s2)

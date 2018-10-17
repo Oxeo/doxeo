@@ -20,6 +20,7 @@ public slots:
     void jsonCreateSensor();
     void jsonEditSensor();
     void jsonDeleteSensor();
+    void jsonSetValue();
 };
 
 #endif // SENSORCONTROLLER_H

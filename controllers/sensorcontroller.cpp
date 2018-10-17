@@ -5,6 +5,7 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonArray>
+#include <QHostAddress>
 
 SensorController::SensorController(QObject *parent) : AbstractController(parent)
 {
@@ -13,6 +14,7 @@ SensorController::SensorController(QObject *parent) : AbstractController(parent)
     router.insert("create_sensor.js", "jsonCreateSensor");
     router.insert("edit_sensor.js", "jsonEditSensor");
     router.insert("delete_sensor.js", "jsonDeleteSensor");
+    router.insert("set_value.js", "jsonSetValue");
 
     Sensor::update();
 }
@@ -135,6 +137,29 @@ void SensorController::jsonDeleteSensor()
         result.insert("Result", "OK");
     } else {
         result.insert("Result", "ERROR");
+    }
+
+    loadJsonView(result);
+}
+
+void SensorController::jsonSetValue()
+{
+    QJsonObject result;
+
+    if (!Authentification::auth().isConnected(header, cookie) &&
+            !socket->peerAddress().toString().contains("127.0.0.1")) {
+        result.insert("msg", "You are not logged.");
+        result.insert("success", false);
+    }
+    else if (Sensor::isIdValid(query->getItem("id"))) {
+        Sensor* s = Sensor::get(query->getItem("id"));
+        s->updateValue(query->getItem("value"));
+
+        result.insert("value", s->getValue());
+        result.insert("success", true);
+    } else {
+       result.insert("msg", "Sensor Id invalid");
+       result.insert("success", false);
     }
 
     loadJsonView(result);

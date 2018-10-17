@@ -39,6 +39,7 @@ public:
 
     QString getValue() const;
     void setValue(const QString &value);
+    void updateValue(QString value);
 
     QString getCmd() const;
     void setCmd(const QString &value);
@@ -60,6 +61,8 @@ public:
 
     static QHash<QString, Sensor *> &getSensorList();
     static QList<Sensor *> getSortedSensorList(OrderBy orderBy);
+    static bool isIdValid(QString id);
+    static Sensor *get(QString id);
     static void update();
     static Event* getEvent();
 
