@@ -19,6 +19,7 @@ public slots:
     void jsonEditSwitch();
     void jsonDeleteSwitch();
     void jsonChangeSwitchStatus();
+    void jsonUpdateSwitchStatus();
 };
 
 #endif // SWITCHCONTROLLER_H

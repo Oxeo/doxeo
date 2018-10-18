@@ -20,6 +20,7 @@ public:
     explicit Switch(QString id, QObject *parent = 0);
 
     void setStatus(QString status);
+    void updateStatus(QString status);
     QString getId()  const;
     QString getStatus()  const;
 

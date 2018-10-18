@@ -34,6 +34,12 @@ Switch::Switch(QString id, QObject *parent) : QObject(parent)
 
 void Switch::setStatus(QString status)
 {
+    updateStatus(status);
+    emit Switch::event.valueUpdated(this->id, status);
+}
+
+void Switch::updateStatus(QString status)
+{
     if (status == this->status) {
         return;
     }
@@ -52,8 +58,6 @@ void Switch::setStatus(QString status)
     Database::release();
 
     qDebug() << "Switch status " + id + " set to " + status;
-
-    emit Switch::event.valueUpdated(this->id, status);
 }
 
 QString Switch::getId() const

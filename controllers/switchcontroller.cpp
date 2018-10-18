@@ -19,6 +19,7 @@ SwitchController::SwitchController(QObject *parent) : AbstractController(parent)
     router.insert("edit_switch.js", "jsonEditSwitch");
     router.insert("delete_switch.js", "jsonDeleteSwitch");
     router.insert("change_switch_status", "jsonChangeSwitchStatus");
+    router.insert("update_switch_status.js", "jsonUpdateSwitchStatus");
 }
 
 void SwitchController::defaultAction()
@@ -163,6 +164,38 @@ void SwitchController::jsonChangeSwitchStatus()
             result.insert("success", true);
         } else if (query->getItem("status").toLower() == "off") {
             sw->powerOff();
+            result.insert("status", "off");
+            result.insert("success", true);
+        } else {
+            result.insert("msg", "Unknown status");
+            result.insert("success", false);
+        }
+    } else {
+       result.insert("msg", "Switch Id invalid");
+       result.insert("success", false);
+    }
+
+    loadJsonView(result);
+}
+
+void SwitchController::jsonUpdateSwitchStatus()
+{
+    QJsonObject result;
+
+    if (!Authentification::auth().isConnected(header, cookie) &&
+            !socket->peerAddress().toString().contains("127.0.0.1")) {
+        result.insert("msg", "You are not logged.");
+        result.insert("success", false);
+    }
+    else if (Switch::isIdValid(query->getItem("id"))) {
+        Switch* sw = Switch::get(query->getItem("id"));
+
+        if (query->getItem("status").toLower() == "on") {
+            sw->updateStatus("on");
+            result.insert("status", "on");
+            result.insert("success", true);
+        } else if (query->getItem("status").toLower() == "off") {
+            sw->updateStatus("off");
             result.insert("status", "off");
             result.insert("success", true);
         } else {
