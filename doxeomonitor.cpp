@@ -90,6 +90,9 @@ int DoxeoMonitor::start()
     Gsm *gsm = new Gsm(Gsm::M590, this);
     gsm->connection();
 
+    // Initilize Jeedom
+    Jeedom::setApikey(settings.value("jeedom/apikey", "").toString());
+
     // Initialise Script Engine
     ScriptEngine *scriptEngine = new ScriptEngine(gsm, this);
 
@@ -190,6 +193,12 @@ void DoxeoMonitor::configure()
     if (userInput != "") {
         settings.setValue("firebasecloudmessaging/serverkey", userInput);
     }
+
+    oldValue = settings.value("jeedom/apikey", "").toString();
+    userInput = commandLine("Enter Jeedom API key (" + oldValue + "):");
+    if (userInput != "") {
+        settings.setValue("jeedom/apikey", userInput);
+    }
 }
 
 void DoxeoMonitor::createUser()
@@ -281,7 +290,7 @@ bool DoxeoMonitor::commandLineParser(bool *error)
     }
 
     if (parser.value(apikeyOption) != "") {
-        Jeedom::setApikey(parser.value(apikeyOption));
+        //Jeedom::setApikey(parser.value(apikeyOption));
     }
 
     if (parser.value(callbackOption) != "") {
