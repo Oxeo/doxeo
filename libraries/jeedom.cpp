@@ -21,6 +21,14 @@ void Jeedom::sendJson(QJsonObject json) {
     manager->post(request, QJsonDocument(json).toJson());
 }
 
+void Jeedom::executeCmd(QString id)
+{
+    QNetworkRequest request;
+    request.setUrl(QUrl("http://127.0.0.1/core/api/jeeApi.php?apikey="+apikey+"&type=cmd&id="+id));
+
+    manager->get(request);
+}
+
 void Jeedom::replyFinished(QNetworkReply *reply)
 {
     if (reply->error() != QNetworkReply::NoError) {

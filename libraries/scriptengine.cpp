@@ -21,6 +21,7 @@ void ScriptEngine::init()
     engine.globalObject().setProperty("helper", engine.newQObject(new ScriptHelper(this)));
     engine.globalObject().setProperty("event_builder", engine.newQObject(timeEvent));
     engine.globalObject().setProperty("gsm", engine.newQObject(gsm));
+    engine.globalObject().setProperty("jeedom", engine.newQObject(jeedom));
 
     updateSensors();
     updateSwitches();

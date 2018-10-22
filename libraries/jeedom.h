@@ -11,6 +11,7 @@ class Jeedom : public QObject
 public:
     explicit Jeedom(QObject *parent = 0);
     void sendJson(QJsonObject json);
+    void executeCmd(QString id);
 
     static QString getApikey();
     static void setApikey(const QString &value);
