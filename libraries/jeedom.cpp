@@ -5,6 +5,7 @@
 #include <QJsonDocument>
 
 QString Jeedom::apikey = "";
+QString Jeedom::doxeokey = "";
 QString Jeedom::callback = "";
 
 Jeedom::Jeedom(QObject *parent) : QObject(parent)
@@ -15,7 +16,7 @@ Jeedom::Jeedom(QObject *parent) : QObject(parent)
 
 void Jeedom::sendJson(QJsonObject json) {
     QNetworkRequest request;
-    request.setUrl(QUrl(callback + "?apikey=" + apikey));
+    request.setUrl(QUrl(callback + "?apikey=" + doxeokey));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
     manager->post(request, QJsonDocument(json).toJson());
@@ -57,3 +58,12 @@ void Jeedom::setApikey(const QString &value)
     apikey = value;
 }
 
+QString Jeedom::getDoxeokey()
+{
+    return doxeokey;
+}
+
+void Jeedom::setDoxeokey(const QString &value)
+{
+    doxeokey = value;
+}

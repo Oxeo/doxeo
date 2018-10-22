@@ -259,7 +259,7 @@ bool DoxeoMonitor::commandLineParser(bool *error)
     parser.addOption(applicationPathOption);
 
     QCommandLineOption apikeyOption(QStringList() << "a" << "apikey",
-                                         "Set the API key of Jeedom.", "apikey");
+                                         "Set the API key of Jeedom Doxeo plugins.", "apikey");
     parser.addOption(apikeyOption);
 
     QCommandLineOption callbackOption(QStringList() << "b" << "callback",
@@ -290,7 +290,7 @@ bool DoxeoMonitor::commandLineParser(bool *error)
     }
 
     if (parser.value(apikeyOption) != "") {
-        //Jeedom::setApikey(parser.value(apikeyOption));
+        Jeedom::setDoxeokey(parser.value(apikeyOption));
     }
 
     if (parser.value(callbackOption) != "") {

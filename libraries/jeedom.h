@@ -16,6 +16,9 @@ public:
     static QString getApikey();
     static void setApikey(const QString &value);
 
+    static QString getDoxeokey();
+    static void setDoxeokey(const QString &value);
+
     static QString getCallback();
     static void setCallback(const QString &value);
 
@@ -29,6 +32,7 @@ protected:
     QNetworkAccessManager *manager;
 
     static QString apikey;
+    static QString doxeokey;
     static QString callback;
 };
 
