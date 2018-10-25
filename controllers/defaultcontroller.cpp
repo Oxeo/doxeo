@@ -9,13 +9,18 @@
 #include <QTimer>
 #include <QHostAddress>
 
-DefaultController::DefaultController()
+DefaultController::DefaultController(FirebaseCloudMessaging *fcm, Gsm *gsm, QObject *parent) : AbstractController(parent)
 {
+    this->gsm = gsm;
+    this->fcm = fcm;
+
     router.insert("stop", "stopApplication");
     router.insert("logs", "logs");
     router.insert("logs.js", "jsonLogs");
     router.insert("clear_logs.js", "jsonClearLogs");
     router.insert("system.js", "jsonSystem");
+    router.insert("sms.js", "jsonSms");
+    router.insert("fcm.js", "jsonfcm");
 }
 
 void DefaultController::defaultAction()
@@ -173,6 +178,41 @@ void DefaultController::jsonSystem()
     result.insert("success", true);
     result.insert("time", QTime::currentTime().toString("HH:mm"));
     result.insert("device_connected", Device::Instance()->isConnected());
+    loadJsonView(result);
+}
+
+void DefaultController::jsonSms()
+{
+    QJsonObject result;
+
+    if (Authentification::auth().isConnected(header, cookie) ||
+            socket->peerAddress().toString().contains("127.0.0.1"))
+    {
+       gsm->sendSMS(query->getItem("number"), query->getItem("message"));
+       result.insert("success", true);
+    } else {
+        result.insert("msg", "You are not logged.");
+        result.insert("success", false);
+    }
+
+    loadJsonView(result);
+}
+
+void DefaultController::jsonFcm()
+{
+    QJsonObject result;
+
+    if (Authentification::auth().isConnected(header, cookie) ||
+            socket->peerAddress().toString().contains("127.0.0.1"))
+    {
+       FirebaseCloudMessaging::Message msg = {query->getItem("type"), query->getItem("title"), query->getItem("message")};
+       fcm->send(msg);
+       result.insert("success", true);
+    } else {
+        result.insert("msg", "You are not logged.");
+        result.insert("success", false);
+    }
+
     loadJsonView(result);
 }
 

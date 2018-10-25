@@ -4,9 +4,8 @@
 #include <QElapsedTimer>
 
 
-HttpServer::HttpServer(int port, AbstractController* defaultController, QObject* parent): QTcpServer(parent)
+HttpServer::HttpServer(int port, QObject* parent): QTcpServer(parent)
 {
-    addController(defaultController, "default");
     listen(QHostAddress::Any, (quint16)port);
 }
 

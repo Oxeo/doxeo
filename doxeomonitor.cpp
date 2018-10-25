@@ -60,7 +60,7 @@ int DoxeoMonitor::start()
     }
 
     // Start Http server
-    httpServer = new HttpServer(8080, new DefaultController(), this);
+    httpServer = new HttpServer(8080, this);
     if (!httpServer->isListening()) {
         qCritical() << applicationName() + " stopped: http server already running";
         return -1;
@@ -69,8 +69,7 @@ int DoxeoMonitor::start()
     // Connection to Mysql Database
     Database::initialize("QMYSQL");
     if(!Database::open()) {
-        qCritical() << applicationName() + " stopped: Mysql connection failed";
-        return -1;
+        qCritical() << applicationName() + " Mysql connection failed";
     }
 
     // Initialize logger messages
@@ -100,6 +99,7 @@ int DoxeoMonitor::start()
     Device::initialize("Doxeoboard", this);
 
     // Add controller
+    httpServer->addController(new DefaultController(fcm, gsm, this), "default");
     httpServer->addController(new AssetController(), "assets");
     httpServer->addController(new SwitchController(this), "switch");
     httpServer->addController(new SensorController(this), "sensor");

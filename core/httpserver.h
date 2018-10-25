@@ -10,7 +10,7 @@ class HttpServer : public QTcpServer {
     Q_OBJECT
 
 public:
-    HttpServer(int port, AbstractController* defaultController, QObject* parent = 0);
+    HttpServer(int port, QObject* parent = 0);
     void addController(AbstractController *controller, QString params);
     QHash<QString, AbstractController*> getControllers();
 
