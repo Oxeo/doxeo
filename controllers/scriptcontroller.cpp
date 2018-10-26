@@ -6,6 +6,7 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonArray>
+#include <QHostAddress>
 
 ScriptController::ScriptController(ScriptEngine *scriptEngine, QObject *parent) : AbstractController(parent)
 {
@@ -244,7 +245,8 @@ void ScriptController::jsonExecuteCmd()
 {
     QJsonObject result;
 
-    if (!Authentification::auth().isConnected(header, cookie)) {
+    if (!Authentification::auth().isConnected(header, cookie) &&
+            !socket->peerAddress().toString().contains("127.0.0.1")) {
         result.insert("msg", "You are not logged.");
         result.insert("success", false);
     }

@@ -20,7 +20,7 @@ DefaultController::DefaultController(FirebaseCloudMessaging *fcm, Gsm *gsm, QObj
     router.insert("clear_logs.js", "jsonClearLogs");
     router.insert("system.js", "jsonSystem");
     router.insert("sms.js", "jsonSms");
-    router.insert("fcm.js", "jsonfcm");
+    router.insert("fcm.js", "jsonFcm");
 }
 
 void DefaultController::defaultAction()

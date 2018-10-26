@@ -28,6 +28,7 @@ $(document).ready(function () {
             },
 			cmd: {
 				title: 'Command',
+                type: 'textarea'
             },
             name: {
                 title: 'Name',
