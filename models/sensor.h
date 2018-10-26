@@ -65,6 +65,7 @@ public:
     static Sensor *get(QString id);
     static void update();
     static Event* getEvent();
+    static void updateValueByCommand(QString cmd, QString value);
 
 public slots:
     int getLastUpdate(int index) const;

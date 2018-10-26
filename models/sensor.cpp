@@ -143,6 +143,16 @@ Event *Sensor::getEvent()
     return &event;
 }
 
+void Sensor::updateValueByCommand(QString cmd, QString value)
+{
+    foreach (Sensor *s, sensorList.values()) {
+        if (s->cmd == cmd) {
+            s->updateValue(value);
+            break;
+        }
+    }
+}
+
 bool Sensor::flush(bool newObject)
 {
     QSqlQuery query = Database::getQuery();

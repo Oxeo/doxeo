@@ -15,6 +15,7 @@ SensorController::SensorController(QObject *parent) : AbstractController(parent)
     router.insert("edit_sensor.js", "jsonEditSensor");
     router.insert("delete_sensor.js", "jsonDeleteSensor");
     router.insert("set_value.js", "jsonSetValue");
+    router.insert("update_value_by_cmd.js", "jsonUpdateValueByCommand");
 
     Sensor::update();
 }
@@ -160,6 +161,22 @@ void SensorController::jsonSetValue()
     } else {
        result.insert("msg", "Sensor Id invalid");
        result.insert("success", false);
+    }
+
+    loadJsonView(result);
+}
+
+void SensorController::jsonUpdateValueByCommand()
+{
+    QJsonObject result;
+
+    if (!socket->peerAddress().toString().contains("127.0.0.1") &&
+            !Authentification::auth().isConnected(header, cookie)) {
+        result.insert("msg", "You are not logged.");
+        result.insert("success", false);
+    } else {
+        Sensor::updateValueByCommand(query->getItem("value"), query->getItem("value"));
+        result.insert("success", true);
     }
 
     loadJsonView(result);
