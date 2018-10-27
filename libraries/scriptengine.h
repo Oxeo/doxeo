@@ -15,7 +15,7 @@ class ScriptEngine : public QObject
     Q_OBJECT
 
 public:
-    explicit ScriptEngine(Gsm *gsm = 0, QObject *parent = 0);
+    explicit ScriptEngine(Jeedom *jeedom, Gsm *gsm = 0, QObject *parent = 0);
     void init();
     QString runCmd(QString cmd);
 

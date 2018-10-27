@@ -18,6 +18,7 @@
 #include "libraries/scriptengine.h"
 #include "libraries/jeedom.h"
 #include "models/setting.h"
+#include "models/switch.h"
 #include "core/database.h"
 
 #include <QDir>
@@ -90,10 +91,14 @@ int DoxeoMonitor::start()
     gsm->connection();
 
     // Initilize Jeedom
-    Jeedom::setApikey(settings.value("jeedom/apikey", "").toString());
+    Jeedom *jeedom = new Jeedom(this);
+    jeedom->setApikey(settings.value("jeedom/apikey", "").toString());
+
+    // Initialise Switch
+    Switch::setJeedom(jeedom);
 
     // Initialise Script Engine
-    ScriptEngine *scriptEngine = new ScriptEngine(gsm, this);
+    ScriptEngine *scriptEngine = new ScriptEngine(jeedom, gsm, this);
 
     // Connect device
     Device::initialize("Doxeoboard", this);

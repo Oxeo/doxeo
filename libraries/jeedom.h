@@ -12,8 +12,8 @@ public:
     explicit Jeedom(QObject *parent = 0);
     void sendJson(QJsonObject json);
 
-    static QString getApikey();
-    static void setApikey(const QString &value);
+    QString getApikey();
+    void setApikey(const QString &value);
 
     static QString getDoxeokey();
     static void setDoxeokey(const QString &value);
@@ -32,8 +32,8 @@ protected slots:
 
 protected:
     QNetworkAccessManager *manager;
+    QString apikey;
 
-    static QString apikey;
     static QString doxeokey;
     static QString callback;
 };

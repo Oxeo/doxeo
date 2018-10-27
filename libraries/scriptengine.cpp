@@ -9,10 +9,10 @@
 #include <QTime>
 #include <QJsonObject>
 
-ScriptEngine::ScriptEngine(Gsm *gsm, QObject *parent) : QObject(parent)
+ScriptEngine::ScriptEngine(Jeedom *jeedom, Gsm *gsm, QObject *parent) : QObject(parent)
 {
     this->gsm = gsm;
-    this->jeedom = new Jeedom(this);
+    this->jeedom = jeedom;
 }
 
 void ScriptEngine::init()

@@ -2,6 +2,7 @@
 #define SWITCH_H
 
 #include "core/event.h"
+#include "libraries/jeedom.h"
 
 #include <QObject>
 #include <QString>
@@ -46,6 +47,7 @@ public:
     static Switch *get(QString id);
     static QHash<QString, Switch *> &getSwitchList();
     static Event* getEvent();
+    static void setJeedom(Jeedom *jeedom);
 
 public slots:
     void powerOn(int timerOff = 0);
@@ -72,6 +74,7 @@ protected:
 
     static QHash<QString, Switch*> switchList;
     static Event event;
+    static Jeedom *jeedom;
 };
 
 #endif // SWITCH_H

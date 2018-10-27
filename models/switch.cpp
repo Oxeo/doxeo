@@ -10,6 +10,7 @@
 
 QHash<QString, Switch*> Switch::switchList;
 Event Switch::event;
+Jeedom* Switch::jeedom;
 
 Switch::Switch(QString id, QObject *parent) : QObject(parent)
 {
@@ -81,7 +82,12 @@ void Switch::powerOn(int timerOff)
     }
 
     if (powerOnCmd.trimmed() != "") {
-        Device::Instance()->send(powerOnCmd.split(",").value(0));
+        QString val = powerOnCmd.split(",").value(0);
+        if (val.startsWith("jeedom_cmd;") && val.split(";").size() == 2) {
+            jeedom->executeCmd(val.split(";").value(1));
+        } else {
+            Device::Instance()->send(powerOnCmd.split(",").value(0));
+        }
     }
     setStatus("on");
 }
@@ -96,7 +102,12 @@ void Switch::powerOnAfter(int timer)
 void Switch::powerOff()
 {
     if (powerOffCmd.trimmed() != "") {
-        Device::Instance()->send(powerOffCmd.split(",").value(0));
+        QString val = powerOffCmd.split(",").value(0);
+        if (val.startsWith("jeedom_cmd;") && val.split(";").size() == 2) {
+            jeedom->executeCmd(val.split(";").value(1));
+        } else {
+            Device::Instance()->send(powerOffCmd.split(",").value(0));
+        }
     }
     setStatus("off");
     timerPowerOn->stop();
@@ -188,6 +199,11 @@ QHash<QString, Switch *> &Switch::getSwitchList()
 Event *Switch::getEvent()
 {
     return &event;
+}
+
+void Switch::setJeedom(Jeedom *jeedom)
+{
+    Switch::jeedom = jeedom;
 }
 
 QString Switch::getPowerOnCmd() const

@@ -4,7 +4,6 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 
-QString Jeedom::apikey = "";
 QString Jeedom::doxeokey = "";
 QString Jeedom::callback = "";
 
