@@ -175,7 +175,7 @@ void SensorController::jsonUpdateValueByCommand()
         result.insert("msg", "You are not logged.");
         result.insert("success", false);
     } else {
-        Sensor::updateValueByCommand(query->getItem("value"), query->getItem("value"));
+        Sensor::updateValueByCommand(query->getItem("cmd"), query->getItem("value"));
         result.insert("success", true);
     }
 
