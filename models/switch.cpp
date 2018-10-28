@@ -284,6 +284,10 @@ void Switch::updateStatusByCommand(QString cmd)
 {
     foreach (Switch *s, switchList.values()) {
         foreach(QString exp, s->powerOnCmd.split(",")) {
+            if (exp.trimmed() == "") {
+                break;
+            }
+
             QRegularExpression re(exp.trimmed());
             QRegularExpressionMatch match = re.match(cmd);
 
@@ -294,6 +298,10 @@ void Switch::updateStatusByCommand(QString cmd)
         }
 
         foreach(QString exp, s->powerOffCmd.split(",")) {
+            if (exp.trimmed() == "") {
+                break;
+            }
+
             QRegularExpression re(exp.trimmed());
             QRegularExpressionMatch match = re.match(cmd);
 
