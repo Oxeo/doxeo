@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QSqlError>
 #include <QProcess>
+#include <QRegularExpression>
 
 QHash<QString, Switch*> Switch::switchList;
 Event Switch::event;
@@ -278,6 +279,32 @@ void Switch::updateValue(QString id, QString value)
         setStatus("off");
     }
 }
+
+void Switch::updateStatusByCommand(QString cmd)
+{
+    foreach (Switch *s, switchList.values()) {
+        foreach(QString exp, s->powerOnCmd.split(",")) {
+            QRegularExpression re(exp.trimmed());
+            QRegularExpressionMatch match = re.match(cmd);
+
+            if (match.hasMatch()) {
+                s->setStatus("on");
+                break;
+            }
+        }
+
+        foreach(QString exp, s->powerOffCmd.split(",")) {
+            QRegularExpression re(exp.trimmed());
+            QRegularExpressionMatch match = re.match(cmd);
+
+            if (match.hasMatch()) {
+                s->setStatus("off");
+                break;
+            }
+        }
+    }
+}
+
 QString Switch::getSensor() const
 {
     return sensor;

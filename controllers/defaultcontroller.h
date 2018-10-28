@@ -23,6 +23,7 @@ public slots:
     void jsonSystem();
     void jsonSms();
     void jsonFcm();
+    void jsonUpdateValueByCommand();
     
 protected:
     Gsm *gsm;

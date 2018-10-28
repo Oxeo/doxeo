@@ -48,6 +48,7 @@ public:
     static QHash<QString, Switch *> &getSwitchList();
     static Event* getEvent();
     static void setJeedom(Jeedom *jeedom);
+    static void updateStatusByCommand(QString cmd);
 
 public slots:
     void powerOn(int timerOff = 0);

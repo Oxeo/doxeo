@@ -2,6 +2,8 @@
 #include "libraries/authentification.h"
 #include "libraries/messagelogger.h"
 #include "libraries/device.h"
+#include "models/sensor.h"
+#include "models/switch.h"
 
 #include <QCoreApplication>
 #include <QJsonArray>
@@ -21,6 +23,7 @@ DefaultController::DefaultController(FirebaseCloudMessaging *fcm, Gsm *gsm, QObj
     router.insert("system.js", "jsonSystem");
     router.insert("sms.js", "jsonSms");
     router.insert("fcm.js", "jsonFcm");
+    router.insert("update_value_by_cmd.js", "jsonUpdateValueByCommand");
 }
 
 void DefaultController::defaultAction()
@@ -216,3 +219,19 @@ void DefaultController::jsonFcm()
     loadJsonView(result);
 }
 
+void DefaultController::jsonUpdateValueByCommand()
+{
+    QJsonObject result;
+
+    if (!socket->peerAddress().toString().contains("127.0.0.1") &&
+            !Authentification::auth().isConnected(header, cookie)) {
+        result.insert("msg", "You are not logged.");
+        result.insert("success", false);
+    } else {
+        Sensor::updateValueByCommand(query->getItem("cmd"), query->getItem("value"));
+        Switch::updateStatusByCommand(query->getItem("cmd") + ";" + query->getItem("value"));
+        result.insert("success", true);
+    }
+
+    loadJsonView(result);
+}
