@@ -14,6 +14,7 @@
 #include <QMetaEnum>
 
 QHash<int, Heater*> *Heater::heaterList = NULL;
+Event Heater::event;
 
 Heater::Heater(QObject *parent) : QObject(parent)
 {
@@ -241,6 +242,8 @@ void Heater::changeStatus(Heater::Status status)
         }
     }
 
+    emit Heater::event.valueUpdated(QString::number(this->id), getStatusStr());
+
     timer.start();
     QMetaObject::invokeMethod(&timer, "timeout", Qt::QueuedConnection);
 }
@@ -353,4 +356,9 @@ QString Heater::getName() const
 void Heater::setName(const QString &value)
 {
     name = value;
+}
+
+Event *Heater::getEvent()
+{
+    return &event;
 }

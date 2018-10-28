@@ -27,6 +27,7 @@ protected slots:
     void updateSwitches();
     void switchValueUpdated(QString id, QString value);
     void sensorValueUpdated(QString id, QString value);
+    void heaterValueUpdated(QString id, QString value);
     void batteryUpdated(QString id, int value);
     void newSMS(QString numbers, QString msg);
     void eventTimeout(QString name);

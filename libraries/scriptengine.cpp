@@ -2,6 +2,7 @@
 #include "scripthelper.h"
 #include "models/sensor.h"
 #include "models/switch.h"
+#include "models/heater.h"
 #include "libraries/device.h"
 #include "libraries/scripttimeevent.h"
 
@@ -31,6 +32,7 @@ void ScriptEngine::init()
     connect(Sensor::getEvent(), SIGNAL(batteryUpdated(QString,int)), this, SLOT(batteryUpdated(QString, int)), Qt::QueuedConnection);
     connect(Switch::getEvent(), SIGNAL(dataChanged()), this, SLOT(updateSwitches()), Qt::QueuedConnection);
     connect(Switch::getEvent(), SIGNAL(valueUpdated(QString,QString)), this, SLOT(switchValueUpdated(QString, QString)), Qt::QueuedConnection);
+    connect(Heater::getEvent(), SIGNAL(valueUpdated(QString,QString)), this, SLOT(heaterValueUpdated(QString, QString)), Qt::QueuedConnection);
 
     connect(gsm, SIGNAL(newSMS(QString,QString)), this, SLOT(newSMS(QString,QString)), Qt::QueuedConnection);
     connect(timeEvent, SIGNAL(eventTimeout(QString)), this, SLOT(eventTimeout(QString)), Qt::QueuedConnection);
@@ -110,6 +112,18 @@ void ScriptEngine::sensorValueUpdated(QString id, QString value)
 
     QJsonObject json;
     json.insert("type", "sensor");
+    json.insert("id", id);
+    json.insert("value", value);
+
+    jeedom->sendJson(json);
+}
+
+void ScriptEngine::heaterValueUpdated(QString id, QString value)
+{
+    run("heater_" + id + ";" + value);
+
+    QJsonObject json;
+    json.insert("type", "heater");
     json.insert("id", id);
     json.insert("value", value);
 
