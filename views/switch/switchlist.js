@@ -38,9 +38,11 @@ $(document).ready(function () {
             },
             power_on_cmd: {
                 title: 'Power on command',
+                type: 'textarea'
             },
 			power_off_cmd: {
                 title: 'Power off command',
+                type: 'textarea'
             },
             sensor: {
                 title: 'Sensor',
