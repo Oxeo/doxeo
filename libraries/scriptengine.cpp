@@ -28,11 +28,10 @@ void ScriptEngine::init()
     updateSwitches();
 
     connect(Sensor::getEvent(), SIGNAL(dataChanged()), this, SLOT(updateSensors()), Qt::QueuedConnection);
-    connect(Sensor::getEvent(), SIGNAL(valueUpdated(QString,QString)), this, SLOT(sensorValueUpdated(QString, QString)), Qt::QueuedConnection);
-    connect(Sensor::getEvent(), SIGNAL(batteryUpdated(QString,int)), this, SLOT(batteryUpdated(QString, int)), Qt::QueuedConnection);
+    connect(Sensor::getEvent(), SIGNAL(valueUpdated(QString,QString,QString)), this, SLOT(sensorValueUpdated(QString, QString, QString)), Qt::QueuedConnection);
     connect(Switch::getEvent(), SIGNAL(dataChanged()), this, SLOT(updateSwitches()), Qt::QueuedConnection);
-    connect(Switch::getEvent(), SIGNAL(valueUpdated(QString,QString)), this, SLOT(switchValueUpdated(QString, QString)), Qt::QueuedConnection);
-    connect(Heater::getEvent(), SIGNAL(valueUpdated(QString,QString)), this, SLOT(heaterValueUpdated(QString, QString)), Qt::QueuedConnection);
+    connect(Switch::getEvent(), SIGNAL(valueUpdated(QString,QString,QString)), this, SLOT(switchValueUpdated(QString,QString, QString)), Qt::QueuedConnection);
+    connect(Heater::getEvent(), SIGNAL(valueUpdated(QString,QString,QString)), this, SLOT(heaterValueUpdated(QString,QString, QString)), Qt::QueuedConnection);
 
     connect(gsm, SIGNAL(newSMS(QString,QString)), this, SLOT(newSMS(QString,QString)), Qt::QueuedConnection);
     connect(timeEvent, SIGNAL(eventTimeout(QString)), this, SLOT(eventTimeout(QString)), Qt::QueuedConnection);
@@ -94,51 +93,45 @@ void ScriptEngine::updateSwitches()
     }
 }
 
-void ScriptEngine::switchValueUpdated(QString id, QString value)
+void ScriptEngine::switchValueUpdated(QString id, QString type, QString value)
 {
     run("switch_" + id + ";" + value);
 
     QJsonObject json;
     json.insert("type", "switch");
+    json.insert("subtype", type);
     json.insert("id", id);
     json.insert("value", value);
 
     jeedom->sendJson(json);
 }
 
-void ScriptEngine::sensorValueUpdated(QString id, QString value)
+void ScriptEngine::sensorValueUpdated(QString id, QString type, QString value)
 {
-    run("sensor_" + id + ";" + value);
+    if (type == "battery") {
+        run("sensor_" + id + ";" + "battery_status");
+    } else {
+        run("sensor_" + id + ";" + value);
+    }
 
     QJsonObject json;
     json.insert("type", "sensor");
+    json.insert("subtype", type);
     json.insert("id", id);
     json.insert("value", value);
 
     jeedom->sendJson(json);
 }
 
-void ScriptEngine::heaterValueUpdated(QString id, QString value)
+void ScriptEngine::heaterValueUpdated(QString id, QString type, QString value)
 {
     run("heater_" + id + ";" + value);
 
     QJsonObject json;
     json.insert("type", "heater");
+    json.insert("subtype", type);
     json.insert("id", id);
     json.insert("value", value);
-
-    jeedom->sendJson(json);
-}
-
-void ScriptEngine::batteryUpdated(QString id, int batteryLevel)
-{
-    run("sensor_" + id + ";" + "battery_status");
-
-    QJsonObject json;
-    json.insert("type", "sensor");
-    json.insert("id", id);
-    json.insert("value", batteryLevel);
-    json.insert("battery", true);
 
     jeedom->sendJson(json);
 }

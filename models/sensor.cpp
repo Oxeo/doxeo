@@ -206,7 +206,7 @@ void Sensor::updateValue(QString cmd, QString value)
             bool ok;
             batteryLevel = match.captured(1).toInt(&ok);
             batteryLevelUpdate = QDateTime::currentDateTime();
-            emit Sensor::event.batteryUpdated(this->id, batteryLevel);
+            emit Sensor::event.valueUpdated(this->id, "battery", QString::number(batteryLevel));
         } else {
 
             if (this->cmd.replace(" ", "").split(",").size() > 1) {
@@ -227,7 +227,7 @@ void Sensor::updateValue(QString value)
     }
 
     this->lastEvent = QDateTime::currentDateTime();
-    emit Sensor::event.valueUpdated(this->id, value);
+    emit Sensor::event.valueUpdated(this->id, "value", value);
 }
 
 bool Sensor::compareById(Sensor *s1, Sensor *s2)

@@ -37,7 +37,7 @@ Switch::Switch(QString id, QObject *parent) : QObject(parent)
 void Switch::setStatus(QString status)
 {
     updateStatus(status);
-    emit Switch::event.valueUpdated(this->id, status);
+    emit Switch::event.valueUpdated(this->id, "status", status);
 }
 
 void Switch::updateStatus(QString status)

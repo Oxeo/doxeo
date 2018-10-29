@@ -223,7 +223,10 @@ int Heater::getId() const
 
 void Heater::setHeatSetpoint(float value)
 {
-    heatSetpoint = value;
+    if (heatSetpoint != value) {
+        heatSetpoint = value;
+        emit Heater::event.valueUpdated(QString::number(this->id), "heat_setpoint", QString::number(value));
+    }
 }
 
 void Heater::changeStatus(Heater::Status status)
@@ -242,7 +245,7 @@ void Heater::changeStatus(Heater::Status status)
         }
     }
 
-    emit Heater::event.valueUpdated(QString::number(this->id), getStatusStr());
+    emit Heater::event.valueUpdated(QString::number(this->id), "status", getStatusStr());
 
     timer.start();
     QMetaObject::invokeMethod(&timer, "timeout", Qt::QueuedConnection);
@@ -335,7 +338,10 @@ QJsonObject Heater::toJson()
 
 void Heater::setCoolSetpoint(float value)
 {
-    coolSetpoint = value;
+    if (coolSetpoint != value) {
+        coolSetpoint = value;
+        emit Heater::event.valueUpdated(QString::number(this->id), "cool_setpoint", QString::number(value));
+    }
 }
 
 Heater::Mode Heater::getMode() const
