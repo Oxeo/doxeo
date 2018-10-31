@@ -18,7 +18,7 @@ Device* Device::Instance()
 
 Device::Device(QString deviceName, QObject *parent) : QObject(parent)
 {
-    this->deviceName = deviceName + ":";
+    this->deviceName = deviceName;
     currentPortTested = "";
     systemInError = false;
     

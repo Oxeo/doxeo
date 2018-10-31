@@ -66,7 +66,7 @@ void Thermostat::run()
             if (currentSetpoint > temp + 0.2 && heater->getStatus() != Heater::On) {
                 qDebug() << "Heater set to On " << heater->getName();
                 heater->changeStatus(Heater::On);
-            } else if (currentSetpoint < temp - 0.3 && heater->getStatus() != Heater::Off) {
+            } else if (currentSetpoint < temp - 0.2 && heater->getStatus() != Heater::Off) {
                 qDebug() << "Heater set to Off " << heater->getName();
                 heater->changeStatus(Heater::Off);
             }
