@@ -3,6 +3,7 @@
 
 #include "core/abstractcontroller.h"
 #include "libraries/device.h"
+#include "libraries/mysensors.h"
 
 
 class SensorController : public AbstractController
@@ -10,7 +11,7 @@ class SensorController : public AbstractController
     Q_OBJECT
 
 public:
-    SensorController(QObject *parent);
+    SensorController(MySensors *mySensors, QObject *parent);
     void defaultAction();
     void stop();
 
@@ -21,6 +22,9 @@ public slots:
     void jsonEditSensor();
     void jsonDeleteSensor();
     void jsonSetValue();
+
+protected slots:
+    void mySensorsDataReceived(QString messagetype, int sender, int sensor, int type, QString payload);
 };
 
 #endif // SENSORCONTROLLER_H

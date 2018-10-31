@@ -10,6 +10,7 @@
 #include "controllers/sensorcontroller.h"
 #include "controllers/scriptcontroller.h"
 #include "controllers/scenariocontroller.h"
+#include "controllers/jeedomcontroller.h"
 #include "libraries/messagelogger.h"
 #include "libraries/authentification.h"
 #include "libraries/device.h"
@@ -17,6 +18,7 @@
 #include "libraries/gsm.h"
 #include "libraries/scriptengine.h"
 #include "libraries/jeedom.h"
+#include "libraries/mysensors.h"
 #include "models/setting.h"
 #include "models/switch.h"
 #include "core/database.h"
@@ -103,19 +105,24 @@ int DoxeoMonitor::start()
     // Connect device
     Device::initialize("Doxeoboard", this);
 
+    // Initialise mySensors
+    MySensors *mySensors = new MySensors(this);
+    mySensors->start();
+
     // Add controller
-    httpServer->addController(new DefaultController(fcm, gsm, this), "default");
+    httpServer->addController(new DefaultController(mySensors, fcm, gsm, this), "default");
     httpServer->addController(new AssetController(), "assets");
-    httpServer->addController(new SwitchController(this), "switch");
-    httpServer->addController(new SensorController(this), "sensor");
+    httpServer->addController(new SwitchController(mySensors, this), "switch");
+    httpServer->addController(new SensorController(mySensors, this), "sensor");
     httpServer->addController(new AuthController(this), "auth");
     httpServer->addController(new ThermostatController(this), "thermostat");
     httpServer->addController(new ScriptController(scriptEngine, this), "script");
     httpServer->addController(new ScenarioController(scriptEngine, this), "scenario");
+    httpServer->addController(new JeedomController(jeedom, mySensors, this), "jeedom");
 
     scriptEngine->init();
 
-    qDebug() << QCoreApplication::applicationName() + " started.";
+    qDebug() << qPrintable(QCoreApplication::applicationName()) << "started.";
     return this->exec();
 }
 

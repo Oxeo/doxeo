@@ -7,7 +7,7 @@
 #include <QJsonArray>
 #include <QHostAddress>
 
-SensorController::SensorController(QObject *parent) : AbstractController(parent)
+SensorController::SensorController(MySensors *mySensors, QObject *parent) : AbstractController(parent)
 {
     router.insert("list", "sensorList");
     router.insert("sensor_list.js", "jsonSensorList");
@@ -17,6 +17,10 @@ SensorController::SensorController(QObject *parent) : AbstractController(parent)
     router.insert("set_value.js", "jsonSetValue");
 
     Sensor::update();
+
+    connect(mySensors, SIGNAL(dataReceived(QString messagetype, int sender, int sensor, int type, QString payload)),
+            this, SLOT(mySensorsDataReceived(QString messagetype, int sender, int sensor, int type, QString payload)),
+            Qt::QueuedConnection);
 }
 
 void SensorController::defaultAction()
@@ -163,4 +167,12 @@ void SensorController::jsonSetValue()
     }
 
     loadJsonView(result);
+}
+
+void SensorController::mySensorsDataReceived(QString messagetype, int sender, int sensor, int type, QString payload)
+{
+    if (messagetype == "saveValue") {
+        QString cmd = "ms;" + QString::number(sender) + ";" + QString::number(sensor) + ";" + QString::number(type);
+        Sensor::updateValueByCommand(cmd, payload);
+    }
 }

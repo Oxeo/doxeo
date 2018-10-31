@@ -50,7 +50,9 @@ SOURCES += main.cpp\
     libraries/scripttimeevent.cpp \
     libraries/gsm.cpp \
     libraries/jeedom.cpp \
-    models/setting.cpp
+    models/setting.cpp \
+    libraries/mysensors.cpp \
+    controllers/jeedomcontroller.cpp
 
 HEADERS  += \
     controllers/switchcontroller.h \
@@ -91,6 +93,8 @@ HEADERS  += \
     libraries/scripttimeevent.h \
     libraries/gsm.h \
     libraries/jeedom.h \
-    models/setting.h
+    models/setting.h \
+    libraries/mysensors.h \
+    controllers/jeedomcontroller.h
 
 RESOURCES +=

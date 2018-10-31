@@ -9,7 +9,7 @@
 #include <QJsonArray>
 #include <QHostAddress>
 
-SwitchController::SwitchController(QObject *parent) : AbstractController(parent)
+SwitchController::SwitchController(MySensors *mySensors, QObject *parent) : AbstractController(parent)
 {
     Switch::update();
 
@@ -20,6 +20,10 @@ SwitchController::SwitchController(QObject *parent) : AbstractController(parent)
     router.insert("delete_switch.js", "jsonDeleteSwitch");
     router.insert("change_switch_status", "jsonChangeSwitchStatus");
     router.insert("update_switch_status.js", "jsonUpdateSwitchStatus");
+
+    connect(mySensors, SIGNAL(dataReceived(QString messagetype, int sender, int sensor, int type, QString payload)),
+            this, SLOT(mySensorsDataReceived(QString messagetype, int sender, int sensor, int type, QString payload)),
+            Qt::QueuedConnection);
 }
 
 void SwitchController::defaultAction()
@@ -208,4 +212,13 @@ void SwitchController::jsonUpdateSwitchStatus()
     }
 
     loadJsonView(result);
+}
+
+void SwitchController::mySensorsDataReceived(QString messagetype, int sender, int sensor, int type, QString payload)
+{
+    if (messagetype == "saveValue") {
+        QString cmd = "ms;" + QString::number(sender) + ";" + QString::number(sensor) + ";" + QString::number(type)
+                + ";" + payload;
+        Switch::updateStatusByCommand(cmd);
+    }
 }

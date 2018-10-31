@@ -96,14 +96,6 @@ void ScriptEngine::updateSwitches()
 void ScriptEngine::switchValueUpdated(QString id, QString type, QString value)
 {
     run("switch_" + id + ";" + value);
-
-    QJsonObject json;
-    json.insert("type", "switch");
-    json.insert("subtype", type);
-    json.insert("id", id);
-    json.insert("value", value);
-
-    jeedom->sendJson(json);
 }
 
 void ScriptEngine::sensorValueUpdated(QString id, QString type, QString value)
@@ -113,27 +105,11 @@ void ScriptEngine::sensorValueUpdated(QString id, QString type, QString value)
     } else {
         run("sensor_" + id + ";" + value);
     }
-
-    QJsonObject json;
-    json.insert("type", "sensor");
-    json.insert("subtype", type);
-    json.insert("id", id);
-    json.insert("value", value);
-
-    jeedom->sendJson(json);
 }
 
 void ScriptEngine::heaterValueUpdated(QString id, QString type, QString value)
 {
     run("heater_" + id + ";" + value);
-
-    QJsonObject json;
-    json.insert("type", "heater");
-    json.insert("subtype", type);
-    json.insert("id", id);
-    json.insert("value", value);
-
-    jeedom->sendJson(json);
 }
 
 void ScriptEngine::newSMS(QString numbers, QString msg)

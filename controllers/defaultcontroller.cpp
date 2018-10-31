@@ -11,8 +11,9 @@
 #include <QTimer>
 #include <QHostAddress>
 
-DefaultController::DefaultController(FirebaseCloudMessaging *fcm, Gsm *gsm, QObject *parent) : AbstractController(parent)
+DefaultController::DefaultController(MySensors *mySensors, FirebaseCloudMessaging *fcm, Gsm *gsm, QObject *parent) : AbstractController(parent)
 {
+    this->mySensors = mySensors;
     this->gsm = gsm;
     this->fcm = fcm;
 
@@ -23,7 +24,7 @@ DefaultController::DefaultController(FirebaseCloudMessaging *fcm, Gsm *gsm, QObj
     router.insert("system.js", "jsonSystem");
     router.insert("sms.js", "jsonSms");
     router.insert("fcm.js", "jsonFcm");
-    router.insert("update_value_by_cmd.js", "jsonUpdateValueByCommand");
+    router.insert("mysensors.js", "jsonMySensors");
 }
 
 void DefaultController::defaultAction()
@@ -219,19 +220,27 @@ void DefaultController::jsonFcm()
     loadJsonView(result);
 }
 
-void DefaultController::jsonUpdateValueByCommand()
+void DefaultController::jsonMySensors()
 {
     QJsonObject result;
 
-    if (!socket->peerAddress().toString().contains("127.0.0.1") &&
-            !Authentification::auth().isConnected(header, cookie)) {
+    if (Authentification::auth().isConnected(header, cookie) ||
+            socket->peerAddress().toString().contains("127.0.0.1"))
+    {
+       QString msg = query->getItem("msg").trimmed();
+
+       if (!msg.isEmpty()) {
+           mySensors->send(msg);
+           result.insert("success", true);
+       } else {
+           result.insert("msg", "msg is empty!");
+           result.insert("success", false);
+       }
+    } else {
         result.insert("msg", "You are not logged.");
         result.insert("success", false);
-    } else {
-        Sensor::updateValueByCommand(query->getItem("cmd"), query->getItem("value"));
-        Switch::updateStatusByCommand(query->getItem("cmd") + ";" + query->getItem("value"));
-        result.insert("success", true);
     }
 
     loadJsonView(result);
 }
+

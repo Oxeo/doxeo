@@ -18,7 +18,7 @@ Device* Device::Instance()
 
 Device::Device(QString deviceName, QObject *parent) : QObject(parent)
 {
-    this->deviceName = deviceName;
+    this->deviceName = deviceName + ":";
     currentPortTested = "";
     systemInError = false;
     
@@ -47,7 +47,7 @@ Device::Device(QString deviceName, QObject *parent) : QObject(parent)
     }
     
     if (!success && !foundDevice()) {
-        qCritical() << "Unable to connect to " + deviceName;
+        qCritical() << qPrintable(deviceName) << "unable to connect";
         connectionTimer.start(5000);
     }
 }
@@ -58,7 +58,7 @@ void Device::connection()
     
     if (serial->isOpen()) {
         serial->close();
-        qDebug() << deviceName + " disconnected because the registered message has not been send during the last 5 seconds";
+        qDebug() << qPrintable(deviceName) << "disconnected because the registered message has not been send during the last 5 seconds";
     }
     
     waitRegisterMsgTimer.stop();
@@ -71,7 +71,7 @@ void Device::connection()
 void Device::handleError(QSerialPort::SerialPortError error)
 {
     if (error != QSerialPort::NoError && systemInError == false) {
-        qCritical() << deviceName + " has been disconnected: " + serial->errorString();
+        qCritical() << qPrintable(deviceName) << "has been disconnected because" << qPrintable(serial->errorString());
         systemInError = true;
         
         waitRegisterMsgTimer.stop();
@@ -91,7 +91,7 @@ void Device::readData()
        QString msg = QString( data ).remove("\r").remove("\n");
        QStringList args = msg.split(";");
 
-       qDebug() << deviceName + ": " + msg;
+       qDebug() << deviceName << msg;
        
        if (waitRegisterMsgTimer.isActive() && msg.contains(deviceName, Qt::CaseInsensitive)) {
             waitRegisterMsgTimer.stop();
@@ -101,11 +101,11 @@ void Device::readData()
             
             currentPortTested = "";
             
-            qDebug() << deviceName + " registered with success!";
+            qDebug() << qPrintable(deviceName) << "registered with success!";
        }
 
        if (msg.startsWith("error", Qt::CaseInsensitive)) {
-           qCritical() << deviceName + ": " + msg;
+           qCritical() << qPrintable(deviceName) << msg;
        }
 
        if (args.length() == 3) {
@@ -136,7 +136,7 @@ void Device::sendProcess()
         if (serial->isOpen()) {
             serial->write(msgToSend.first().toLatin1());
         } else {
-            qCritical() << deviceName + " not connected to send the message: " + msgToSend.first();
+            qCritical() << qPrintable(deviceName) << "not connected to send the message" << qPrintable(msgToSend.first());
         }
         msgToSend.removeFirst();
 
@@ -171,13 +171,13 @@ bool Device::foundDevice(const QString port)
             }
         }
 
-        qDebug() << "Try to connect to " + deviceName + " on port " + info.portName();
+        qDebug() << qPrintable(deviceName) << "try to connect on port" << qPrintable(info.portName());
         
         serial->setPort(info);
         if (serial->open(QIODevice::ReadWrite)) {
             currentPortTested = info.portName();
             waitRegisterMsgTimer.start(5000);
-            qDebug() << deviceName + " connected on port " + info.portName() + " (waiting of the registered message)";
+            qDebug() << qPrintable(deviceName) << "connected on port" << qPrintable(info.portName()) << "(waiting of the registered message)";
 
             return true;
         }

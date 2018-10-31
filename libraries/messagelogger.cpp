@@ -66,7 +66,7 @@ void MessageLogger::addMessage(QString type, QString msg)
     messages.append(log);
     idCpt++;
     
-    if (messages.size() > 100000) {
+    if (messages.size() > 3000) {
         messages.removeFirst();
     }
 }
