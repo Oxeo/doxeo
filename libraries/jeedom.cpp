@@ -18,6 +18,7 @@ void Jeedom::sendJson(QJsonObject json) {
     request.setUrl(QUrl(callback + "?apikey=" + doxeokey));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
+    //qDebug() << "jeedom: send" << QJsonDocument(json).toJson();
     manager->post(request, QJsonDocument(json).toJson());
 }
 
@@ -33,6 +34,8 @@ void Jeedom::replyFinished(QNetworkReply *reply)
 {
     if (reply->error() != QNetworkReply::NoError) {
         qWarning() << "Jeedom - Unable to send the request: " << reply->errorString();
+    } else {
+        //qDebug() << "jeedom:" << reply->readAll();
     }
 
     reply->deleteLater();

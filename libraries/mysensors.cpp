@@ -83,6 +83,7 @@ void MySensors::readData()
        if (waitRegisterMsgTimer.isActive()) {
            if (msg.contains("MCO:BGN:INIT", Qt::CaseInsensitive)) {
                 waitRegisterMsgTimer.stop();
+                connectionTimer.stop();
 
                 QSettings settings;
                 settings.setValue("mysensors/port", currentPortTested);
@@ -103,6 +104,7 @@ void MySensors::readData()
 void MySensors::send(QString msg)
 {
     if (serial->isOpen()) {
+        qDebug() << "mySensors: send" << qPrintable(msg);
         QString msgToSend = msg + "\n";
         serial->write(msgToSend.toLatin1());
     } else {

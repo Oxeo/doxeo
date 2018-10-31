@@ -95,6 +95,7 @@ void Device::readData()
        
        if (waitRegisterMsgTimer.isActive() && msg.contains(deviceName, Qt::CaseInsensitive)) {
             waitRegisterMsgTimer.stop();
+            connectionTimer.stop();
             
             QSettings settings;
             settings.setValue("device/port", currentPortTested);
