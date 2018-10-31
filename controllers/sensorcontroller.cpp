@@ -18,8 +18,8 @@ SensorController::SensorController(MySensors *mySensors, QObject *parent) : Abst
 
     Sensor::update();
 
-    connect(mySensors, SIGNAL(dataReceived(QString messagetype, int sender, int sensor, int type, QString payload)),
-            this, SLOT(mySensorsDataReceived(QString messagetype, int sender, int sensor, int type, QString payload)),
+    connect(mySensors, SIGNAL(dataReceived(QString, int, int, int, QString)),
+            this, SLOT(mySensorsDataReceived(QString, int, int, int, QString)),
             Qt::QueuedConnection);
 }
 

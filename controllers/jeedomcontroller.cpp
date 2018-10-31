@@ -9,8 +9,8 @@ JeedomController::JeedomController(Jeedom *jeedom, MySensors *mySensors, QObject
     this->jeedom = jeedom;
     this->mySensors = mySensors;
 
-    connect(mySensors, SIGNAL(dataReceived(QString messagetype, int sender, int sensor, int type, QString payload)),
-            this, SLOT(mySensorsDataReceived(QString messagetype, int sender, int sensor, int type, QString payload)),
+    connect(mySensors, SIGNAL(dataReceived(QString, int, int, int, QString)),
+            this, SLOT(mySensorsDataReceived(QString, int, int, int, QString)),
             Qt::QueuedConnection);
 
     connect(Sensor::getEvent(), SIGNAL(valueUpdated(QString,QString,QString)), this,

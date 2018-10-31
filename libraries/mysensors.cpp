@@ -135,7 +135,7 @@ bool MySensors::foundDevice(const QString port)
             }
         }
 
-        qDebug() << "mySensors: try to connect on port" << qPrintable(info.portName());
+        //qDebug() << "mySensors: try to connect on port" << qPrintable(info.portName());
 
         serial->setPort(info);
         if (serial->open(QIODevice::ReadWrite)) {

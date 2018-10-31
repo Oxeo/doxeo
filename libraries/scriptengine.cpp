@@ -95,7 +95,9 @@ void ScriptEngine::updateSwitches()
 
 void ScriptEngine::switchValueUpdated(QString id, QString type, QString value)
 {
-    run("switch_" + id + ";" + value);
+    if (type == "status") {
+        run("switch_" + id + ";" + value);
+    }
 }
 
 void ScriptEngine::sensorValueUpdated(QString id, QString type, QString value)
@@ -109,7 +111,9 @@ void ScriptEngine::sensorValueUpdated(QString id, QString type, QString value)
 
 void ScriptEngine::heaterValueUpdated(QString id, QString type, QString value)
 {
-    run("heater_" + id + ";" + value);
+    if (type == "status") {
+        run("heater_" + id + ";" + value);
+    }
 }
 
 void ScriptEngine::newSMS(QString numbers, QString msg)

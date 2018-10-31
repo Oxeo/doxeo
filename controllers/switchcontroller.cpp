@@ -21,8 +21,8 @@ SwitchController::SwitchController(MySensors *mySensors, QObject *parent) : Abst
     router.insert("change_switch_status", "jsonChangeSwitchStatus");
     router.insert("update_switch_status.js", "jsonUpdateSwitchStatus");
 
-    connect(mySensors, SIGNAL(dataReceived(QString messagetype, int sender, int sensor, int type, QString payload)),
-            this, SLOT(mySensorsDataReceived(QString messagetype, int sender, int sensor, int type, QString payload)),
+    connect(mySensors, SIGNAL(dataReceived(QString, int, int, int, QString)),
+            this, SLOT(mySensorsDataReceived(QString, int, int, int, QString)),
             Qt::QueuedConnection);
 }
 
