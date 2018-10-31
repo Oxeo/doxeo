@@ -23,11 +23,11 @@ Setting::Setting(QString id)
     value2 = "";
 }
 
-bool Setting::flush(bool newObject)
+bool Setting::flush()
 {
     QSqlQuery query = Database::getQuery();
 
-    if (!newObject) {
+    if (settingList.contains(id)) {
         query.prepare("UPDATE setting SET group1=?, value1=?, value2=? WHERE id=?");
     } else {
         query.prepare("INSERT INTO setting (group1, value1, value2, id) "
@@ -41,6 +41,15 @@ bool Setting::flush(bool newObject)
 
     if (Database::exec(query)) {
         Database::release();
+
+        if (settingList.contains(id)) {
+            settingList.take(id).group = group;
+            settingList.take(id).value1 = value1;
+            settingList.take(id).value2 = value2;
+        } else {
+            settingList.insert(id, *this);
+        }
+
         return true;
     } else {
         Database::release();

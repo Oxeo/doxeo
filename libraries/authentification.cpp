@@ -150,7 +150,7 @@ void Authentification::insertRememberCode(QString id, Remember remember)
     setting.setGroup("code_auth");
     setting.setValue1(remember.login);
     setting.setValue2(remember.code);
-    setting.flush(true);
+    setting.flush();
 
     rememberList.insert(id, remember);
 }

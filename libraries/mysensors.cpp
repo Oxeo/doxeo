@@ -1,8 +1,8 @@
 #include "mysensors.h"
+#include "models/setting.h"
 
 #include <QDateTime>
 #include <QtDebug>
-#include <QSettings>
 #include <QSerialPortInfo>
 
 MySensors::MySensors(QObject *parent) : QObject(parent)
@@ -26,8 +26,11 @@ MySensors::MySensors(QObject *parent) : QObject(parent)
 
 void MySensors::start()
 {
-    QSettings settings;
-    QString lastPort = settings.value("mysensors/port", "").toString();
+    QString lastPort = "";
+    if (Setting::isIdValid("mysensors_port")) {
+        lastPort = Setting::get("mysensors_port").getValue1();
+    }
+
     bool success = false;
 
     if (lastPort != "") {
@@ -52,7 +55,7 @@ void MySensors::connection()
     waitRegisterMsgTimer.stop();
 
     if (!foundDevice()) {
-        connectionTimer.start(5000);
+        connectionTimer.start(17000);
     }
 }
 
@@ -65,7 +68,7 @@ void MySensors::handleError(QSerialPort::SerialPortError error)
         waitRegisterMsgTimer.stop();
 
         if (!connectionTimer.isActive()) {
-            connectionTimer.start(5000);
+            connectionTimer.start(17000);
         }
 
         emit dataReceived("saveGateway", 0, 0, 0, "0");
@@ -85,8 +88,10 @@ void MySensors::readData()
                 waitRegisterMsgTimer.stop();
                 connectionTimer.stop();
 
-                QSettings settings;
-                settings.setValue("mysensors/port", currentPortTested);
+                Setting setting("mysensors_port");
+                setting.setValue1(currentPortTested);
+                setting.flush();
+
                 currentPortTested = "";
 
                 qDebug() << "mySensors: registered with success!";
@@ -120,6 +125,10 @@ bool MySensors::isConnected()
 bool MySensors::foundDevice(const QString port)
 {
     foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
+        if (info.isBusy()) {
+            continue;
+        }
+
         if (port == "") {
             if (currentPortTested != "") {
                 if (currentPortTested == info.portName()) {

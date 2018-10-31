@@ -463,7 +463,7 @@ void ThermostatController::jsonSetStatus()
         thermostat->start();
         if (!Setting::isIdValid("start_thermostat")) {
             Setting setting("start_thermostat");
-            setting.flush(true);
+            setting.flush();
         }
     } else if (query->getItem("thermostat").toLower() == "stopped") {
         thermostat->stop();
@@ -475,7 +475,7 @@ void ThermostatController::jsonSetStatus()
             thermostat->setOnBreak(query->getItem("time").toInt());
             if (!Setting::isIdValid("start_thermostat")) {
                 Setting setting("start_thermostat");
-                setting.flush(true);
+                setting.flush();
             }
         } else {
             result.insert("msg", "The time break is missing!");
@@ -484,7 +484,7 @@ void ThermostatController::jsonSetStatus()
         temperatureLogger->start();
         if (!Setting::isIdValid("temperature_logger")) {
             Setting setting("temperature_logger");
-            setting.flush(true);
+            setting.flush();
         }
     } else if (query->getItem("temperature_logger").toLower() == "stopped") {
         temperatureLogger->stop();

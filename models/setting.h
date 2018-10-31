@@ -12,7 +12,7 @@ public:
     Setting();
     Setting(QString id);
 
-    bool flush(bool newObject);
+    bool flush();
     bool remove();
 
     static void update();
