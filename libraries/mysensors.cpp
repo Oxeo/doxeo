@@ -84,7 +84,7 @@ void MySensors::readData()
        QString msg = QString(data);
 
        if (waitRegisterMsgTimer.isActive()) {
-           if (msg.contains("MCO:BGN:INIT", Qt::CaseInsensitive)) {
+           if (msg.contains("Gateway startup complete", Qt::CaseInsensitive)) {
                 waitRegisterMsgTimer.stop();
                 connectionTimer.stop();
 
