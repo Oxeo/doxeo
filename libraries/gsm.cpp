@@ -57,7 +57,7 @@ void Gsm::connection()
         serial->setDataBits(QSerialPort::Data8);
 
         if (serial->open(QIODevice::ReadWrite)) {
-            qDebug() << "SIM900 connected on port " + info.portName();
+            qDebug() << "gsm: connected on port" << qPrintable(info.portName());
             QTimer::singleShot(4000, this, SLOT(init()));
         }
     }
@@ -77,7 +77,7 @@ void Gsm::init()
 void Gsm::handleError(QSerialPort::SerialPortError error)
 {
     if (error != QSerialPort::NoError && systemInError == false) {
-        qCritical() << "Sim900 has been disconnected: " + serial->errorString();
+        qCritical() << "gsm: disconnected:" << qPrintable(serial->errorString());
         systemInError = true;
     }
 }
@@ -111,7 +111,7 @@ void Gsm::parseSms(QString data)
     }
     
     if (data.contains("+CMT:") && exist == false) {
-        qWarning() << "SMS decoding error: " + data;
+        qWarning() << "gsm: SMS decoding error:" << qPrintable(data);
     }
 }
 
@@ -130,14 +130,14 @@ void Gsm::send(QString data)
     if (serial->isOpen()) {
         serial->write(msg.toLatin1());
     } else {
-        qCritical() << "SIM900 not connected to send the message: " + msg;
+        qCritical() << "gsm: SIM900 not connected to send the message" << qPrintable(msg);
     }
 }
 
 void Gsm::sendSMS(QString numbers, QString msg)
 {
     if (isInitialized == false) {
-        qWarning() << "Unable to send SMS: GSM module not initialized!";
+        qWarning() << "gsm: Unable to send SMS: GSM module not initialized!";
     } else {
         Sms sms = {msg, numbers};
         smsToSendList.append(sms);
@@ -152,7 +152,7 @@ void Gsm::sendAtCmd(QString cmd)
     if (isConnected() && state == 0) {
         send(cmd + "\r");
     } else {
-        qWarning() << "Unable to send AT command!";
+        qWarning() << "gsm: Unable to send AT command!";
     }
 }
 
@@ -164,7 +164,7 @@ void Gsm::sendSMSProcess()
     } else if (nbSendSmsTryMax < 1) {
         smsToSendList.clear();
     } else if (state == 0) {
-        qDebug() << "Sending SMS... (" + smsToSendList.first().numbers + ": " + smsToSendList.first().msg + ")";
+        qDebug() << "gsm: Sending SMS... (" << qPrintable(smsToSendList.first().numbers) << ":" << qPrintable(smsToSendList.first().msg) << ")";
         state = 1;
         if (type == SIM900) {
             send("WAKEUP\r");
@@ -193,9 +193,9 @@ void Gsm::update(QString buffer) {
             if (buffer.contains("+CMT:")) {
                 // nothing to do is a SMS
             } else if (buffer.contains("Call Ready")) {
-                qCritical() << "SIM900 has rebooting";
+                qCritical() << "gsm: SIM900 has rebooting";
             } else {
-                qDebug() << "SIM900: " << data;
+                qDebug() << "gsm:" << qPrintable(data);
             }
         }
         break;
@@ -211,7 +211,7 @@ void Gsm::update(QString buffer) {
             timeoutTimer->stop();
             update();
         } else if (!buffer.isEmpty()) {
-            qWarning() << "Unable to send SMS (mode error): " + buffer;
+            qWarning() << "gsm: Unable to send SMS (mode error):" << qPrintable(buffer);
             nbSendSmsTryMax--;
             timeoutTimer->stop();
             state = 0;
@@ -230,7 +230,7 @@ void Gsm::update(QString buffer) {
             timeoutTimer->stop();
             update();
         } else if (!buffer.isEmpty()) {
-            qWarning() << "Unable to send SMS (numbers error): " + buffer;
+            qWarning() << "gsm: Unable to send SMS (numbers error):" << qPrintable(buffer);
             state = 0;
             timeoutTimer->stop();
             nbSendSmsTryMax--;
@@ -248,7 +248,7 @@ void Gsm::update(QString buffer) {
             timeoutTimer->stop();
             update();
         } else if (!buffer.isEmpty()){
-            qWarning() << "Send SMS error with the message format: " + buffer;
+            qWarning() << "gsm: Send SMS error with the message format:" << qPrintable(buffer);
             state += 1;
             timeoutTimer->stop();
             update();
@@ -263,7 +263,7 @@ void Gsm::update(QString buffer) {
         break;
     case 8:
         if (buffer.contains("+CMGS:") && buffer.contains("OK")) {
-            qDebug() << "SMS send with success";
+            qDebug() << "gsm: SMS send with success";
             smsToSendList.removeFirst();
             if (!smsToSendList.isEmpty()) {
                 sendSmsTimer->start(10);
@@ -271,7 +271,7 @@ void Gsm::update(QString buffer) {
             state = 0;
             timeoutTimer->stop();
         } else if (!buffer.isEmpty()){
-            qWarning() << "Unable to send SMS (send AT): " + buffer;
+            qWarning() << "gsm: Unable to send SMS (send AT):" << qPrintable(buffer);
             state = 0;
             timeoutTimer->stop();
             nbSendSmsTryMax--;
@@ -295,14 +295,14 @@ void Gsm::update(QString buffer) {
                 updateTimer->start(1000);
                 timeoutTimer->stop();
             } else {
-                qWarning() << "Unable to initialize SIM900 (SMS mode): " + buffer;
+                qWarning() << "gsm: Unable to initialize SIM900 (SMS mode):" << qPrintable(buffer);
                 state = 0;
                 timeoutTimer->stop();
              }
         }
         break;
     case 102:
-        qDebug() << "Initialize SIM900... (SMS notification)";
+        qDebug() << "gsm: Initialize SIM900... (SMS notification)";
         timeoutTimer->start(500);
         state += 1;
         send("AT+CNMI=2,2,0,0,0\r");
@@ -319,7 +319,7 @@ void Gsm::update(QString buffer) {
                 updateTimer->start(1000);
                 timeoutTimer->stop();
             } else {
-                qWarning() << "Unable to initialize SIM900 (SMS notification): " + buffer;
+                qWarning() << "gsm: Unable to initialize SIM900 (SMS notification):" << qPrintable(buffer);
                 state = 0;
                 timeoutTimer->stop();
             }
@@ -327,10 +327,10 @@ void Gsm::update(QString buffer) {
         break;
     case 104:
         if (type == SIM900) {
-            qDebug() << "Initialize SIM900... (Sleep mode)";
+            qDebug() << "gsm: Initialize SIM900... (Sleep mode)";
             send("AT+CSCLK=2\r");
         } else {
-            qDebug() << "Initialize SIM900... (String mode)";
+            qDebug() << "gsm: Initialize SIM900... (String mode)";
             send("AT+CSCS=\"GSM\"\r");
         }
         timeoutTimer->start(500);
@@ -339,12 +339,12 @@ void Gsm::update(QString buffer) {
     case 105:
         if (type == SIM900 && buffer.contains("AT+CSCLK=2") && buffer.contains("OK")) {
             isInitialized = true;
-            qDebug() << "SIM900 initialized with success";
+            qDebug() << "gsm: SIM900 initialized with success";
             timeoutTimer->stop();
             state = 0;
         } else if (type == M590 && buffer.contains("AT+CSCS") && buffer.contains("GSM") && buffer.contains("OK")) {
             isInitialized = true;
-            qDebug() << "SIM900 initialized with success";
+            qDebug() << "gsm: SIM900 initialized with success";
             timeoutTimer->stop();
             state = 0;
         } else if (!buffer.isEmpty()) {
@@ -354,7 +354,7 @@ void Gsm::update(QString buffer) {
                 updateTimer->start(1000);
                 timeoutTimer->stop();
             } else {
-                qWarning() << "Unable to initialize SIM900 (sleep mode): " + buffer;
+                qWarning() << "gsm: Unable to initialize SIM900 (sleep mode):" << qPrintable(buffer);
                 state = 0;
                 timeoutTimer->stop();
             }
@@ -373,6 +373,6 @@ void Gsm::timeout()
         error = "Unable to initialize SIM900";
     }
 
-    qWarning() << "timeout error: " << error << " step " << state;
+    qWarning() << "gsm: timeout error " << error << " step " << state;
     state = 0;
 }

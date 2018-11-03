@@ -94,7 +94,7 @@ void Device::readData()
        QString msg = QString( data ).remove("\r").remove("\n");
        QStringList args = msg.split(";");
 
-       qDebug() << deviceName << msg;
+       qDebug() << qPrintable(deviceName) << qPrintable(msg);
        
        if (waitRegisterMsgTimer.isActive() && msg.contains(deviceName, Qt::CaseInsensitive)) {
             waitRegisterMsgTimer.stop();
@@ -110,7 +110,7 @@ void Device::readData()
        }
 
        if (msg.startsWith("error", Qt::CaseInsensitive)) {
-           qCritical() << qPrintable(deviceName) << msg;
+           qCritical() << qPrintable(deviceName) << qPrintable(msg);
        }
 
        if (args.length() == 3) {
