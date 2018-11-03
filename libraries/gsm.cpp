@@ -58,7 +58,7 @@ void Gsm::connection()
 
         if (serial->open(QIODevice::ReadWrite)) {
             qDebug() << "gsm: connected on port" << qPrintable(info.portName());
-            QTimer::singleShot(4000, this, SLOT(init()));
+            QTimer::singleShot(10000, this, SLOT(init()));
         }
     }
 }
@@ -283,7 +283,7 @@ void Gsm::update(QString buffer) {
         }
         break;
     case 100:
-        qDebug() << "Initialize SIM900... (SMS mode)";
+        qDebug() << "gsm: initialize SIM900... (SMS mode)";
         timeoutTimer->start(500);
         state += 1;
         send("AT+CMGF=1\r");
