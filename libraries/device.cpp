@@ -18,7 +18,7 @@ Device* Device::Instance()
 
 Device::Device(QString deviceName, QObject *parent) : QObject(parent)
 {
-    this->deviceName = deviceName;
+    this->deviceName = deviceName + ":";
     currentPortTested = "";
     systemInError = false;
     
@@ -96,7 +96,7 @@ void Device::readData()
 
        qDebug() << qPrintable(deviceName) << qPrintable(msg);
        
-       if (waitRegisterMsgTimer.isActive() && msg.contains(deviceName, Qt::CaseInsensitive)) {
+       if (waitRegisterMsgTimer.isActive() && msg.contains("doxeoboard", Qt::CaseInsensitive)) {
             waitRegisterMsgTimer.stop();
             connectionTimer.stop();
             

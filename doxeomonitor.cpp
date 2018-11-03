@@ -103,7 +103,7 @@ int DoxeoMonitor::start()
     ScriptEngine *scriptEngine = new ScriptEngine(jeedom, gsm, this);
 
     // Connect device
-    Device::initialize("Doxeoboard", this);
+    Device::initialize("doxeoboard", this);
 
     // Initialise mySensors
     MySensors *mySensors = new MySensors(this);
@@ -270,14 +270,6 @@ bool DoxeoMonitor::commandLineParser(bool *error)
                                          "Set the absolute path of the application directory.", "path");
     parser.addOption(applicationPathOption);
 
-    QCommandLineOption apikeyOption(QStringList() << "a" << "apikey",
-                                         "Set the API key of Jeedom Doxeo plugins.", "apikey");
-    parser.addOption(apikeyOption);
-
-    QCommandLineOption callbackOption(QStringList() << "b" << "callback",
-                                         "Set Jeedom callback.", "callback");
-    parser.addOption(callbackOption);
-
     parser.process(*this);
 
     if (parser.isSet(configureOption)) {
@@ -299,14 +291,6 @@ bool DoxeoMonitor::commandLineParser(bool *error)
 
     if (parser.value(applicationPathOption) != "") {
         QDir::setCurrent(parser.value(applicationPathOption));
-    }
-
-    if (parser.value(apikeyOption) != "") {
-        Jeedom::setDoxeokey(parser.value(apikeyOption));
-    }
-
-    if (parser.value(callbackOption) != "") {
-        Jeedom::setCallback(parser.value(callbackOption));
     }
 
     verbose = parser.isSet(debugOption);

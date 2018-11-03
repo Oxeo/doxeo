@@ -5,24 +5,19 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 
+const QString callbackCore = "http://127.0.0.1/core/api/jeeApi.php";
+const QString callbackDoxeo = "http://127.0.0.1/plugins/doxeo/core/php/jeeDoxeo.php";
+
 class Jeedom : public QObject
 {
     Q_OBJECT
+
 public:
     explicit Jeedom(QObject *parent = 0);
     void sendJson(QJsonObject json);
 
     QString getApikey();
     void setApikey(const QString &value);
-
-    static QString getDoxeokey();
-    static void setDoxeokey(const QString &value);
-
-    static QString getCallback();
-    static void setCallback(const QString &value);
-
-signals:
-
 
 public slots:
     void executeCmd(QString id);
@@ -33,9 +28,6 @@ protected slots:
 protected:
     QNetworkAccessManager *manager;
     QString apikey;
-
-    static QString doxeokey;
-    static QString callback;
 };
 
 #endif // JEEDOM_H

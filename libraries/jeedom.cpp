@@ -4,28 +4,25 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 
-QString Jeedom::doxeokey = "";
-QString Jeedom::callback = "";
-
 Jeedom::Jeedom(QObject *parent) : QObject(parent)
 {
+    apikey = "";
     manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
 }
 
 void Jeedom::sendJson(QJsonObject json) {
     QNetworkRequest request;
-    request.setUrl(QUrl(callback + "?apikey=" + doxeokey));
+    request.setUrl(QUrl(callbackDoxeo + "?apikey=" + apikey));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-    //qDebug() << "jeedom: send" << QJsonDocument(json).toJson();
     manager->post(request, QJsonDocument(json).toJson());
 }
 
 void Jeedom::executeCmd(QString id)
 {
     QNetworkRequest request;
-    request.setUrl(QUrl("http://127.0.0.1/core/api/jeeApi.php?apikey="+apikey+"&type=cmd&id="+id));
+    request.setUrl(QUrl(callbackCore + "?apikey="+apikey+"&type=cmd&id="+id));
 
     manager->get(request);
 }
@@ -33,21 +30,12 @@ void Jeedom::executeCmd(QString id)
 void Jeedom::replyFinished(QNetworkReply *reply)
 {
     if (reply->error() != QNetworkReply::NoError) {
-        qWarning() << "Jeedom - Unable to send the request: " << reply->errorString();
-    } else {
-        //qDebug() << "jeedom:" << reply->readAll();
+        qWarning() << "jeedom: Unable to send the request" << qPrintable(reply->errorString());
+    } else if (reply->readAll().contains("success")) {
+        qWarning() << "jeedom: no success returned" << qPrintable(reply->readAll());
     }
 
     reply->deleteLater();
-}
-QString Jeedom::getCallback()
-{
-    return callback;
-}
-
-void Jeedom::setCallback(const QString &value)
-{
-    callback = value;
 }
 
 QString Jeedom::getApikey()
@@ -58,14 +46,4 @@ QString Jeedom::getApikey()
 void Jeedom::setApikey(const QString &value)
 {
     apikey = value;
-}
-
-QString Jeedom::getDoxeokey()
-{
-    return doxeokey;
-}
-
-void Jeedom::setDoxeokey(const QString &value)
-{
-    doxeokey = value;
 }
