@@ -27,6 +27,7 @@ signals:
 public slots:
     void sendSMS(QString numbers, QString msg);
     void sendAtCmd(QString cmd);
+    void sendCtrlZ();
     void init();
 
 protected slots:

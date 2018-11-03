@@ -156,6 +156,13 @@ void Gsm::sendAtCmd(QString cmd)
     }
 }
 
+void Gsm::sendCtrlZ()
+{
+    // End AT command with a ^Z, ASCII code 26
+    send(QString(QByteArray(1, 26)));
+    send(QString('\r'));
+}
+
 void Gsm::sendSMSProcess()
 {
     if (smsToSendList.empty()) {
@@ -202,7 +209,7 @@ void Gsm::update(QString buffer) {
     case 1:
         // AT command to set SIM900 to SMS mode
         send("AT+CMGF=1\r");
-        timeoutTimer->start(500);
+        timeoutTimer->start(2000);
         state += 1;
         break;
     case 2:
@@ -220,7 +227,7 @@ void Gsm::update(QString buffer) {
     case 3:
         // mobile numbers
         send("AT+CMGS = \"" + smsToSendList.first().numbers + "\"\r");
-        timeoutTimer->start(500);
+        timeoutTimer->start(2000);
         state += 1;
         break;
     case 4:
@@ -239,7 +246,7 @@ void Gsm::update(QString buffer) {
     case 5:
         // message
         send(smsToSendList.first().msg + '\r');
-        timeoutTimer->start(500);
+        timeoutTimer->start(2000);
         state += 1;
         break;
     case 6:
@@ -255,9 +262,7 @@ void Gsm::update(QString buffer) {
         }
         break;
     case 7:
-        // End AT command with a ^Z, ASCII code 26
-        send(QString(QByteArray(1, 26)));
-        send(QString('\r'));
+        sendCtrlZ();
         timeoutTimer->start(10000);
         state += 1;
         break;
