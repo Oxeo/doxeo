@@ -12,7 +12,7 @@ FirebaseCloudMessaging::FirebaseCloudMessaging(QString projectName, QObject *par
     this->manager = new QNetworkAccessManager(this);
 
     if (!QSslSocket::supportsSsl()) {
-        qCritical() << "SSL not supported: FirebaseCloudMessaging cannot be used!";
+        qCritical() << "fcm: SSL not supported: FirebaseCloudMessaging cannot be used!";
     }
     
     connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(networkReply(QNetworkReply*)));
@@ -28,7 +28,7 @@ void FirebaseCloudMessaging::send(Message message)
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", QString("key=" + serverKey).toUtf8());
     
-    qDebug() << "FCM: " + message.type + " " + message.title + " " + message.body;
+    qDebug() << "fcm:" << qPrintable(message.type) << qPrintable(message.title) << qPrintable(message.body);
     QNetworkReply *reply = manager->post(request, postMessage.toUtf8());
     Q_UNUSED(reply);
 }
@@ -55,12 +55,12 @@ void FirebaseCloudMessaging::networkReply(QNetworkReply *reply)
        QJsonObject json = doc.object();
        
        if (json.contains("error_code")) {
-            qWarning() << "FCM error: " << json.value("error_code").toString();
+            qWarning() << "fcm: error" << qPrintable(json.value("error_code").toString());
         } else {
-            qDebug() << "FCM message send with success!";
+            qDebug() << "fcm: send with success!";
         }
    } else {
-       qWarning() << "FCM error: " + reply->errorString();
+       qWarning() << "fcm: error" << qPrintable(reply->errorString());
    }
    
    delete reply;
