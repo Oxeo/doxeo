@@ -82,14 +82,17 @@ void MySensors::retryHandler()
     QMutableListIterator<RetryMsg> i(retryList);
     while (i.hasNext()) {
         RetryMsg *retryMsg = &i.next();
-        if (retryMsg->retryNumber == 0) {
-            qWarning() << "mysensors: no ack reveived for the message" << qPrintable(retryMsg->msg);
-            i.remove();
-        } else if (retryMsg->lastSendTime.addMSecs(200) < QDateTime::currentDateTime()) {
-            retryMsg->lastSendTime = QDateTime::currentDateTime();
-            retryMsg->retryNumber--;
-            qDebug() << "mysensors:" << qPrintable(retryMsg->msg) << "send again because no ack received";
-            send(retryMsg->msg, false);
+
+        if (retryMsg->lastSendTime.addMSecs(200) < QDateTime::currentDateTime()) {
+            if (retryMsg->retryNumber == 0) {
+                qWarning() << "mysensors: no ack reveived for the message" << qPrintable(retryMsg->msg);
+                i.remove();
+            } else {
+                retryMsg->lastSendTime = QDateTime::currentDateTime();
+                retryMsg->retryNumber--;
+                qDebug() << "mysensors:" << qPrintable(retryMsg->msg) << "send again because no ack received";
+                send(retryMsg->msg, false);
+            }
         }
     }
 
