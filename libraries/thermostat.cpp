@@ -29,7 +29,7 @@ void Thermostat::run()
 
         boolResetEvents = false;
 
-        qDebug() << "eventlist updated";
+        qDebug() << "thermostat: eventlist updated";
     }
 
     // Manage cool/heat setpoint scheduling
@@ -39,10 +39,10 @@ void Thermostat::run()
 
             if (action.type == HeaterEvent::Action::Start) {
                 heater->setActiveSetpoint(Heater::Heat);
-                qDebug() << "Heat setpoint set for " << heater->getName();
+                qDebug() << "thermostat: Heat setpoint set for" << qPrintable(heater->getName());
             } else {
                 heater->setActiveSetpoint(Heater::Cool);
-                qDebug() << "Cool setpoint set for " << heater->getName();
+                qDebug() << "thermostat: Cool setpoint set for" << qPrintable(heater->getName());
             }
 
             actionList.removeFirst();
@@ -56,7 +56,7 @@ void Thermostat::run()
     foreach(Heater *heater, *Heater::heaters()) {
         if (heater->getMode() == Heater::Off_Mode) {
             if (heater->getStatus() != Heater::Off) {
-                qDebug() << "Heater set to Off " << heater->getName();
+                qDebug() << "thermostat: Heater" << qPrintable(heater->getName()) << "set to off";
                 heater->changeStatus(Heater::Off);
             }
         } else {
@@ -64,10 +64,10 @@ void Thermostat::run()
             float currentSetpoint = heater->getCurrentSetpoint();
 
             if (currentSetpoint > temp + 0.2 && heater->getStatus() != Heater::On) {
-                qDebug() << "Heater set to On " << heater->getName();
+                qDebug() << "thermostat: Heater" << qPrintable(heater->getName()) << "set to on";
                 heater->changeStatus(Heater::On);
             } else if (currentSetpoint < temp - 0.2 && heater->getStatus() != Heater::Off) {
-                qDebug() << "Heater set to Off " << heater->getName();
+                qDebug() << "thermostat: Heater" << qPrintable(heater->getName()) << "set to off";
                 heater->changeStatus(Heater::Off);
             }
         }
@@ -103,7 +103,7 @@ void Thermostat::start()
     timer.start();
     logTimer.start();
 
-    qDebug() << "Thermostat started";
+    qDebug() << "thermostat: started";
 }
 
 void Thermostat::stop()

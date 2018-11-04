@@ -70,7 +70,7 @@ void Heater::sendCommand()
         Device::Instance()->send(powerOffCmd);
     }
     
-    qDebug() << "Heater command send: " << this->name << statusCmd;
+    //qDebug() << "Heater command send: " << this->name << statusCmd;
 
     repeat--;
     if (repeat == 0) {
