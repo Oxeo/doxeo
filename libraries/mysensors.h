@@ -5,6 +5,8 @@
 #include <QString>
 #include <QSerialPort>
 #include <QTimer>
+#include <QDateTime>
+#include <QList>
 
 const int BROADCAST_ADDRESS				= 255;
 const int NODE_SENSOR_ID				= 255;
@@ -34,10 +36,10 @@ class MySensors : public QObject
 {
     Q_OBJECT
 
-public:
+public:   
     explicit MySensors(QObject *parent = 0);
     void start();
-    void send(QString msg);
+    void send(QString msg, int retryNumber = 0);
     bool isConnected();
 
 signals:
@@ -46,8 +48,15 @@ signals:
 protected slots:
     void connection();
     void handleError(QSerialPort::SerialPortError error);
+    void retryHandler();
 
 protected:
+    struct RetryMsg {
+      QString msg;
+      int retryNumber;
+      QDateTime lastSendTime;
+    };
+
     void readData();
     bool foundDevice(const QString port = "");
     QString encode(int destination, int sensor, int command, int acknowledge, int type, QString payload);
@@ -55,6 +64,7 @@ protected:
     void sendConfig(int destination);
     void appendData(QString str);
     void rfReceived(QString data);
+    void removeRetryMsg(QString msg);
 
     QString appendedString;
     QSerialPort *serial;
@@ -62,6 +72,8 @@ protected:
     QTimer waitRegisterMsgTimer;
     QString currentPortTested;
     bool systemInError;
+    QTimer retryTimer;
+    QList<RetryMsg> retryList;
 };
 
 #endif // MYSENSORS_H

@@ -16,12 +16,14 @@ MySensors::MySensors(QObject *parent) : QObject(parent)
 
     connectionTimer.setSingleShot(true);
     waitRegisterMsgTimer.setSingleShot(true);
+    retryTimer.setSingleShot(true);
 
     connect(serial, &QSerialPort::readyRead, this, &MySensors::readData);
     connect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this,
             SLOT(handleError(QSerialPort::SerialPortError)));
     connect(&connectionTimer, SIGNAL(timeout()), this, SLOT(connection()), Qt::QueuedConnection);
     connect(&waitRegisterMsgTimer, SIGNAL(timeout()), this, SLOT(connection()), Qt::QueuedConnection);
+    connect(&retryTimer, SIGNAL(timeout()), this, SLOT(retryHandler()), Qt::QueuedConnection);
 }
 
 void MySensors::start()
@@ -75,6 +77,27 @@ void MySensors::handleError(QSerialPort::SerialPortError error)
     }
 }
 
+void MySensors::retryHandler()
+{
+    QMutableListIterator<RetryMsg> i(retryList);
+    while (i.hasNext()) {
+        RetryMsg *retryMsg = &i.next();
+        if (retryMsg->retryNumber == 0) {
+            qWarning() << "mysensors: no ack reveived for the message" << qPrintable(retryMsg->msg);
+            i.remove();
+        } else if (retryMsg->lastSendTime.addMSecs(200) < QDateTime::currentDateTime()) {
+            retryMsg->lastSendTime = QDateTime::currentDateTime();
+            retryMsg->retryNumber--;
+            qDebug() << "mysensors:" << qPrintable(retryMsg->msg) << "send again because no ack received";
+            send(retryMsg->msg);
+        }
+    }
+
+    if (!retryList.isEmpty()) {
+        retryTimer.start(50);
+    }
+}
+
 void MySensors::readData()
 {
     QByteArray data;
@@ -106,12 +129,26 @@ void MySensors::readData()
     }
 }
 
-void MySensors::send(QString msg)
+void MySensors::send(QString msg, int retryNumber)
 {
     if (serial->isOpen()) {
         qDebug() << "mySensors: send" << qPrintable(msg);
         QString msgToSend = msg + "\n";
         serial->write(msgToSend.toLatin1());
+
+        if (retryNumber != 0 &&
+                msg.split(";").length() > 3 &&
+                msg.split(";").at(3).toInt() == 1) {
+            RetryMsg retryMsg;
+            retryMsg.msg = msg;
+            retryMsg.retryNumber = retryNumber;
+            retryMsg.lastSendTime = QDateTime::currentDateTime();
+            retryList.append(retryMsg);
+
+            if (!retryTimer.isActive()) {
+                retryTimer.start(210);
+            }
+        }
     } else {
         qCritical() << "mySensors: not connected to send the message" << qPrintable(msg);
     }
@@ -201,6 +238,8 @@ void MySensors::appendData(QString str) {
 
 void MySensors::rfReceived(QString data) {
     if (data != "" && data.split(";").length() > 4) {
+        removeRetryMsg(data);
+
         // decoding message
         QStringList datas = data.split(";");
         int sender = datas.at(0).toInt();
@@ -211,7 +250,7 @@ void MySensors::rfReceived(QString data) {
 
         QString payload = "";
         if (datas.size() > 5) {
-            payload = datas[5].trimmed();
+            payload = datas.at(5).trimmed();
         }
 
         switch (command) {
@@ -274,6 +313,16 @@ void MySensors::rfReceived(QString data) {
                 break;
             default:
                 break;
+        }
+    }
+}
+
+void MySensors::removeRetryMsg(QString msg)
+{
+    QMutableListIterator<RetryMsg> i(retryList);
+    while (i.hasNext()) {
+        if (i.next().msg == msg) {
+            i.remove();
         }
     }
 }
