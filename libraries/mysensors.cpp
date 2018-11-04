@@ -136,9 +136,7 @@ void MySensors::send(QString msg, int retryNumber)
         QString msgToSend = msg + "\n";
         serial->write(msgToSend.toLatin1());
 
-        if (retryNumber != 0 &&
-                msg.split(";").length() > 3 &&
-                msg.split(";").at(3).toInt() == 1) {
+        if (msg.split(";").length() > 3 && msg.split(";").at(3).toInt() == 1) {
             RetryMsg retryMsg;
             retryMsg.msg = msg;
             retryMsg.retryNumber = retryNumber;
