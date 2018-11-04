@@ -39,7 +39,7 @@ class MySensors : public QObject
 public:   
     explicit MySensors(QObject *parent = 0);
     void start();
-    void send(QString msg, int retryNumber = 0);
+    void send(QString msg, bool checkAck = true);
     bool isConnected();
 
 signals:

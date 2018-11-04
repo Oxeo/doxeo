@@ -89,7 +89,7 @@ void MySensors::retryHandler()
             retryMsg->lastSendTime = QDateTime::currentDateTime();
             retryMsg->retryNumber--;
             qDebug() << "mysensors:" << qPrintable(retryMsg->msg) << "send again because no ack received";
-            send(retryMsg->msg);
+            send(retryMsg->msg, false);
         }
     }
 
@@ -129,17 +129,17 @@ void MySensors::readData()
     }
 }
 
-void MySensors::send(QString msg, int retryNumber)
+void MySensors::send(QString msg, bool checkAck)
 {
     if (serial->isOpen()) {
         qDebug() << "mySensors: send" << qPrintable(msg);
         QString msgToSend = msg + "\n";
         serial->write(msgToSend.toLatin1());
 
-        if (msg.split(";").length() > 3 && msg.split(";").at(3).toInt() == 1) {
+        if (checkAck && msg.split(";").length() > 3 && msg.split(";").at(3).toInt() == 1) {
             RetryMsg retryMsg;
             retryMsg.msg = msg;
-            retryMsg.retryNumber = retryNumber;
+            retryMsg.retryNumber = 5;
             retryMsg.lastSendTime = QDateTime::currentDateTime();
             retryList.append(retryMsg);
 

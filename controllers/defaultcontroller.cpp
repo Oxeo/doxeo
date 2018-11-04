@@ -230,7 +230,7 @@ void DefaultController::jsonMySensors()
        QString msg = query->getItem("msg").trimmed();
 
        if (!msg.isEmpty()) {
-           mySensors->send(msg, 5);
+           mySensors->send(msg);
            result.insert("success", true);
        } else {
            result.insert("msg", "msg is empty!");
