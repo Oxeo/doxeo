@@ -47,6 +47,10 @@ $(document).ready(function () {
             hide: {
                 title: 'Hide',
                 options: { 'false': 'No', 'true': 'Yes'}
+            },
+            invert_binary: {
+                title: 'Invert',
+                options: { 'false': 'No', 'true': 'Yes'}
             }
         }
     });

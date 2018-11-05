@@ -49,6 +49,9 @@ public:
 
     bool getHide() const;
     void setHide(bool value);
+
+    bool getInvertBinary() const;
+    void setInvertBinary(bool value);
     
     int getBatteryLevel() const;
 
@@ -88,6 +91,7 @@ protected:
     QDateTime startTime;
     int batteryLevel;
     QDateTime batteryLevelUpdate;
+    bool invertBinary;
 
     static Event event;
     static QHash<QString, Sensor*> sensorList;

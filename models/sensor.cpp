@@ -21,6 +21,7 @@ Sensor::Sensor(QString id, QObject *parent) : QObject(parent)
     startTime = QDateTime::currentDateTime();
     batteryLevel = 0;
     batteryLevelUpdate = QDateTime::currentDateTime().addMonths(-6);
+    invertBinary = false;
 
     for (int i=0; i<5; i++) {
         lastUpdate.append(QDateTime::currentDateTime().addMonths(-6));
@@ -44,6 +45,7 @@ QJsonObject Sensor::toJson() const
     result.insert("last_event", QString::number(lastEvent.toTime_t()));
     result.insert("battery", batteryLevel);
     result.insert("battery_update", QString::number(batteryLevelUpdate.toTime_t()));
+    result.insert("invert_binary", invertBinary ? "true" : "false");
 
     return result;
 }
@@ -113,7 +115,7 @@ Sensor *Sensor::get(QString id)
 void Sensor::update()
 {
     QSqlQuery query = Database::getQuery();
-    query.prepare("SELECT id, cmd, name, category, order_by, hide FROM sensor");
+    query.prepare("SELECT id, cmd, name, category, order_by, hide, invert_binary FROM sensor");
 
     if(Database::exec(query))
     {
@@ -128,6 +130,7 @@ void Sensor::update()
             s->category = query.value(3).toString();
             s->order = query.value(4).toInt();
             s->hide = query.value(5).toBool();
+            s->invertBinary = query.value(6).toBool();
             s->value = "";
 
             sensorList.insert(s->getId(), s);
@@ -158,10 +161,10 @@ bool Sensor::flush(bool newObject)
     QSqlQuery query = Database::getQuery();
 
     if (!newObject) {
-        query.prepare("UPDATE sensor SET cmd=?, name=?, category=?, order_by=?, hide=? WHERE id=?");
+        query.prepare("UPDATE sensor SET cmd=?, name=?, category=?, order_by=?, hide=?, invert_binary=? WHERE id=?");
     } else {
-        query.prepare("INSERT INTO sensor (cmd, name, category, order_by, hide, id) "
-                      "VALUES (?, ?, ?, ?, ?, ?)");
+        query.prepare("INSERT INTO sensor (cmd, name, category, order_by, hide, invert_binary, id) "
+                      "VALUES (?, ?, ?, ?, ?, ?, ?)");
     }
 
     query.addBindValue(cmd);
@@ -169,6 +172,7 @@ bool Sensor::flush(bool newObject)
     query.addBindValue(category);
     query.addBindValue(order);
     query.addBindValue(hide);
+    query.addBindValue(invertBinary);
     query.addBindValue(id);
 
     if (Database::exec(query)) {
@@ -243,6 +247,16 @@ bool Sensor::compareByOrder(Sensor *s1, Sensor *s2)
         return s1->order < s2->order;
     }
 }
+bool Sensor::getInvertBinary() const
+{
+    return invertBinary;
+}
+
+void Sensor::setInvertBinary(bool value)
+{
+    invertBinary = value;
+}
+
 
 bool Sensor::getHide() const
 {

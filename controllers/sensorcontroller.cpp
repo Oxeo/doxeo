@@ -86,6 +86,7 @@ void SensorController::jsonCreateSensor()
     sw.setCategory(query->getItem("category"));
     sw.setOrder(query->getItem("order").toInt());
     sw.setHide(query->getItem("hide") == "true" ? true : false);
+    sw.setInvertBinary(query->getItem("invert_binary") == "true" ? true : false);
     sw.setValue(query->getItem("value"));
     sw.flush(true);
 
@@ -113,6 +114,7 @@ void SensorController::jsonEditSensor()
     sw.setCategory(query->getItem("category"));
     sw.setOrder(query->getItem("order").toInt());
     sw.setHide(query->getItem("hide") == "true" ? true : false);
+    sw.setInvertBinary(query->getItem("invert_binary") == "true" ? true : false);
     sw.setValue(query->getItem("value"));
     sw.flush(false);
 
