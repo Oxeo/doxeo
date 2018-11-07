@@ -10,10 +10,11 @@
 #include <QTime>
 #include <QJsonObject>
 
-ScriptEngine::ScriptEngine(Jeedom *jeedom, Gsm *gsm, QObject *parent) : QObject(parent)
+ScriptEngine::ScriptEngine(Jeedom *jeedom, Gsm *gsm, MySensors *mySensors, QObject *parent) : QObject(parent)
 {
     this->gsm = gsm;
     this->jeedom = jeedom;
+    this->mySensors = mySensors;
 }
 
 void ScriptEngine::init()
@@ -23,6 +24,7 @@ void ScriptEngine::init()
     engine.globalObject().setProperty("event_builder", engine.newQObject(timeEvent));
     engine.globalObject().setProperty("gsm", engine.newQObject(gsm));
     engine.globalObject().setProperty("jeedom", engine.newQObject(jeedom));
+    engine.globalObject().setProperty("mySensors", engine.newQObject(mySensors));
 
     updateSensors();
     updateSwitches();

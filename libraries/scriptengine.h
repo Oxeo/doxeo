@@ -4,6 +4,7 @@
 #include <models/script.h>
 #include <libraries/gsm.h>
 #include <libraries/jeedom.h>
+#include <libraries/mysensors.h>
 
 #include <QObject>
 #include <QScriptEngine>
@@ -15,7 +16,7 @@ class ScriptEngine : public QObject
     Q_OBJECT
 
 public:
-    explicit ScriptEngine(Jeedom *jeedom, Gsm *gsm = 0, QObject *parent = 0);
+    explicit ScriptEngine(Jeedom *jeedom, Gsm *gsm, MySensors *mySensors, QObject *parent = 0);
     void init();
     QString runCmd(QString cmd);
 
@@ -37,6 +38,7 @@ protected:
     QHash<QString, uint> eventList;
     Gsm *gsm;
     Jeedom *jeedom;
+    MySensors *mySensors;
 };
 
 #endif // SCRIPTENGINE_H

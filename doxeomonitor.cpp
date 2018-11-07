@@ -96,18 +96,19 @@ int DoxeoMonitor::start()
     Jeedom *jeedom = new Jeedom(this);
     jeedom->setApikey(settings.value("jeedom/apikey", "").toString());
 
-    // Initialise Switch
-    Switch::setJeedom(jeedom);
-
-    // Initialise Script Engine
-    ScriptEngine *scriptEngine = new ScriptEngine(jeedom, gsm, this);
-
     // Connect device
     Device::initialize("doxeoboard", this);
 
     // Initialise mySensors
     MySensors *mySensors = new MySensors(this);
     mySensors->start();
+
+    // Initialise Switch
+    Switch::setJeedom(jeedom);
+    Switch::setMySensors(mySensors);
+
+    // Initialise Script Engine
+    ScriptEngine *scriptEngine = new ScriptEngine(jeedom, gsm, mySensors, this);
 
     // Add controller
     httpServer->addController(new DefaultController(mySensors, fcm, gsm, this), "default");

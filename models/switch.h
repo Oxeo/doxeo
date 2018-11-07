@@ -3,6 +3,7 @@
 
 #include "core/event.h"
 #include "libraries/jeedom.h"
+#include "libraries/mysensors.h"
 
 #include <QObject>
 #include <QString>
@@ -48,6 +49,7 @@ public:
     static QHash<QString, Switch *> &getSwitchList();
     static Event* getEvent();
     static void setJeedom(Jeedom *jeedom);
+    static void setMySensors(MySensors *value);
     static void updateStatusByCommand(QString cmd);
 
 public slots:
@@ -76,6 +78,7 @@ protected:
     static QHash<QString, Switch*> switchList;
     static Event event;
     static Jeedom *jeedom;
+    static MySensors *mySensors;
 };
 
 #endif // SWITCH_H

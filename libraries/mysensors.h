@@ -39,8 +39,10 @@ class MySensors : public QObject
 public:   
     explicit MySensors(QObject *parent = 0);
     void start();
-    void send(QString msg, bool checkAck = true);
     bool isConnected();
+
+public slots:
+    void send(QString msg, bool checkAck = true);
 
 signals:
     void dataReceived(QString messagetype, int sender, int sensor, int type, QString payload);

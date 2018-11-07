@@ -12,6 +12,7 @@
 QHash<QString, Switch*> Switch::switchList;
 Event Switch::event;
 Jeedom* Switch::jeedom;
+MySensors* Switch::mySensors;
 
 Switch::Switch(QString id, QObject *parent) : QObject(parent)
 {
@@ -86,6 +87,8 @@ void Switch::powerOn(int timerOff)
         QString val = powerOnCmd.split(",").value(0);
         if (val.startsWith("jeedom_cmd;") && val.split(";").size() == 2) {
             jeedom->executeCmd(val.split(";").value(1));
+        } else if (val.startsWith("ms;") && val.split(";").size() > 1) {
+            mySensors->send(val.section(";", 1));
         } else {
             Device::Instance()->send(powerOnCmd.split(",").value(0));
         }
@@ -106,6 +109,8 @@ void Switch::powerOff()
         QString val = powerOffCmd.split(",").value(0);
         if (val.startsWith("jeedom_cmd;") && val.split(";").size() == 2) {
             jeedom->executeCmd(val.split(";").value(1));
+        } else if (val.startsWith("ms;") && val.split(";").size() > 1) {
+            mySensors->send(val.section(";", 1));
         } else {
             Device::Instance()->send(powerOffCmd.split(",").value(0));
         }
@@ -279,6 +284,11 @@ void Switch::updateValue(QString id, QString value)
         setStatus("off");
     }
 }
+void Switch::setMySensors(MySensors *value)
+{
+    mySensors = value;
+}
+
 
 void Switch::updateStatusByCommand(QString cmd)
 {
