@@ -39,7 +39,7 @@ $(document).ready(function () {
             },
             category: {
                 title: 'Category',
-                options: { 'temperature': 'Temperature', 'speaker': 'Speaker', 'door': 'Door', 'pump': 'Pump', 'light': 'Light', 'other': 'Other'}
+                options: { 'temperature': 'Temperature', 'speaker': 'Speaker', 'door': 'Door', 'pump': 'Pump', 'light': 'Light', 'doormat': 'Doormat', 'doorknob': 'Doorknob', 'pir': 'PIR', 'other': 'Other'}
             },
             order: {
                 title: 'Order',

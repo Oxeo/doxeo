@@ -31,7 +31,7 @@ $(document).ready(function () {
             },
             category: {
                 title: 'Category',
-                options: { 'light': 'Light', 'socket': 'Socket', 'camera': 'Camera', 'alarm': 'Alarm', 'speaker': 'Speaker', 'fountain': 'Fountain', 'other': 'Other'}
+                options: { 'light': 'Light', 'socket': 'Socket', 'camera': 'Camera', 'alarm': 'Alarm', 'speaker': 'Speaker', 'fountain': 'Fountain', 'dog': 'Dog', 'other': 'Other'}
             },
             order: {
                 title: 'Order',
