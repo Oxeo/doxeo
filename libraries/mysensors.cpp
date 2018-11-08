@@ -132,10 +132,10 @@ void MySensors::readData()
     }
 }
 
-void MySensors::send(QString msg, bool checkAck)
+void MySensors::send(QString msg, bool checkAck, QString comment)
 {
     if (serial->isOpen()) {
-        qDebug() << "mySensors: send" << qPrintable(msg);
+        qDebug() << "mySensors: send" << qPrintable(msg) << qPrintable("(" + comment + ")");
         QString msgToSend = msg + "\n";
         serial->write(msgToSend.toLatin1());
 
@@ -227,7 +227,6 @@ void MySensors::appendData(QString str) {
     }
 
     if (pos < str.length() && str.at(pos) == '\n') {
-        qDebug() << "mySensors:" << qPrintable(appendedString.trimmed());
         rfReceived(appendedString.trimmed());
         appendedString = "";
     }
@@ -252,6 +251,10 @@ void MySensors::rfReceived(QString data) {
         QString payload = "";
         if (datas.size() > 5) {
             payload = datas.at(5).trimmed();
+        }
+
+        if (type != I_LOG_MESSAGE) {
+            qDebug() << "mySensors:" << qPrintable(data);
         }
 
         switch (command) {
@@ -306,6 +309,8 @@ void MySensors::rfReceived(QString data) {
                         break;
                     case I_REBOOT:
                         break;
+                    case I_PONG:
+                        emit dataReceived("saveValue", sender, sensor, type, payload);
                     default:
                         break;
                 }
