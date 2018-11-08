@@ -122,7 +122,7 @@ void Device::readData()
 
 void Device::send(QString data, QString comment)
 {
-    qDebug() << qPrintable(deviceName) << "send" << data << qPrintable("(" + comment + ")");
+    qDebug() << qPrintable(deviceName) << "send" << qPrintable(data) << qPrintable("(" + comment + ")");
     msgToSend.append(data + "\n");
 
     if (!sendTimer->isActive()) {
