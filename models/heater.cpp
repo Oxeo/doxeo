@@ -64,10 +64,10 @@ void Heater::sendCommand()
 
     if (status == On) {
         statusCmd = "on";
-        Device::Instance()->send(powerOnCmd);
+        Device::Instance()->send(powerOnCmd, "Heater " + name + " set to ON");
     } else {
         statusCmd = "off";
-        Device::Instance()->send(powerOffCmd);
+        Device::Instance()->send(powerOffCmd, "Heater " + name + " set to OFF");
     }
     
     //qDebug() << "Heater command send: " << this->name << statusCmd;

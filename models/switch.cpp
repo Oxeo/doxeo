@@ -59,8 +59,6 @@ void Switch::updateStatus(QString status)
 
     Database::exec(query);
     Database::release();
-
-    qDebug() << "Switch status " + id + " set to " + status;
 }
 
 QString Switch::getId() const
@@ -90,7 +88,9 @@ void Switch::powerOn(int timerOff)
         } else if (val.startsWith("ms;") && val.split(";").size() > 1) {
             mySensors->send(val.section(";", 1), true, "Switch " + name + " set to ON");
         } else {
-            Device::Instance()->send(powerOnCmd.split(",").value(0));
+            Device::Instance()->send(powerOnCmd.split(",").value(0), "Switch " + name + " set to ON");
+        } else {
+            qDebug() << "switch:" << qPrintable(name) << "set to ON";
         }
     }
     setStatus("on");
@@ -112,7 +112,9 @@ void Switch::powerOff()
         } else if (val.startsWith("ms;") && val.split(";").size() > 1) {
             mySensors->send(val.section(";", 1), true, "Switch " + name + " set to OFF");
         } else {
-            Device::Instance()->send(powerOffCmd.split(",").value(0));
+            Device::Instance()->send(powerOffCmd.split(",").value(0), "Switch " + name + " set to OFF");
+        } else {
+            qDebug() << "switch:" << qPrintable(name) << "set to Off";
         }
     }
     setStatus("off");

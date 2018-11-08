@@ -14,8 +14,7 @@ public:
     static void initialize(QString deviceName, QObject *parent = 0);
     static Device *Instance();
 
-    void send(QString id, QString value);
-    void send(QString data);
+    void send(QString data, QString comment);
     bool isConnected();
 
 signals:

@@ -97,9 +97,9 @@ void ScriptHelper::setScriptStatus(int id, QString status)
     }
 }
 
-void ScriptHelper::sendCmd(QString cmd)
+void ScriptHelper::sendCmd(QString cmd, QString comment)
 {
-    Device::Instance()->send(cmd);
+    Device::Instance()->send(cmd, comment);
 }
 
 QString ScriptHelper::execute(QString cmd)

@@ -25,7 +25,7 @@ public:
 signals:
 
 public slots:
-    void sendCmd(QString cmd);
+    void sendCmd(QString cmd, QString comment = "");
     QString execute(QString cmd);
     void setLog(QString log);
     void setWarning(QString warning);
