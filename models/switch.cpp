@@ -88,7 +88,7 @@ void Switch::powerOn(int timerOff)
         if (val.startsWith("jeedom_cmd;") && val.split(";").size() == 2) {
             jeedom->executeCmd(val.split(";").value(1));
         } else if (val.startsWith("ms;") && val.split(";").size() > 1) {
-            mySensors->send(val.section(";", 1));
+            mySensors->send(val.section(";", 1), true, "Switch " + name + " set to ON");
         } else {
             Device::Instance()->send(powerOnCmd.split(",").value(0));
         }
@@ -110,7 +110,7 @@ void Switch::powerOff()
         if (val.startsWith("jeedom_cmd;") && val.split(";").size() == 2) {
             jeedom->executeCmd(val.split(";").value(1));
         } else if (val.startsWith("ms;") && val.split(";").size() > 1) {
-            mySensors->send(val.section(";", 1));
+            mySensors->send(val.section(";", 1), true, "Switch " + name + " set to OFF");
         } else {
             Device::Instance()->send(powerOffCmd.split(",").value(0));
         }
