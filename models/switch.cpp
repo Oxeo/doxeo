@@ -89,10 +89,11 @@ void Switch::powerOn(int timerOff)
             mySensors->send(val.section(";", 1), true, "Switch " + name + " set to ON");
         } else {
             Device::Instance()->send(powerOnCmd.split(",").value(0), "Switch " + name + " set to ON");
-        } else {
-            qDebug() << "switch:" << qPrintable(name) << "set to ON";
         }
+    } else {
+        qDebug() << "switch:" << qPrintable(name) << "set to ON";
     }
+    
     setStatus("on");
 }
 
@@ -113,10 +114,11 @@ void Switch::powerOff()
             mySensors->send(val.section(";", 1), true, "Switch " + name + " set to OFF");
         } else {
             Device::Instance()->send(powerOffCmd.split(",").value(0), "Switch " + name + " set to OFF");
-        } else {
-            qDebug() << "switch:" << qPrintable(name) << "set to Off";
         }
+    } else {
+        qDebug() << "switch:" << qPrintable(name) << "set to Off";
     }
+        
     setStatus("off");
     timerPowerOn->stop();
     timerPowerOff->stop();
