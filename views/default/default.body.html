@@ -26,46 +26,6 @@
       </table>
     </div>
     
-    <!-- Sensor Panel -->
-    <div class="panel panel-warning">
-      <div class="panel-heading clearfix">
-        <h3 class="panel-title pull-left" style="padding-top: 2.5px;">Sensor</h3>
-        <div class="dropdown pull-right">
-          <button class="btn btn-link dropdown-toggle btn-xs" type="button" id="dropdownSwitch" data-toggle="dropdown" aria-expanded="true">
-            <span class="glyphicon glyphicon-menu-hamburger" aria-label="menu"></span>
-          </button>
-          <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownSwitch">
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="/sensor/list">Manage</a></li>
-          </ul>
-        </div>
-      </div>
-      <table class="table" id="sensorList">
-      </table>
-    </div>
-    
-    <!-- Scenario Panel -->
-    <div class="panel panel-warning">
-      <div class="panel-heading clearfix">
-        <h3 class="panel-title pull-left" style="padding-top: 2.5px;">Scenario</h3>
-        <div class="dropdown pull-right">
-          <button class="btn btn-link dropdown-toggle btn-xs" type="button" id="dropdownSwitch" data-toggle="dropdown" aria-expanded="true">
-            <span class="glyphicon glyphicon-menu-hamburger" aria-label="menu"></span>
-          </button>
-          <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownSwitch">
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="/scenario/list">Manage</a></li>
-          </ul>
-        </div>
-      </div>
-      <table class="table" id="scenarioList">
-      </table>
-    </div>
-    
-
-  </div>
-  
-  <!-- Center column -->
-  <div class="col-sm-4">
-
     <!-- System Panel -->
     <div class="panel panel-success">
       <div class="panel-heading clearfix">
@@ -128,23 +88,58 @@
         </tr>
       </table>
     </div>
-	
-	<!-- Script Panel -->
-    <div class="panel panel-info">
+    <!-- End System Panel -->
+    
+    <!-- Battery Panel -->
+    <div class="panel panel-danger">
       <div class="panel-heading clearfix">
-        <h3 class="panel-title pull-left" style="padding-top: 2.5px;">Script</h3>
+        <h3 class="panel-title pull-left" style="padding-top: 2.5px;">Battery</h3>
+      </div>
+      <table class="table" id="batteryList">
+      </table>
+    </div>
+    <!-- End Battery Panel -->
+
+  </div>
+  
+  <!-- Center column -->
+  <div class="col-sm-4">
+  
+    <!-- Sensor Panel -->
+    <div class="panel panel-warning">
+      <div class="panel-heading clearfix">
+        <h3 class="panel-title pull-left" style="padding-top: 2.5px;">Sensor</h3>
         <div class="dropdown pull-right">
           <button class="btn btn-link dropdown-toggle btn-xs" type="button" id="dropdownSwitch" data-toggle="dropdown" aria-expanded="true">
             <span class="glyphicon glyphicon-menu-hamburger" aria-label="menu"></span>
           </button>
           <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownSwitch">
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="/script/list">Manage</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="/sensor/list">Manage</a></li>
           </ul>
         </div>
       </div>
-      <table class="table" id="scriptList">
+      <table class="table" id="sensorList">
       </table>
     </div>
+    <!-- End Sensor Panel -->
+    
+    <!-- Scenario Panel -->
+    <div class="panel panel-warning">
+      <div class="panel-heading clearfix">
+        <h3 class="panel-title pull-left" style="padding-top: 2.5px;">Scenario</h3>
+        <div class="dropdown pull-right">
+          <button class="btn btn-link dropdown-toggle btn-xs" type="button" id="dropdownSwitch" data-toggle="dropdown" aria-expanded="true">
+            <span class="glyphicon glyphicon-menu-hamburger" aria-label="menu"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownSwitch">
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="/scenario/list">Manage</a></li>
+          </ul>
+        </div>
+      </div>
+      <table class="table" id="scenarioList">
+      </table>
+    </div>
+    <!-- End Scenario Panel -->
 	
   </div>
   
@@ -210,16 +205,26 @@
         </div>
       </div>
     </div>
+    <!-- End Heater Panel -->
     
-    <!-- Battery Panel -->
-    <div class="panel panel-danger">
+    <!-- Script Panel -->
+    <div class="panel panel-info">
       <div class="panel-heading clearfix">
-        <h3 class="panel-title pull-left" style="padding-top: 2.5px;">Battery</h3>
+        <h3 class="panel-title pull-left" style="padding-top: 2.5px;">Script</h3>
+        <div class="dropdown pull-right">
+          <button class="btn btn-link dropdown-toggle btn-xs" type="button" id="dropdownSwitch" data-toggle="dropdown" aria-expanded="true">
+            <span class="glyphicon glyphicon-menu-hamburger" aria-label="menu"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownSwitch">
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="/script/list">Manage</a></li>
+          </ul>
+        </div>
       </div>
-      <table class="table" id="batteryList">
+      <table class="table" id="scriptList">
       </table>
     </div>
-
+    <!-- End Script Panel -->
+    
   </div>
 </div>
 

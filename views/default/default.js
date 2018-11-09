@@ -190,7 +190,7 @@ function update() {
                 if (val.hide != "true") {
                     var date = new Date(val.last_event * 1000);;
                     var lastUpdate = date.toLocaleTimeString() + ' ' + date.toLocaleDateString();
-                    $('#sensorList').append('<tr><td class="text-right" style="width: 50%">'+val.name+'</td><td class="text-left"><span data-toggle="tooltip" data-placement="right" title="'+lastUpdate+'">'+val.value+'</span></td></tr>');
+                    $('#sensorList').append('<tr><td class="text-right" style="width: 40%"><span data-toggle="tooltip" data-placement="left" title="'+lastUpdate+'">'+ getSensorImage(val) + '</span></td><td class="text-left">'+ val.name + '<br />' + getSensorStatus(val) +'</td></tr>');
                 }
                 
                 // update battery panel
@@ -448,6 +448,91 @@ $('.container').on('click', '.change_heater_setpoint', function(){
             alert_error("Request Failed: " + error);
     });
 });
+
+function getSensorImage(sensor) {
+    var img = "";
+    if (sensor.category === "temperature") {
+        img = "temperature_sensor.png";
+    } else if (sensor.category === "door") {
+        if (isSensorOn(sensor)) {
+            img = "door_close.png";
+        } else {
+            img = "door_open.png";
+        }
+    } else if (sensor.category === "doorknob") {
+        var eventDate = new Date(sensor.last_event * 1000);
+        var todayDate = new Date();
+        if (todayDate.getTime() - eventDate.getTime() < 180000) {
+            img = "handle_on.png";
+        } else {
+            img = "handle_off.png";
+        }
+    } else if (sensor.category === "pir") {
+        var eventDate = new Date(sensor.last_event * 1000);
+        var todayDate = new Date();
+        if (todayDate.getTime() - eventDate.getTime() < 180000) {
+            img = "running.png";
+        } else {
+            img = "eye.png";
+        }
+    } else if (sensor.category === "pump") {
+        img = "tap.png";
+    } else if (sensor.category === "speaker") {
+        img = "music.png";
+    } else if (sensor.category === "light") {
+        img = "bulb.png";
+    } else if (sensor.category === "doormat") {
+        var eventDate = new Date(sensor.last_event * 1000);
+        var todayDate = new Date();
+        if (todayDate.getTime() - eventDate.getTime() < 180000) {
+            img = "sensor.png";
+        } else {
+            img = "sensor_off.png";
+        }
+    } else {
+        img = "sensor.png";
+    }
+    
+    var style = '';
+    
+    if (sensor.value === '') {
+        style = ' style="opacity: 0.2; filter: alpha(opacity=20)"'
+    }
+
+    return '<img src="assets/images/' + img + '" alt="Icon" height="42" width="42"' + style + '>';
+}
+
+function getSensorStatus(sensor) {
+    var result = sensor.value;
+    
+    if (sensor.category === 'door') {
+        if (isSensorOn(sensor)) {
+            result = "Close";
+        } else {
+            result = "Open";
+        }
+    } else if (sensor.category === 'temperature') {
+        result = result + "°C";
+    } else if (sensor.category === 'doorknob') {
+        result = "";
+    } else if (sensor.category === 'pir') {
+        result = "";
+    } else if (sensor.category === 'doormat') {
+        result = "";
+    }
+        
+    return result;
+}
+
+function isSensorOn(sensor) {
+    if (sensor.value === "") {
+        return false;
+    } else if (sensor.value === "on" || sensor.value === "1" || sensor.value === "close") {
+        return sensor.invert_binary === 'false';
+    } else {
+        return sensor.invert_binary === 'true';
+    }
+}
 
 function alert_info(message) {           
     $('#alert_placeholder').prepend(
