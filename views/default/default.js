@@ -499,13 +499,14 @@ function getSensorImage(sensor) {
         style = ' style="opacity: 0.2; filter: alpha(opacity=20)"'
     }
 
-    return '<img src="assets/images/' + img + '" alt="Icon" height="42" width="42"' + style + '>';
+    return '<img src="assets/images/' + img + '" alt="Icon" height="45" width="45"' + style + '>';
 }
 
 function getSensorStatus(sensor) {
     var result = sensor.value;
-    
-    if (sensor.category === 'door') {
+    if (result === '') {
+        // nothing to do
+    } else if (sensor.category === 'door') {
         if (isSensorOn(sensor)) {
             result = "Close";
         } else {
