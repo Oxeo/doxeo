@@ -87,8 +87,13 @@ void Thermostat::logIndicators()
     }
 }
 
-void Thermostat::start()
+void Thermostat::start(int delayMs)
 {
+    if (delayMs != 0) {
+        QTimer::singleShot(delayMs, this, SLOT(start()));
+        return;
+    }
+
     if (timer.isActive()) {
         stop();
     }

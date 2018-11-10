@@ -10,7 +10,7 @@ ThermostatController::ThermostatController(QObject *parent) : AbstractController
     thermostat = new Thermostat(this);
 
     if (Setting::isIdValid("start_thermostat")) {
-        thermostat->start();
+        thermostat->start(30000);
     }
 
     temperatureLogger = new TemperatureLogger(this);

@@ -29,7 +29,7 @@ public:
     Status getStatus();
 
 public slots:
-    void start();
+    void start(int delayMs = 0);
 
 protected slots:
     void run();
