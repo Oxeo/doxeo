@@ -452,7 +452,13 @@ $('.container').on('click', '.change_heater_setpoint', function(){
 function getSensorImage(sensor) {
     var img = "";
     if (sensor.category === "temperature") {
-        img = "temperature_sensor.png";
+        if (sensor.value == '' || sensor.value <= 15) {
+            img = "temperature_blue.png";
+        } else if (sensor.value <= 22) {
+            img = "temperature_orange.png";
+        } else {
+            img = "temperature_red.png";
+        }
     } else if (sensor.category === "door") {
         if (isSensorOn(sensor)) {
             img = "door_close.png";
