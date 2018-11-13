@@ -10,6 +10,7 @@ FirebaseCloudMessaging::FirebaseCloudMessaging(QString projectName, QObject *par
 {
     this->projectName = projectName;
     this->manager = new QNetworkAccessManager(this);
+    this->serverKey = "";
 
     if (!QSslSocket::supportsSsl()) {
         qCritical() << "fcm: SSL not supported: FirebaseCloudMessaging cannot be used!";
@@ -20,6 +21,10 @@ FirebaseCloudMessaging::FirebaseCloudMessaging(QString projectName, QObject *par
 
 void FirebaseCloudMessaging::send(Message message)
 {
+    if (serverKey.isEmpty()) {
+        return;
+    }
+
     QUrl url("https://fcm.googleapis.com/fcm/send");
     QJsonDocument doc(buildJsonMessage(message));
     QString postMessage(doc.toJson(QJsonDocument::Compact));

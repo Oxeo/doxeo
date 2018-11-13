@@ -12,6 +12,10 @@ Jeedom::Jeedom(QObject *parent) : QObject(parent)
 }
 
 void Jeedom::sendJson(QJsonObject json) {
+    if (apikey.isEmpty()) {
+        return;
+    }
+
     QNetworkRequest request;
     request.setUrl(QUrl(callbackDoxeo + "?apikey=" + apikey));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
@@ -21,6 +25,10 @@ void Jeedom::sendJson(QJsonObject json) {
 
 void Jeedom::executeCmd(QString id)
 {
+    if (apikey.isEmpty()) {
+        return;
+    }
+
     QNetworkRequest request;
     request.setUrl(QUrl(callbackCore + "?apikey="+apikey+"&type=cmd&id="+id));
 
