@@ -4,7 +4,7 @@
 <script>
 $(document).ready(function () {
 
-    $('#SensorListContainer').jtable({
+    $('#crudContainer').jtable({
         title: 'Sensor',
         sorting: false,
         defaultSorting: 'id ASC',
@@ -13,10 +13,10 @@ $(document).ready(function () {
             dataType: 'json'
         },
         actions: {
-            listAction: 'sensor_list.js',
-            createAction: 'create_sensor.js',
-            updateAction: 'edit_sensor.js',
-            deleteAction: 'delete_sensor.js'
+            listAction: 'list.js',
+            createAction: 'create.js',
+            updateAction: 'update.js',
+            deleteAction: 'delete.js'
         },
         fields: {
             id: {
@@ -56,7 +56,7 @@ $(document).ready(function () {
     });
 
     //Load list from server
-    $('#SensorListContainer').jtable('load');
+    $('#crudContainer').jtable('load');
 
 });
 </script>

@@ -120,6 +120,23 @@ QList<Setting> Setting::getFromGroup(QString groupName)
     return result;
 }
 
+QJsonObject Setting::toJson() const
+{
+    QJsonObject result;
+
+    result.insert("id", id);
+    result.insert("group", group);
+    result.insert("value1", value1);
+    result.insert("value2", value2);
+
+    return result;
+}
+
+QMap<QString, Setting> &Setting::getSettingList()
+{
+    return settingList;
+}
+
 QString Setting::getValue1() const
 {
     return value1;

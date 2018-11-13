@@ -172,7 +172,7 @@ function update() {
         alert_error("Request Failed: " + error);
     });
 	
-	$.getJSON('sensor/sensor_list.js').done(function(result) {
+	$.getJSON('sensor/list.js').done(function(result) {
         if (result.Result == "OK") {
             $('#sensorList').html('');
             $('#batteryList').html('');

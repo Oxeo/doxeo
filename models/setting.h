@@ -4,6 +4,7 @@
 #include <QList>
 #include <QMap>
 #include <QString>
+#include <QJsonObject>
 
 class Setting
 {
@@ -14,11 +15,13 @@ public:
 
     bool flush();
     bool remove();
+    QJsonObject toJson() const;
 
     static void update();
     static bool isIdValid(QString id);
     static Setting& get(QString id);
     static QList<Setting> getFromGroup(QString groupName);
+    static QMap<QString, Setting> &getSettingList();
 
     QString getValue1() const;
     void setValue1(const QString &value);

@@ -1,30 +1,29 @@
 #ifndef SENSORCONTROLLER_H
 #define SENSORCONTROLLER_H
 
-#include "core/abstractcontroller.h"
+#include "core/abstractcrudcontroller.h"
 #include "libraries/device.h"
 #include "libraries/mysensors.h"
 
+#include <QJsonArray>
 
-class SensorController : public AbstractController
+class SensorController : public AbstractCrudController
 {
     Q_OBJECT
 
 public:
     SensorController(MySensors *mySensors, QObject *parent);
-    void defaultAction();
-    void stop();
 
 public slots:
-    void sensorList();
-    void jsonSensorList();
-    void jsonCreateSensor();
-    void jsonEditSensor();
-    void jsonDeleteSensor();
     void jsonSetValue();
 
 protected slots:
     void mySensorsDataReceived(QString messagetype, int sender, int sensor, int type, QString payload);
+
+protected:
+    QJsonArray getList();
+    QJsonObject updateElement(bool createNewObject);
+    bool deleteElement(QString id);
 };
 
 #endif // SENSORCONTROLLER_H

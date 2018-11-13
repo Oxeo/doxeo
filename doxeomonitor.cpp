@@ -11,6 +11,7 @@
 #include "controllers/scriptcontroller.h"
 #include "controllers/scenariocontroller.h"
 #include "controllers/jeedomcontroller.h"
+#include "controllers/settingcontroller.h"
 #include "libraries/messagelogger.h"
 #include "libraries/authentification.h"
 #include "libraries/device.h"
@@ -120,6 +121,7 @@ int DoxeoMonitor::start()
     httpServer->addController(new ScriptController(scriptEngine, this), "script");
     httpServer->addController(new ScenarioController(scriptEngine, this), "scenario");
     httpServer->addController(new JeedomController(jeedom, mySensors, this), "jeedom");
+    httpServer->addController(new SettingController(this), "setting");
 
     scriptEngine->init();
 

@@ -14,6 +14,7 @@ TEMPLATE = app
 SOURCES += main.cpp\
     controllers/switchcontroller.cpp \
     core/abstractcontroller.cpp \
+    core/abstractcrudcontroller.cpp \
     core/httpserver.cpp \
     models/switch.cpp \
     controllers/defaultcontroller.cpp \
@@ -40,6 +41,7 @@ SOURCES += main.cpp\
     controllers/sensorcontroller.cpp \
     controllers/scriptcontroller.cpp \
     controllers/scenariocontroller.cpp \
+    controllers/settingcontroller.cpp \
     models/script.cpp \
     models/scenario.cpp \
     libraries/scriptengine.cpp \
@@ -57,6 +59,7 @@ SOURCES += main.cpp\
 HEADERS  += \
     controllers/switchcontroller.h \
     core/abstractcontroller.h \
+    core/abstractcrudcontroller.h \
     core/httpserver.h \
     models/switch.h \
     controllers/defaultcontroller.h \
@@ -83,6 +86,7 @@ HEADERS  += \
     controllers/sensorcontroller.h \
     controllers/scriptcontroller.h \
     controllers/scenariocontroller.h \
+    controllers/settingcontroller.h \
     models/script.h \
     models/scenario.h \
     libraries/scriptengine.h \
