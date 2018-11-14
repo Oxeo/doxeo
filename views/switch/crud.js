@@ -4,7 +4,7 @@
 <script>
 $(document).ready(function () {
 
-    $('#SwitchListContainer').jtable({
+    $('#crudContainer').jtable({
         title: 'Switch',
         sorting: false,
         defaultSorting: 'order ASC',
@@ -13,10 +13,10 @@ $(document).ready(function () {
             dataType: 'json'
         },
         actions: {
-            listAction: 'switch_list.js',
-            createAction: 'create_switch.js',
-            updateAction: 'edit_switch.js',
-            deleteAction: 'delete_switch.js'
+            listAction: 'list.js',
+            createAction: 'create.js',
+            updateAction: 'update.js',
+            deleteAction: 'delete.js'
         },
         fields: {
             id: {
@@ -55,7 +55,7 @@ $(document).ready(function () {
     });
 
     //Load list from server
-    $('#SwitchListContainer').jtable('load');
+    $('#crudContainer').jtable('load');
 
 });
 </script>

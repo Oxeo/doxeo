@@ -30,7 +30,7 @@ function update() {
         alert_error("Request Failed: " + error);
     });
     
-    $.getJSON('switch/switch_list.js').done(function(result) {
+    $.getJSON('switch/list.js').done(function(result) {
         if (result.Result == "OK") {
             $('#switchList').html('');
             result.Records.sort(function(a, b) { 
@@ -214,7 +214,7 @@ function update() {
         alert_error("Request Failed: " + error);
     });
     
-    $.getJSON('scenario/scenario_list.js').done(function(result) {
+    $.getJSON('scenario/list.js').done(function(result) {
         if (result.Result == "OK") {
             $('#scenarioList').html('');
             result.Records.sort(function(a, b) { 
@@ -242,7 +242,7 @@ function update() {
         alert_error("Request Failed: " + error);
     });
 	
-	$.getJSON('script/script_list.js').done(function(result) {
+	$.getJSON('script/list.js').done(function(result) {
         if (result.Result == "OK") {
             $('#scriptList').html('');
             result.Records.sort(function(a, b) { 

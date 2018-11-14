@@ -4,7 +4,7 @@
 <script>
 $(document).ready(function () {
 
-    $('#ScriptListContainer').jtable({
+    $('#crudContainer').jtable({
         title: 'Script',
         sorting: false,
         defaultSorting: 'id ASC',
@@ -21,10 +21,10 @@ $(document).ready(function () {
             }]
         },
         actions: {
-            listAction: 'script_list.js',
-            createAction: 'edit_script.js',
-            updateAction: 'edit_script.js',
-            deleteAction: 'delete_script.js'
+            listAction: 'list.js',
+            createAction: 'create.js',
+            updateAction: 'update.js',
+            deleteAction: 'delete.js'
         },
         fields: {
             name: {
@@ -60,7 +60,7 @@ $(document).ready(function () {
     });
 
     //Load list from server
-    $('#ScriptListContainer').jtable('load');
+    $('#crudContainer').jtable('load');
 
 });
 </script>

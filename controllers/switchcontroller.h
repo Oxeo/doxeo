@@ -1,29 +1,29 @@
 #ifndef SWITCHCONTROLLER_H
 #define SWITCHCONTROLLER_H
 
-#include "core/abstractcontroller.h"
+#include "core/abstractcrudcontroller.h"
 #include "libraries/mysensors.h"
 
-class SwitchController : public AbstractController
+#include <QJsonArray>
+
+class SwitchController : public AbstractCrudController
 {
     Q_OBJECT
 
 public:
     SwitchController(MySensors *mySensors, QObject *parent = 0);
-    void defaultAction();
-    void stop();
 
 public slots:
-    void switchList();
-    void jsonSwitchList();
-    void jsonCreateSwitch();
-    void jsonEditSwitch();
-    void jsonDeleteSwitch();
     void jsonChangeSwitchStatus();
     void jsonUpdateSwitchStatus();
 
 protected slots:
     void mySensorsDataReceived(QString messagetype, int sender, int sensor, int type, QString payload);
+    
+protected:
+    QJsonArray getList();
+    QJsonObject updateElement(bool createNewObject);
+    bool deleteElement(QString id);
 };
 
 #endif // SWITCHCONTROLLER_H

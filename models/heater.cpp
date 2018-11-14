@@ -276,10 +276,8 @@ bool Heater::flush()
     if (Database::exec(query)) {
         if (id < 1) {
             id = query.lastInsertId().toInt();
-
-            if (heaterList != NULL) {
-                heaterList->insert(id, this);
-            }
+            this->id = id;
+            heaterList->insert(id, this);
         }
 
         Database::release();
@@ -299,6 +297,7 @@ bool Heater::remove()
 
     if (Database::exec(query)) {
         Database::release();
+        heaterList->remove(id);
         return true;
     } else {
         Database::release();

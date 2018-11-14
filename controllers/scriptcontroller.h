@@ -1,29 +1,23 @@
 #ifndef SCRIPTCONTROLLER_H
 #define SCRIPTCONTROLLER_H
 
-#include "core/abstractcontroller.h"
+#include "core/abstractcrudcontroller.h"
 #include "libraries/scriptengine.h"
 #include "libraries/gsm.h"
 
 #include <QList>
 #include <QString>
 
-class ScriptController : public AbstractController
+class ScriptController : public AbstractCrudController
 {
     Q_OBJECT
 
 public:
     ScriptController(ScriptEngine *scriptEngine, QObject *parent = 0);
-    void defaultAction();
-    void stop();
 
 public slots:
-    void scriptList();
     void editor();
     void exportScripts();
-    void jsonScriptList();
-    void jsonEditScript();
-    void jsonDeleteScript();
     void jsonChangeScriptStatus();
     void jsonSetScriptBody();
     void jsonGetScript();
@@ -32,6 +26,10 @@ public slots:
     void jsonDeleteCmd();
 
 protected:
+    QJsonArray getList();
+    QJsonObject updateElement(bool createNewObject);
+    bool deleteElement(QString id);
+    
     ScriptEngine *scriptEngine;
 };
 

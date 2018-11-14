@@ -4,7 +4,7 @@
 <script>
 $(document).ready(function () {
 
-    $('#ScenarioListContainer').jtable({
+    $('#crudContainer').jtable({
         title: 'Scenario',
         sorting: true,
         defaultSorting: 'id ASC',
@@ -13,10 +13,10 @@ $(document).ready(function () {
             dataType: 'json'
         },
         actions: {
-            listAction: 'scenario_list.js',
-            createAction: 'create_scenario.js',
-            updateAction: 'edit_scenario.js',
-            deleteAction: 'delete_scenario.js'
+            listAction: 'list.js',
+            createAction: 'create.js',
+            updateAction: 'update.js',
+            deleteAction: 'delete.js'
         },
         fields: {
             id: {
@@ -52,7 +52,7 @@ $(document).ready(function () {
     });
 
     //Load list from server
-    $('#ScenarioListContainer').jtable('load');
+    $('#crudContainer').jtable('load');
 
 });
 </script>

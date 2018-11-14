@@ -1,18 +1,16 @@
 #include "scenariocontroller.h"
 #include "libraries/authentification.h"
 #include "models/scenario.h"
+
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonArray>
 
-ScenarioController::ScenarioController(ScriptEngine *scriptEngine, QObject *parent) : AbstractController(parent)
+ScenarioController::ScenarioController(ScriptEngine *scriptEngine, QObject *parent) : AbstractCrudController(parent)
 {
-    router.insert("list", "scenarioList");
+    name = "scenario";
+    
     router.insert("editor", "editor");
-    router.insert("scenario_list.js", "jsonScenarioList");
-    router.insert("create_scenario.js", "jsonCreateScenario");
-    router.insert("edit_scenario.js", "jsonEditScenario");
-    router.insert("delete_scenario.js", "jsonDeleteScenario");
     router.insert("get_scenario.js", "jsonGetScenario");
     router.insert("change_scenario_status.js", "jsonChangeStatus");
 
@@ -20,112 +18,44 @@ ScenarioController::ScenarioController(ScriptEngine *scriptEngine, QObject *pare
     Scenario::update();
 }
 
-void ScenarioController::defaultAction()
+QJsonArray ScenarioController::getList()
 {
-
-}
-
-void ScenarioController::stop()
-{
-}
-
-void ScenarioController::scenarioList()
-{
-    if (!Authentification::auth().isConnected(header, cookie)) {
-        redirect("/auth");
-        return;
-    }
-
-    QHash<QString, QByteArray> view;
-    view["head"] = loadHtmlView("views/scenario/scenariolist.head.html", NULL, false);
-    view["content"] = loadHtmlView("views/scenario/scenariolist.body.html", NULL, false);
-    view["bottom"] = loadHtmlView("views/scenario/scenariolist.js", NULL, false);
-    loadHtmlView("views/template.html", &view);
-}
-
-void ScenarioController::jsonScenarioList()
-{
-    QJsonObject result;
-
-    if (!Authentification::auth().isConnected(header, cookie)) {
-        result.insert("Result", "ERROR");
-        result.insert("Message", "You are not logged.");
-        loadJsonView(result);
-        return;
-    }
-
+    QJsonArray result;
+    
     QList<Scenario> list = Scenario::getScenarioList().values();
-    QJsonArray array;
-
     foreach (const Scenario &s, list) {
-        array.push_back(s.toJson());
+        result.push_back(s.toJson());
     }
-
-    result.insert("Result", "OK");
-    result.insert("Records", array);
-
-    loadJsonView(result);
+    
+    return result;
 }
 
-void ScenarioController::jsonCreateScenario()
+QJsonObject ScenarioController::updateElement(bool createNewObject)
 {
-    editCreate(true);
-}
-
-void ScenarioController::jsonEditScenario()
-{
-    editCreate(false);
-}
-
-void ScenarioController::editCreate(bool newObject)
-{
-    QJsonObject result;
-
-    if (!Authentification::auth().isConnected(header, cookie)) {
-        result.insert("Result", "ERROR");
-        result.insert("Message", "You are not logged.");
-        loadJsonView(result);
-        return;
-    }
-
     Scenario s(query->getItem("id"));
-
     s.setName(query->getItem("name"));
     s.setDescription(query->getItem("description"));
     s.setContent(query->getItem("content"));
     s.setStatus(query->getItem("status"));
     s.setOrder(query->getItem("order").toInt());
     s.setHide(query->getItem("hide") == "true" ? true : false);
-    s.flush(newObject);
+    s.flush(createNewObject);
 
     Scenario::update();
-    result.insert("Result", "OK");
-    result.insert("Record", s.toJson());
-
-    loadJsonView(result);
+    
+    return s.toJson();
 }
 
-void ScenarioController::jsonDeleteScenario()
+bool ScenarioController::deleteElement(QString id)
 {
-    QJsonObject result;
-
-    if (!Authentification::auth().isConnected(header, cookie)) {
-        result.insert("Result", "ERROR");
-        result.insert("Message", "You are not logged.");
-        loadJsonView(result);
-        return;
-    }
-
-    Scenario s(query->getItem("id"));
+    Scenario s(id);
 
     if (s.remove()) {
         Scenario::update();
-        result.insert("Result", "OK");
+        return true;
     } else {
-        result.insert("Result", "ERROR");
+        return false;
     }
-
-    loadJsonView(result);
 }
 
 void ScenarioController::jsonGetScenario()
