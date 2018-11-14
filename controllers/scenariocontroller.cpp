@@ -22,9 +22,9 @@ QJsonArray ScenarioController::getList()
 {
     QJsonArray result;
     
-    QList<Scenario> list = Scenario::getScenarioList().values();
-    foreach (const Scenario &s, list) {
-        result.push_back(s.toJson());
+    QList<Scenario*> list = Scenario::getScenarioList().values();
+    foreach (const Scenario *s, list) {
+        result.push_back(s->toJson());
     }
     
     return result;
@@ -32,18 +32,25 @@ QJsonArray ScenarioController::getList()
 
 QJsonObject ScenarioController::updateElement(bool createNewObject)
 {
-    Scenario s(query->getItem("id"));
-    s.setName(query->getItem("name"));
-    s.setDescription(query->getItem("description"));
-    s.setContent(query->getItem("content"));
-    s.setStatus(query->getItem("status"));
-    s.setOrder(query->getItem("order").toInt());
-    s.setHide(query->getItem("hide") == "true" ? true : false);
-    s.flush(createNewObject);
+    Q_UNUSED(createNewObject);
+    QString id = query->getItem("id");
+    Scenario *s;
 
-    Scenario::update();
+    if (Scenario::isIdValid(id)) {
+        s = Scenario::get(id);
+    } else {
+        s = new Scenario(id);
+    }
+
+    s->setName(query->getItem("name"));
+    s->setDescription(query->getItem("description"));
+    s->setContent(query->getItem("content"));
+    s->setStatus(query->getItem("status"));
+    s->setOrder(query->getItem("order").toInt());
+    s->setHide(query->getItem("hide") == "true" ? true : false);
+    s->flush();
     
-    return s.toJson();
+    return s->toJson();
 }
 
 bool ScenarioController::deleteElement(QString id)
@@ -51,7 +58,6 @@ bool ScenarioController::deleteElement(QString id)
     Scenario s(id);
 
     if (s.remove()) {
-        Scenario::update();
         return true;
     } else {
         return false;
@@ -67,8 +73,8 @@ void ScenarioController::jsonGetScenario()
         result.insert("success", false);
     }
     else if (Scenario::isIdValid(query->getItem("id"))) {
-        Scenario &s = Scenario::get(query->getItem("id"));
-        result.insert("scenario", s.toJson());
+        Scenario *s = Scenario::get(query->getItem("id"));
+        result.insert("scenario", s->toJson());
         result.insert("success", true);
     } else {
        result.insert("msg", "Scenario Id invalid");

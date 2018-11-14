@@ -34,19 +34,26 @@ QJsonArray SwitchController::getList()
 
 QJsonObject SwitchController::updateElement(bool createNewObject)
 {
-    Switch sw(query->getItem("id"));
-    sw.setName(query->getItem("name"));
-    sw.setCategory(query->getItem("category"));
-    sw.setOrder(query->getItem("order").toInt());
-    sw.setPowerOnCmd(query->getItem("power_on_cmd"));
-    sw.setPowerOffCmd(query->getItem("power_off_cmd"));
-    sw.setStatus(query->getItem("status"));
-    sw.setSensor(query->getItem("sensor"));
-    sw.flush(createNewObject);
+    Q_UNUSED (createNewObject);
 
-    Switch::update();
+    QString id = query->getItem("id");
+    Switch *sw;
+    if (Switch::isIdValid(id)) {
+        sw = Switch::get(id);
+    } else {
+        sw = new Switch(id);
+    }
+
+    sw->setName(query->getItem("name"));
+    sw->setCategory(query->getItem("category"));
+    sw->setOrder(query->getItem("order").toInt());
+    sw->setPowerOnCmd(query->getItem("power_on_cmd"));
+    sw->setPowerOffCmd(query->getItem("power_off_cmd"));
+    sw->setStatus(query->getItem("status"));
+    sw->setSensor(query->getItem("sensor"));
+    sw->flush();
     
-    return sw.toJson();
+    return sw->toJson();
 }
 
 bool SwitchController::deleteElement(QString id)
@@ -54,7 +61,6 @@ bool SwitchController::deleteElement(QString id)
     Switch sw(id);
 
     if (sw.remove()) {
-        Switch::update();
         return true;
     } else {
         return false;

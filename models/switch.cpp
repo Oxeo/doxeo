@@ -236,11 +236,11 @@ void Switch::setPowerOffCmd(const QString &value)
     powerOffCmd = value;
 }
 
-bool Switch::flush(bool newObject)
+bool Switch::flush()
 {
     QSqlQuery query = Database::getQuery();
 
-    if (!newObject) {
+    if (switchList.contains(id)) {
         query.prepare("UPDATE switch SET name=?, category=?, order_by=?, power_on_cmd=?, power_off_cmd=?, status=?, sensor=? WHERE id=?");
     } else {
         query.prepare("INSERT INTO switch (name, category, order_by, power_on_cmd, power_off_cmd, status, sensor, id) "
@@ -257,6 +257,10 @@ bool Switch::flush(bool newObject)
 
     if (Database::exec(query)) {
         Database::release();
+
+        if (!switchList.contains(id)) {
+            switchList.insert(id, this);
+        }
         return true;
     } else {
         Database::release();
@@ -273,6 +277,8 @@ bool Switch::remove()
 
     if (Database::exec(query)) {
         Database::release();
+
+        switchList.remove(id);
         return true;
     } else {
         Database::release();

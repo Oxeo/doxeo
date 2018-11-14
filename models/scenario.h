@@ -14,13 +14,13 @@ public:
 
     QString getId()  const;
     QJsonObject toJson() const;
-    bool flush(bool newObject);
+    bool flush();
     bool remove();
 
     static void update();
     static bool isIdValid(QString id);
-    static Scenario& get(QString id);
-    static QMap<QString, Scenario> &getScenarioList();
+    static Scenario* get(QString id);
+    static QMap<QString, Scenario*> getScenarioList();
 
     QString getName() const;
     void setName(const QString &value);
@@ -50,7 +50,7 @@ protected:
     int order;
     bool hide;
 
-    static QMap<QString, Scenario> scenarioList;
+    static QMap<QString, Scenario*> scenarioList;
 };
 
 #endif // Scenario_H

@@ -19,8 +19,8 @@ public:
 
     static void update();
     static bool isIdValid(int id);
-    static Script& get(int id);
-    static QMap<int, Script> &getScriptList();
+    static Script *get(int id);
+    static QMap<int, Script*> getScriptList();
 
     QString getName() const;
     void setName(const QString &value);
@@ -42,7 +42,7 @@ protected:
     QString description;
     QString content;
 
-    static QMap<int, Script> scriptList;
+    static QMap<int, Script*> scriptList;
 };
 
 #endif // SCRIPT_H

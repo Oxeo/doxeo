@@ -6,7 +6,7 @@
 #include <QDebug>
 #include <QSqlError>
 
-QMap<QString, Scenario> Scenario::scenarioList;
+QMap<QString, Scenario*> Scenario::scenarioList;
 
 Scenario::Scenario()
 {
@@ -45,16 +45,16 @@ void Scenario::update()
         scenarioList.clear();
         while(query.next())
         {
-            Scenario s(query.value(0).toString());
+            Scenario *s = new Scenario(query.value(0).toString());
 
-            s.name = query.value(1).toString();
-            s.description = query.value(2).toString();
-            s.content = query.value(3).toString();
-            s.status = query.value(4).toString();
-            s.order = query.value(5).toInt();
-            s.hide = query.value(6).toBool();
+            s->name = query.value(1).toString();
+            s->description = query.value(2).toString();
+            s->content = query.value(3).toString();
+            s->status = query.value(4).toString();
+            s->order = query.value(5).toInt();
+            s->hide = query.value(6).toBool();
 
-            scenarioList.insert(s.id, s);
+            scenarioList.insert(s->id, s);
         }
     }
 
@@ -66,7 +66,7 @@ bool Scenario::isIdValid(QString id)
     return scenarioList.contains(id);
 }
 
-Scenario &Scenario::get(QString id)
+Scenario *Scenario::get(QString id)
 {
     return scenarioList[id];
 }
@@ -86,7 +86,7 @@ QJsonObject Scenario::toJson() const
     return result;
 }
 
-QMap<QString, Scenario> &Scenario::getScenarioList()
+QMap<QString, Scenario*> Scenario::getScenarioList()
 {
     return scenarioList;
 }
@@ -152,11 +152,11 @@ void Scenario::setOrder(int value)
     order = value;
 }
 
-bool Scenario::flush(bool newObject)
+bool Scenario::flush()
 {
     QSqlQuery query = Database::getQuery();
 
-    if (!newObject) {
+    if (scenarioList.contains(id)) {
         query.prepare("UPDATE scenario SET name=?, description=?, content=?, status=?, order_by=?, hide=? WHERE id=?");
     } else {
         query.prepare("INSERT INTO scenario (name, description, content, status, order_by, hide, id) "
@@ -172,6 +172,10 @@ bool Scenario::flush(bool newObject)
 
     if (Database::exec(query)) {
         Database::release();
+
+        if (!scenarioList.contains(id)) {
+            scenarioList.insert(id, this);
+        }
         return true;
     } else {
         Database::release();
@@ -188,6 +192,7 @@ bool Scenario::remove()
 
     if (Database::exec(query)) {
         Database::release();
+        scenarioList.remove(id);
         return true;
     } else {
         Database::release();

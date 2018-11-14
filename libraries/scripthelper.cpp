@@ -79,7 +79,7 @@ QString ScriptHelper::getScriptStatus(int id)
     QString result;
 
     if (Script::isIdValid(id)) {
-        result = Script::get(id).getStatus();
+        result = Script::get(id)->getStatus();
     } else {
         qWarning("id script not valid in script helper (getScriptStatus)");
         result = "";
@@ -91,7 +91,8 @@ QString ScriptHelper::getScriptStatus(int id)
 void ScriptHelper::setScriptStatus(int id, QString status)
 {
     if (Script::isIdValid(id)) {
-        Script::get(id).setStatus(status);
+        Script::get(id)->setStatus(status);
+        Script::get(id)->flush();
     } else {
         qWarning("id script not valid in script helper (setScriptStatus)");
     }

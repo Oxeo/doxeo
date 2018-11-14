@@ -59,7 +59,7 @@ public:
     unsigned int getLastEventUtc() const;
     int getStartTime() const;
 
-    bool flush(bool newObject);
+    bool flush();
     bool remove();
 
     static QHash<QString, Sensor *> &getSensorList();

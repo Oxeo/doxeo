@@ -45,16 +45,16 @@ void ScriptController::exportScripts()
         return;
     }
 
-    QList<Script> list = Script::getScriptList().values();
+    QList<Script*> list = Script::getScriptList().values();
     QString result;
 
-    foreach (const Script &sw, list) {
+    foreach (const Script *sw, list) {
         result += " /*\n";
-        result += " * Title: " + sw.getName() + "\n";
-        result += " * Id: " + QString::number(sw.getId()) + "\n";
-        result += " * Description: " + sw.getDescription() + "\n";
+        result += " * Title: " + sw->getName() + "\n";
+        result += " * Id: " + QString::number(sw->getId()) + "\n";
+        result += " * Description: " + sw->getDescription() + "\n";
         result += " */\n\n";
-        result += sw.getContent() + "\n\n\n";
+        result += sw->getContent() + "\n\n\n";
     }
 
     QString filename = "doxeo_scripts_" + QDate::currentDate().toString("yyMMdd") + ".js";
@@ -73,9 +73,9 @@ QJsonArray ScriptController::getList()
 {
     QJsonArray result;
     
-    QList<Script> list = Script::getScriptList().values();
-    foreach (const Script &sw, list) {
-        result.push_back(sw.toJson());
+    QList<Script*> list = Script::getScriptList().values();
+    foreach (const Script *sw, list) {
+        result.push_back(sw->toJson());
     }
     
     return result;
@@ -84,17 +84,22 @@ QJsonArray ScriptController::getList()
 QJsonObject ScriptController::updateElement(bool createNewObject)
 {
     Q_UNUSED(createNewObject);
+    int id = query->getItem("id").toInt();
+    Script *script;
 
-    Script sw(query->getItem("id").toInt());
-    sw.setName(query->getItem("name"));
-    sw.setStatus(query->getItem("status"));
-    sw.setDescription(query->getItem("description"));
-    sw.setContent(query->getItem("content"));
-    sw.flush();
+    if (Script::isIdValid(id)) {
+        script = Script::get(id);
+    } else {
+        script = new Script(id);
+    }
 
-    Script::update();
+    script->setName(query->getItem("name"));
+    script->setStatus(query->getItem("status"));
+    script->setDescription(query->getItem("description"));
+    script->setContent(query->getItem("content"));
+    script->flush();
     
-    return sw.toJson();
+    return script->toJson();
 }
 
 bool ScriptController::deleteElement(QString id)
@@ -102,7 +107,6 @@ bool ScriptController::deleteElement(QString id)
     Script s(id.toInt());
 
     if (s.remove()) {
-        Script::update();
         return true;
     } else {
         return false;
@@ -118,16 +122,16 @@ void ScriptController::jsonChangeScriptStatus()
         result.insert("success", false);
     }
     else if (Script::isIdValid(query->getItem("id").toInt())) {
-        Script &s = Script::get(query->getItem("id").toInt());
+        Script *s = Script::get(query->getItem("id").toInt());
 
         if (query->getItem("status").toLower() == "on") {
-            s.setStatus("on");
-            s.flush();
+            s->setStatus("on");
+            s->flush();
             result.insert("status", "on");
             result.insert("success", true);
         } else if (query->getItem("status").toLower() == "off") {
-            s.setStatus("off");
-            s.flush();
+            s->setStatus("off");
+            s->flush();
             result.insert("status", "off");
             result.insert("success", true);
         } else {
@@ -151,9 +155,9 @@ void ScriptController::jsonSetScriptBody()
         result.insert("success", false);
     }
     else if (Script::isIdValid(query->getItem("id").toInt())) {
-        Script &s = Script::get(query->getItem("id").toInt());
-        s.setContent(query->getItem("content"));
-        s.flush();
+        Script *s = Script::get(query->getItem("id").toInt());
+        s->setContent(query->getItem("content"));
+        s->flush();
         result.insert("success", true);
     } else {
        result.insert("msg", "Script Id invalid");
@@ -172,8 +176,8 @@ void ScriptController::jsonGetScript()
         result.insert("success", false);
     }
     else if (Script::isIdValid(query->getItem("id").toInt())) {
-        Script &s = Script::get(query->getItem("id").toInt());
-        result.insert("script", s.toJson());
+        Script *s = Script::get(query->getItem("id").toInt());
+        result.insert("script", s->toJson());
         result.insert("success", true);
     } else {
        result.insert("msg", "Script Id invalid");

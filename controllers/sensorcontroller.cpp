@@ -29,27 +29,33 @@ QJsonArray SensorController::getList()
 
 QJsonObject SensorController::updateElement(bool createNewObject)
 {
-    Sensor sw(query->getItem("id"));
-    sw.setCmd(query->getItem("cmd"));
-    sw.setName(query->getItem("name"));
-    sw.setCategory(query->getItem("category"));
-    sw.setOrder(query->getItem("order").toInt());
-    sw.setHide(query->getItem("hide") == "true" ? true : false);
-    sw.setInvertBinary(query->getItem("invert_binary") == "true" ? true : false);
-    sw.setValue(query->getItem("value"));
-    sw.flush(createNewObject);
+    Q_UNUSED(createNewObject);
+    QString id = query->getItem("id");
+    Sensor *sensor;
 
-    Sensor::update();
+    if (Sensor::isIdValid(id)) {
+        sensor = Sensor::get(id);
+    } else {
+        sensor = new Sensor(id);
+    }
+
+    sensor->setCmd(query->getItem("cmd"));
+    sensor->setName(query->getItem("name"));
+    sensor->setCategory(query->getItem("category"));
+    sensor->setOrder(query->getItem("order").toInt());
+    sensor->setHide(query->getItem("hide") == "true" ? true : false);
+    sensor->setInvertBinary(query->getItem("invert_binary") == "true" ? true : false);
+    sensor->setValue(query->getItem("value"));
+    sensor->flush();
     
-    return sw.toJson();
+    return sensor->toJson();
 }
 
 bool SensorController::deleteElement(QString id)
 {
-    Sensor sw(id);
+    Sensor s(id);
 
-    if (sw.remove()) {
-        Sensor::update();
+    if (s.remove()) {
         return true;
     } else {
         return false;

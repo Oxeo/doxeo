@@ -156,11 +156,11 @@ void Sensor::updateValueByCommand(QString cmd, QString value)
     }
 }
 
-bool Sensor::flush(bool newObject)
+bool Sensor::flush()
 {
     QSqlQuery query = Database::getQuery();
 
-    if (!newObject) {
+    if (sensorList.contains(id)) {
         query.prepare("UPDATE sensor SET cmd=?, name=?, category=?, order_by=?, hide=?, invert_binary=? WHERE id=?");
     } else {
         query.prepare("INSERT INTO sensor (cmd, name, category, order_by, hide, invert_binary, id) "
@@ -177,6 +177,10 @@ bool Sensor::flush(bool newObject)
 
     if (Database::exec(query)) {
         Database::release();
+
+        if (!sensorList.contains(id)) {
+            sensorList.insert(id, this);
+        }
         return true;
     } else {
         Database::release();
@@ -193,6 +197,7 @@ bool Sensor::remove()
 
     if (Database::exec(query)) {
         Database::release();
+        sensorList.remove(id);
         return true;
     } else {
         Database::release();

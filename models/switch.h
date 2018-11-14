@@ -31,7 +31,7 @@ public:
     QJsonObject toJson() const;
     void setName(const QString &value);
     void setCategory(const QString &value);
-    bool flush(bool newObject);
+    bool flush();
     bool remove();
     void setPowerOnCmd(const QString &value);
     void setPowerOffCmd(const QString &value);

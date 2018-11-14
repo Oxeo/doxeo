@@ -58,19 +58,19 @@ void ScriptEngine::run(QString event)
     engine.globalObject().setProperty("event", event);
     engine.globalObject().setProperty("event_date", QDateTime::currentDateTime().toTime_t() - eventList.value(event, 0));
 
-    foreach (const Script &script, Script::getScriptList()) {
+    foreach (const Script *script, Script::getScriptList()) {
 
-        if (script.getStatus().compare("off", Qt::CaseInsensitive) == 0) {
+        if (script->getStatus().compare("off", Qt::CaseInsensitive) == 0) {
             continue;
         }
 
-        QScriptValue result = engine.evaluate(script.getContent());
+        QScriptValue result = engine.evaluate(script->getContent());
 
         if (engine.hasUncaughtException()) {
             int line = engine.uncaughtExceptionLineNumber();
-            qCritical() << "Script " << script.getName() << ": error at line" << line << ":" << result.toString();
+            qCritical() << "Script " << script->getName() << ": error at line" << line << ":" << result.toString();
         } else if (!result.toString().isEmpty() && result.toString() != "undefined") {
-            qDebug() << "script " << script.getName() << ": " << result.toString();
+            qDebug() << "script " << script->getName() << ": " << result.toString();
         }
     }
 
