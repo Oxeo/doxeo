@@ -35,7 +35,7 @@ $(document).ready(function () {
             },
             value: {
                 title: 'Value',
-                edit: false
+                edit: true
             },
             category: {
                 title: 'Category',

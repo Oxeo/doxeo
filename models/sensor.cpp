@@ -180,6 +180,7 @@ bool Sensor::flush()
 
         if (!sensorList.contains(id)) {
             sensorList.insert(id, this);
+            emit Sensor::event.dataChanged();
         }
         return true;
     } else {
@@ -198,6 +199,7 @@ bool Sensor::remove()
     if (Database::exec(query)) {
         Database::release();
         sensorList.remove(id);
+        emit Sensor::event.dataChanged();
         return true;
     } else {
         Database::release();

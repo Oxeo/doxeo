@@ -260,6 +260,7 @@ bool Switch::flush()
 
         if (!switchList.contains(id)) {
             switchList.insert(id, this);
+            emit Switch::event.dataChanged();
         }
         return true;
     } else {
@@ -279,6 +280,7 @@ bool Switch::remove()
         Database::release();
 
         switchList.remove(id);
+        emit Switch::event.dataChanged();
         return true;
     } else {
         Database::release();
