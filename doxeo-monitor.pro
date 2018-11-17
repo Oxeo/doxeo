@@ -55,7 +55,9 @@ SOURCES += main.cpp\
     models/setting.cpp \
     libraries/mysensors.cpp \
     controllers/jeedomcontroller.cpp \
-    controllers/heatercontroller.cpp
+    controllers/heatercontroller.cpp \
+    libraries/settings.cpp \
+    models/session.cpp
 
 HEADERS  += \
     controllers/switchcontroller.h \
@@ -101,6 +103,8 @@ HEADERS  += \
     models/setting.h \
     libraries/mysensors.h \
     controllers/jeedomcontroller.h \
-    controllers/heatercontroller.h
+    controllers/heatercontroller.h \
+    libraries/settings.h \
+    models/session.h
 
 RESOURCES +=

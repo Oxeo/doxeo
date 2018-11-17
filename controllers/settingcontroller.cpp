@@ -10,8 +10,8 @@ QJsonArray SettingController::getList()
 {
     QJsonArray result;
     
-    foreach (const Setting &s, Setting::getSettingList().values()) {
-        result.push_back(s.toJson());
+    foreach (const Setting *s, Setting::getSettingList().values()) {
+        result.push_back(s->toJson());
     }
     
     return result;
@@ -20,14 +20,18 @@ QJsonArray SettingController::getList()
 QJsonObject SettingController::updateElement(bool createNewObject)
 {
     Q_UNUSED(createNewObject);
+    QString id = query->getItem("id");
+    Setting *s = Setting::get(id);
 
-    Setting s(query->getItem("id"));
-    s.setGroup(query->getItem("group"));
-    s.setValue1(query->getItem("value1"));
-    s.setValue2(query->getItem("value2"));
-    s.flush();
+    if (s == NULL) {
+        s = new Setting(id);
+    }
+
+    s->setGroup(query->getItem("group"));
+    s->setValue(query->getItem("value"));
+    s->flush();
     
-    return s.toJson();
+    return s->toJson();
 }
 
 bool SettingController::deleteElement(QString id)

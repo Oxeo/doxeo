@@ -1,5 +1,5 @@
 #include "mysensors.h"
-#include "models/setting.h"
+#include "libraries/settings.h"
 
 #include <QDateTime>
 #include <QtDebug>
@@ -28,10 +28,8 @@ MySensors::MySensors(QObject *parent) : QObject(parent)
 
 void MySensors::start()
 {
-    QString lastPort = "";
-    if (Setting::isIdValid("mysensors_port")) {
-        lastPort = Setting::get("mysensors_port").getValue1();
-    }
+    Settings settings("mysensors");
+    QString lastPort = settings.value("port");
 
     bool success = false;
 
@@ -113,9 +111,8 @@ void MySensors::readData()
                 waitRegisterMsgTimer.stop();
                 connectionTimer.stop();
 
-                Setting setting("mysensors_port");
-                setting.setValue1(currentPortTested);
-                setting.flush();
+                Settings settings("mysensors");
+                settings.setValue("port", currentPortTested);
 
                 currentPortTested = "";
 

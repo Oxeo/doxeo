@@ -2,7 +2,7 @@
 #include <QtSerialPort/QSerialPortInfo>
 #include <QtDebug>
 #include <QThread>
-#include "models/setting.h"
+#include "libraries/settings.h"
 
 Device* Device::instance = NULL;
 
@@ -38,10 +38,8 @@ Device::Device(QString deviceName, QObject *parent) : QObject(parent)
     connect(&connectionTimer, SIGNAL(timeout()), this, SLOT(connection()), Qt::QueuedConnection);
     connect(&waitRegisterMsgTimer, SIGNAL(timeout()), this, SLOT(connection()), Qt::QueuedConnection);
 
-    QString lastPort = "";
-    if (Setting::isIdValid("device_port")) {
-        lastPort = Setting::get("device_port").getValue1();
-    }
+    Settings settings("device");
+    QString lastPort = settings.value("port");
 
     bool success = false;
     
@@ -100,9 +98,8 @@ void Device::readData()
             waitRegisterMsgTimer.stop();
             connectionTimer.stop();
             
-            Setting setting("device_port");
-            setting.setValue1(currentPortTested);
-            setting.flush();
+            Settings settings("device");
+            settings.setValue("port", currentPortTested);
             
             currentPortTested = "";
             

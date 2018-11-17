@@ -21,6 +21,7 @@
 #include "libraries/scriptengine.h"
 #include "libraries/jeedom.h"
 #include "libraries/mysensors.h"
+#include "libraries/settings.h"
 #include "models/setting.h"
 #include "models/switch.h"
 #include "core/database.h"
@@ -84,10 +85,11 @@ int DoxeoMonitor::start()
 
     // Update settings
     Setting::update();
+    Settings mySettings("general");
 
     // Initialize Firebase Cloud Messaging
-    FirebaseCloudMessaging *fcm = new FirebaseCloudMessaging(settings.value("firebasecloudmessaging/projectname", "doxeo").toString(), this);
-    fcm->setServerKey(settings.value("firebasecloudmessaging/serverkey", "").toString());
+    FirebaseCloudMessaging *fcm = new FirebaseCloudMessaging(mySettings.value("fcm_projectname", "doxeo"), this);
+    fcm->setServerKey(mySettings.value("fcm_serverkey", ""));
     MessageLogger::logger().setFirebaseCloudMessaging(fcm);
 
     // Initialise SIM900 GSM module
@@ -96,7 +98,7 @@ int DoxeoMonitor::start()
 
     // Initilize Jeedom
     Jeedom *jeedom = new Jeedom(this);
-    jeedom->setApikey(settings.value("jeedom/apikey", "").toString());
+    jeedom->setApikey(mySettings.value("jeedom_apikey", ""));
 
     // Connect device
     Device::initialize("doxeoboard", this);
@@ -197,24 +199,6 @@ void DoxeoMonitor::configure()
     userInput = commandLine("Enter database name (" + oldValue + "):");
     if (userInput != "") {
         settings.setValue("database/databasename", userInput);
-    }
-    
-    oldValue = settings.value("firebasecloudmessaging/projectname", "").toString();
-    userInput = commandLine("Enter Firebase Cloud Messaging project name (" + oldValue + "):");
-    if (userInput != "") {
-        settings.setValue("firebasecloudmessaging/projectname", userInput);
-    }
-    
-    oldValue = settings.value("firebasecloudmessaging/serverkey", "").toString();
-    userInput = commandLine("Enter Firebase Cloud Messaging server key (" + oldValue + "):");
-    if (userInput != "") {
-        settings.setValue("firebasecloudmessaging/serverkey", userInput);
-    }
-
-    oldValue = settings.value("jeedom/apikey", "").toString();
-    userInput = commandLine("Enter Jeedom API key (" + oldValue + "):");
-    if (userInput != "") {
-        settings.setValue("jeedom/apikey", userInput);
     }
 }
 

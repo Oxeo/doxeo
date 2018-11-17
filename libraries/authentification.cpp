@@ -1,6 +1,6 @@
 #include "authentification.h"
 #include "models/user.h"
-#include "models/setting.h"
+#include "models/session.h"
 #include "core/tools.h"
 
 #include <QList>
@@ -8,11 +8,11 @@
 
 Authentification::Authentification()
 {
-    foreach (Setting setting, Setting::getFromGroup("code_auth")) {
+    foreach (Session *session, Session::getAll()) {
          Authentification::Remember remember;
-         remember.login = setting.getValue1();
-         remember.code = setting.getValue2();
-         rememberList.insert(setting.getId(), remember);
+         remember.login = session->getUser();
+         remember.code = session->getPassword();
+         rememberList.insert(session->getId(), remember);
     }
 }
 
@@ -146,19 +146,19 @@ void Authentification::clearCookies(QString &cookie)
 
 void Authentification::insertRememberCode(QString id, Remember remember)
 {
-    Setting setting(id);
-    setting.setGroup("code_auth");
-    setting.setValue1(remember.login);
-    setting.setValue2(remember.code);
-    setting.flush();
+    Session *session = new Session(id);
+    session->setUser(remember.login);
+    session->setPassword(remember.code);
+    session->flush();
 
     rememberList.insert(id, remember);
 }
 
 void Authentification::removeRememberCode(QString id)
 {
-    if (Setting::isIdValid(id)) {
-        Setting::get(id).remove();
+    Session *session = Session::get(id);
+    if (session != NULL) {
+        session->remove();
     }
 
     rememberList.remove(id);

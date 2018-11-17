@@ -1,21 +1,22 @@
 #include "thermostatcontroller.h"
 #include "libraries/authentification.h"
 #include "models/heaterevent.h"
-#include "models/setting.h"
+#include "libraries/settings.h"
 
 #include <QJsonArray>
 
 ThermostatController::ThermostatController(QObject *parent) : AbstractController(parent)
 {
     thermostat = new Thermostat(this);
+    Settings settings("thermostat");
 
-    if (Setting::isIdValid("start_thermostat")) {
+    if (settings.value("start", "false") == "true") {
         thermostat->start(30000);
     }
 
     temperatureLogger = new TemperatureLogger(this);
 
-    if (Setting::isIdValid("temperature_logger")) {
+    if (settings.value("log_temperature", "false") == "true") {
         temperatureLogger->start();
     }
 
@@ -456,41 +457,29 @@ void ThermostatController::jsonSetEventTime()
 void ThermostatController::jsonSetStatus()
 {
     QJsonObject result;
+    Settings settings("thermostat");
 
     if (!Authentification::auth().isConnected(header, cookie)) {
         result.insert("msg", "You are not logged.");
     } else if (query->getItem("thermostat").toLower() == "running") {
         thermostat->start();
-        if (!Setting::isIdValid("start_thermostat")) {
-            Setting setting("start_thermostat");
-            setting.flush();
-        }
+        settings.setValue("start", "true");
     } else if (query->getItem("thermostat").toLower() == "stopped") {
         thermostat->stop();
-        if (Setting::isIdValid("start_thermostat")) {
-            Setting::get("start_thermostat").remove();
-        }
+        settings.setValue("start", "false");
     } else if (query->getItem("thermostat").toLower() == "onbreak") {
         if (query->getItem("time").toInt() > 0) {
             thermostat->setOnBreak(query->getItem("time").toInt());
-            if (!Setting::isIdValid("start_thermostat")) {
-                Setting setting("start_thermostat");
-                setting.flush();
-            }
+            settings.setValue("start", "true");
         } else {
             result.insert("msg", "The time break is missing!");
         }
     } else if (query->getItem("temperature_logger").toLower() == "running") {
         temperatureLogger->start();
-        if (!Setting::isIdValid("temperature_logger")) {
-            Setting setting("temperature_logger");
-            setting.flush();
-        }
+        settings.setValue("log_temperature", "true");
     } else if (query->getItem("temperature_logger").toLower() == "stopped") {
         temperatureLogger->stop();
-        if (Setting::isIdValid("temperature_logger")) {
-            Setting::get("temperature_logger").remove();
-        }
+        settings.setValue("log_temperature", "false");
     } else {
         result.insert("msg", "Missing parameters!");
     }

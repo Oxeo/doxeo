@@ -5,22 +5,20 @@
 #include <QDebug>
 #include <QSqlError>
 
-QMap<QString, Setting> Setting::settingList;
+QMap<QString, Setting*> Setting::settingList;
 
 Setting::Setting()
 {
     id = "";
     group = "";
-    value1 = "";
-    value2 = "";
+    value = "";
 }
 
 Setting::Setting(QString id)
 {
     this->id = id;
     group = "";
-    value1 = "";
-    value2 = "";
+    value = "";
 }
 
 bool Setting::flush()
@@ -28,26 +26,21 @@ bool Setting::flush()
     QSqlQuery query = Database::getQuery();
 
     if (settingList.contains(id)) {
-        query.prepare("UPDATE setting SET group1=?, value1=?, value2=? WHERE id=?");
+        query.prepare("UPDATE setting SET group1=?, value=? WHERE id=?");
     } else {
-        query.prepare("INSERT INTO setting (group1, value1, value2, id) "
-                      "VALUES (?, ?, ?, ?)");
+        query.prepare("INSERT INTO setting (group1, value, id) "
+                      "VALUES (?, ?, ?)");
     }
 
     query.addBindValue(group);
-    query.addBindValue(value1);
-    query.addBindValue(value2);
+    query.addBindValue(value);
     query.addBindValue(id);
 
     if (Database::exec(query)) {
         Database::release();
 
-        if (settingList.contains(id)) {
-            settingList.take(id).group = group;
-            settingList.take(id).value1 = value1;
-            settingList.take(id).value2 = value2;
-        } else {
-            settingList.insert(id, *this);
+        if (!settingList.contains(id)) {
+            settingList.insert(id, this);
         }
 
         return true;
@@ -77,42 +70,40 @@ bool Setting::remove()
 void Setting::update()
 {
     QSqlQuery query = Database::getQuery();
-    query.prepare("SELECT id, group1, value1, value2 FROM setting");
+    query.prepare("SELECT id, group1, value FROM setting");
 
     if(Database::exec(query))
     {
         settingList.clear();
         while(query.next())
         {
-            Setting s(query.value(0).toString());
+            Setting *s = new Setting(query.value(0).toString());
 
-            s.group = query.value(1).toString();
-            s.value1 = query.value(2).toString();
-            s.value2 = query.value(3).toString();
+            s->group = query.value(1).toString();
+            s->value = query.value(2).toString();
 
-            settingList.insert(s.id, s);
+            settingList.insert(s->id, s);
         }
     }
 
     Database::release();
 }
 
-bool Setting::isIdValid(QString id)
+Setting *Setting::get(QString id)
 {
-    return settingList.contains(id);
+    if (settingList.contains(id)) {
+        return settingList.value(id);
+    } else {
+        return NULL;
+    }
 }
 
-Setting &Setting::get(QString id)
+QList<Setting *> Setting::getFromGroup(QString groupName)
 {
-    return settingList[id];
-}
+    QList<Setting*> result;
 
-QList<Setting> Setting::getFromGroup(QString groupName)
-{
-    QList<Setting> result;
-
-    foreach (Setting setting, settingList.values()) {
-        if (setting.group == groupName) {
+    foreach (Setting *setting, settingList.values()) {
+        if (setting->group == groupName) {
             result.append(setting);
         }
     }
@@ -126,35 +117,24 @@ QJsonObject Setting::toJson() const
 
     result.insert("id", id);
     result.insert("group", group);
-    result.insert("value1", value1);
-    result.insert("value2", value2);
+    result.insert("value", value);
 
     return result;
 }
 
-QMap<QString, Setting> &Setting::getSettingList()
+QMap<QString, Setting *> Setting::getSettingList()
 {
     return settingList;
 }
 
-QString Setting::getValue1() const
+QString Setting::getValue() const
 {
-    return value1;
+    return value;
 }
 
-void Setting::setValue1(const QString &value)
+void Setting::setValue(const QString &value)
 {
-    value1 = value;
-}
-
-QString Setting::getValue2() const
-{
-    return value2;
-}
-
-void Setting::setValue2(const QString &value)
-{
-    value2 = value;
+    this->value = value;
 }
 
 QString Setting::getId() const

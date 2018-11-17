@@ -29,11 +29,8 @@ $(document).ready(function () {
 			group: {
 				title: 'Group'
             },
-            value1: {
-                title: 'Value 1'
-            },
-            value2: {
-                title: 'Value 2'
+            value: {
+                title: 'Value'
             }
         }
     });

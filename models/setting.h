@@ -18,16 +18,12 @@ public:
     QJsonObject toJson() const;
 
     static void update();
-    static bool isIdValid(QString id);
-    static Setting& get(QString id);
-    static QList<Setting> getFromGroup(QString groupName);
-    static QMap<QString, Setting> &getSettingList();
+    static Setting* get(QString id);
+    static QList<Setting*> getFromGroup(QString groupName);
+    static QMap<QString, Setting*> getSettingList();
 
-    QString getValue1() const;
-    void setValue1(const QString &value);
-
-    QString getValue2() const;
-    void setValue2(const QString &value);
+    QString getValue() const;
+    void setValue(const QString &value);
 
     QString getId() const;
     void setId(const QString &value);
@@ -39,10 +35,9 @@ protected:
 
     QString id;
     QString group;
-    QString value1;
-    QString value2;
+    QString value;
 
-    static QMap<QString, Setting> settingList;
+    static QMap<QString, Setting*> settingList;
 };
 
 #endif // SETTING_H
