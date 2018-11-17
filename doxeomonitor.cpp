@@ -24,6 +24,7 @@
 #include "libraries/settings.h"
 #include "models/setting.h"
 #include "models/switch.h"
+#include "models/session.h"
 #include "core/database.h"
 
 #include <QDir>
@@ -82,6 +83,9 @@ int DoxeoMonitor::start()
     if (!verbose) {
         qInstallMessageHandler(MessageLogger::messageHandler);
     }
+
+    // Update session
+    Session::update();
 
     // Update settings
     Setting::update();
