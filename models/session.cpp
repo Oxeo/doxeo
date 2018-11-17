@@ -71,7 +71,7 @@ bool Session::remove()
 void Session::update()
 {
     QSqlQuery query = Database::getQuery();
-    query.prepare("SELECT id, user, password FROM Session");
+    query.prepare("SELECT id, user, password FROM session");
 
     if(Database::exec(query))
     {
