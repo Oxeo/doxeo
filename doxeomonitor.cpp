@@ -12,6 +12,7 @@
 #include "controllers/scenariocontroller.h"
 #include "controllers/jeedomcontroller.h"
 #include "controllers/settingcontroller.h"
+#include "controllers/heatercontroller.h"
 #include "libraries/messagelogger.h"
 #include "libraries/authentification.h"
 #include "libraries/device.h"
@@ -122,6 +123,7 @@ int DoxeoMonitor::start()
     httpServer->addController(new ScenarioController(scriptEngine, this), "scenario");
     httpServer->addController(new JeedomController(jeedom, mySensors, this), "jeedom");
     httpServer->addController(new SettingController(this), "setting");
+    httpServer->addController(new HeaterController(this), "heater");
 
     scriptEngine->init();
 

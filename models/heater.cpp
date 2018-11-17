@@ -107,6 +107,26 @@ void Heater::fillFromBdd()
 
     Database::release();
 }
+QString Heater::getPowerOffCmd() const
+{
+    return powerOffCmd;
+}
+
+void Heater::setPowerOffCmd(const QString &value)
+{
+    powerOffCmd = value;
+}
+
+QString Heater::getPowerOnCmd() const
+{
+    return powerOnCmd;
+}
+
+void Heater::setPowerOnCmd(const QString &value)
+{
+    powerOnCmd = value;
+}
+
 
 QString Heater::getSensor() const
 {
@@ -255,7 +275,7 @@ bool Heater::flush()
 {
     QSqlQuery query = Database::getQuery();
 
-    if (id > 0) {
+    if (heaterList->contains(id)) {
         query.prepare("UPDATE heater SET name=?, power_on_cmd=?, power_off_cmd=?, mode=?, cool_setpoint=?, heat_setpoint=?, sensor=? WHERE id=?");
     } else {
         query.prepare("INSERT INTO heater (name, power_on_cmd, power_off_cmd, mode, cool_setpoint, heat_setpoint, sensor) "
@@ -269,12 +289,12 @@ bool Heater::flush()
     query.addBindValue(heatSetpoint);
     query.addBindValue(sensor);
 
-    if (id > 0) {
+    if (heaterList->contains(id)) {
         query.addBindValue(id);
     }
 
     if (Database::exec(query)) {
-        if (id < 1) {
+        if (!heaterList->contains(id)) {
             id = query.lastInsertId().toInt();
             this->id = id;
             heaterList->insert(id, this);
@@ -351,6 +371,25 @@ Heater::Mode Heater::getMode() const
 void Heater::setMode(Heater::Mode mode)
 {
     this->mode = mode;
+}
+
+void Heater::setMode(QString modeStr)
+{
+    Heater::Mode mode;
+
+    if (modeStr.toLower() == "off") {
+        mode = Heater::Off_Mode;
+    } else if (modeStr.toLower() == "auto") {
+        mode = Heater::Auto_Mode;
+    } else if (modeStr.toLower() == "cool") {
+        mode = Heater::Cool_Mode;
+    } else if (modeStr.toLower() == "heat") {
+        mode = Heater::Heat_Mode;
+    } else {
+        mode = Heater::Off_Mode;
+    }
+
+    setMode(mode);
 }
 
 QString Heater::getName() const

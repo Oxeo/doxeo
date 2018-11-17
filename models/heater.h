@@ -44,6 +44,7 @@ public:
 
     void setName(const QString &value);
     void setMode(Mode mode);
+    void setMode(QString modeStr);
     void setCoolSetpoint(float value);
     void setHeatSetpoint(float value);
     void setActiveSetpoint(Setpoint setpoint);
@@ -66,6 +67,12 @@ public:
 
     QString getSensor() const;
     void setSensor(const QString &value);
+
+    QString getPowerOnCmd() const;
+    void setPowerOnCmd(const QString &value);
+
+    QString getPowerOffCmd() const;
+    void setPowerOffCmd(const QString &value);
 
 public slots:
     void sendCommand();
