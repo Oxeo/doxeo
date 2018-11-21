@@ -21,6 +21,7 @@ Device::Device(QString deviceName, QObject *parent) : QObject(parent)
     this->deviceName = deviceName + ":";
     currentPortTested = "";
     systemInError = false;
+    settings = new Settings("device", this);
     
     serial = new QSerialPort(this);
     serial->setBaudRate(QSerialPort::Baud9600);
@@ -38,8 +39,7 @@ Device::Device(QString deviceName, QObject *parent) : QObject(parent)
     connect(&connectionTimer, SIGNAL(timeout()), this, SLOT(connection()), Qt::QueuedConnection);
     connect(&waitRegisterMsgTimer, SIGNAL(timeout()), this, SLOT(connection()), Qt::QueuedConnection);
 
-    Settings settings("device");
-    QString lastPort = settings.value("port");
+    QString lastPort = settings->value("port");
 
     bool success = false;
     
@@ -92,14 +92,15 @@ void Device::readData()
        QString msg = QString( data ).remove("\r").remove("\n");
        QStringList args = msg.split(";");
 
-       qDebug() << qPrintable(deviceName) << qPrintable(msg);
+       if (settings->value("log", "info") == "debug" || settings->value("log", "info") == "info") {
+            qDebug() << qPrintable(deviceName) << qPrintable(msg);
+       }
        
        if (waitRegisterMsgTimer.isActive() && msg.contains("doxeoboard", Qt::CaseInsensitive)) {
             waitRegisterMsgTimer.stop();
             connectionTimer.stop();
             
-            Settings settings("device");
-            settings.setValue("port", currentPortTested);
+            settings->setValue("port", currentPortTested);
             
             currentPortTested = "";
             
@@ -119,7 +120,10 @@ void Device::readData()
 
 void Device::send(QString data, QString comment)
 {
-    qDebug() << qPrintable(deviceName) << "send" << qPrintable(data) << qPrintable("(" + comment + ")");
+    if (settings->value("log", "info") == "debug" || settings->value("log", "info") == "info") {
+        qDebug() << qPrintable(deviceName) << "send" << qPrintable(data) << qPrintable("(" + comment + ")");
+    }
+
     msgToSend.append(data + "\n");
 
     if (!sendTimer->isActive()) {

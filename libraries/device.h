@@ -1,6 +1,7 @@
 #ifndef DEVICE_H
 #define DEVICE_H
 
+#include "settings.h"
 #include <QObject>
 #include <QTimer>
 #include <QList>
@@ -38,6 +39,7 @@ protected:
     bool systemInError;
     QList<QString> msgToSend;
     QTimer *sendTimer;
+    Settings *settings;
 
     static Device *instance;
 
