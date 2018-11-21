@@ -10,6 +10,7 @@ MySensors::MySensors(QObject *parent) : QObject(parent)
     appendedString = "";
     currentPortTested = "";
     systemInError = false;
+    settings = new Settings("mysensors", this);
 
     serial = new QSerialPort(this);
     serial->setBaudRate(QSerialPort::Baud115200);
@@ -28,8 +29,7 @@ MySensors::MySensors(QObject *parent) : QObject(parent)
 
 void MySensors::start()
 {
-    Settings settings("mysensors");
-    QString lastPort = settings.value("port");
+    QString lastPort = settings->value("port");
 
     bool success = false;
 
@@ -111,8 +111,7 @@ void MySensors::readData()
                 waitRegisterMsgTimer.stop();
                 connectionTimer.stop();
 
-                Settings settings("mysensors");
-                settings.setValue("port", currentPortTested);
+                settings->setValue("port", currentPortTested);
 
                 currentPortTested = "";
 
@@ -131,7 +130,9 @@ void MySensors::readData()
 void MySensors::send(QString msg, bool checkAck, QString comment)
 {
     if (serial->isOpen()) {
-        qDebug() << "mySensors: send" << qPrintable(msg) << qPrintable("(" + comment + ")");
+        if (settings->value("log", "info") == "debug" || settings->value("log", "info") == "info") {
+            qDebug() << "mySensors: send" << qPrintable(msg) << qPrintable("(" + comment + ")");
+        }
         QString msgToSend = msg + "\n";
         serial->write(msgToSend.toLatin1());
 
@@ -249,7 +250,8 @@ void MySensors::rfReceived(QString data) {
             payload = datas.at(5).trimmed();
         }
 
-        if (type != I_LOG_MESSAGE) {
+        if ((settings->value("log", "info") == "info" && type != I_LOG_MESSAGE) ||
+                settings->value("log", "info") == "debug") {
             qDebug() << "mySensors:" << qPrintable(data);
         }
 

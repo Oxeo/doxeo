@@ -1,6 +1,7 @@
 #ifndef MYSENSORS_H
 #define MYSENSORS_H
 
+#include "libraries/settings.h"
 #include <QObject>
 #include <QString>
 #include <QSerialPort>
@@ -77,6 +78,7 @@ protected:
     bool systemInError;
     QTimer retryTimer;
     QList<RetryMsg> retryList;
+    Settings *settings;
 };
 
 #endif // MYSENSORS_H
