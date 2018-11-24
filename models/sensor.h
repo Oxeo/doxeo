@@ -54,6 +54,7 @@ public:
     void setInvertBinary(bool value);
     
     int getBatteryLevel() const;
+    void updateBatteryLevel(int level);
 
     int getLastEvent() const;
     unsigned int getLastEventUtc() const;
@@ -69,6 +70,7 @@ public:
     static void update();
     static Event* getEvent();
     static void updateValueByCommand(QString cmd, QString value);
+    static void updateBatteryLevelByCommand(QString cmd, int level);
 
 public slots:
     int getLastUpdate(int index) const;

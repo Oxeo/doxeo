@@ -156,6 +156,16 @@ void Sensor::updateValueByCommand(QString cmd, QString value)
     }
 }
 
+void Sensor::updateBatteryLevelByCommand(QString cmd, int level)
+{
+    foreach (Sensor *s, sensorList.values()) {
+        if (s->cmd == cmd) {
+            s->updateBatteryLevel(level);
+            break;
+        }
+    }
+}
+
 bool Sensor::flush()
 {
     QSqlQuery query = Database::getQuery();
@@ -219,9 +229,11 @@ void Sensor::updateValue(QString cmd, QString value)
         
         if (match.hasMatch()) {
             bool ok;
-            batteryLevel = match.captured(1).toInt(&ok);
-            batteryLevelUpdate = QDateTime::currentDateTime();
-            emit Sensor::event.valueUpdated(this->id, "battery", QString::number(batteryLevel));
+            int level = match.captured(1).toInt(&ok);
+
+            if (ok) {
+                updateBatteryLevel(level);
+            }
         } else {
             if (cmds.size() > 1) {
                 value = QString::number(cmds.indexOf(cmd));
@@ -323,4 +335,11 @@ void Sensor::setCmd(const QString &value)
 int Sensor::getBatteryLevel() const
 {
     return batteryLevel;
+}
+
+void Sensor::updateBatteryLevel(int level)
+{
+    batteryLevel = level;
+    batteryLevelUpdate = QDateTime::currentDateTime();
+    emit Sensor::event.valueUpdated(id, "battery", QString::number(batteryLevel));
 }

@@ -90,5 +90,12 @@ void SensorController::mySensorsDataReceived(QString messagetype, int sender, in
     if (messagetype == "saveValue") {
         QString cmd = "ms;" + QString::number(sender) + ";" + QString::number(sensor) + ";" + QString::number(type);
         Sensor::updateValueByCommand(cmd, payload);
+    } else if (messagetype == "saveBatteryLevel") {
+        QString cmd = "ms;" + QString::number(sender) + ";" + QString::number(sensor) + ";" + QString::number(type);
+        bool ok;
+        int batteryLevel = payload.toInt(&ok);
+        if (ok) {
+            Sensor::updateBatteryLevelByCommand(cmd, batteryLevel);
+        }
     }
 }
