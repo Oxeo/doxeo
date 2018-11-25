@@ -156,16 +156,6 @@ void Sensor::updateValueByCommand(QString cmd, QString value)
     }
 }
 
-void Sensor::updateBatteryLevelByCommand(QString cmd, int level)
-{
-    foreach (Sensor *s, sensorList.values()) {
-        if (s->cmd == cmd) {
-            s->updateBatteryLevel(level);
-            break;
-        }
-    }
-}
-
 bool Sensor::flush()
 {
     QSqlQuery query = Database::getQuery();
