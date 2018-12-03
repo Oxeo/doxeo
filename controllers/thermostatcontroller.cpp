@@ -5,9 +5,9 @@
 
 #include <QJsonArray>
 
-ThermostatController::ThermostatController(QObject *parent) : AbstractController(parent)
+ThermostatController::ThermostatController(Thermostat *thermostat, QObject *parent) : AbstractController(parent)
 {
-    thermostat = new Thermostat(this);
+    this->thermostat = thermostat;
     Settings settings("thermostat");
 
     if (settings.value("start", "false") == "true") {

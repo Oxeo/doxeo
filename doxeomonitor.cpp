@@ -13,6 +13,7 @@
 #include "controllers/jeedomcontroller.h"
 #include "controllers/settingcontroller.h"
 #include "controllers/heatercontroller.h"
+#include "libraries/thermostat.h"
 #include "libraries/messagelogger.h"
 #include "libraries/authentification.h"
 #include "libraries/device.h"
@@ -115,8 +116,11 @@ int DoxeoMonitor::start()
     Switch::setJeedom(jeedom);
     Switch::setMySensors(mySensors);
 
+    // Initialise Thermostat
+    Thermostat *thermostat = new Thermostat(this);
+
     // Initialise Script Engine
-    ScriptEngine *scriptEngine = new ScriptEngine(jeedom, gsm, mySensors, this);
+    ScriptEngine *scriptEngine = new ScriptEngine(thermostat, jeedom, gsm, mySensors, this);
 
     // Add controller
     httpServer->addController(new DefaultController(mySensors, fcm, gsm, this), "default");
@@ -124,7 +128,7 @@ int DoxeoMonitor::start()
     httpServer->addController(new SwitchController(mySensors, this), "switch");
     httpServer->addController(new SensorController(mySensors, this), "sensor");
     httpServer->addController(new AuthController(this), "auth");
-    httpServer->addController(new ThermostatController(this), "thermostat");
+    httpServer->addController(new ThermostatController(thermostat, this), "thermostat");
     httpServer->addController(new ScriptController(scriptEngine, this), "script");
     httpServer->addController(new ScenarioController(scriptEngine, this), "scenario");
     httpServer->addController(new JeedomController(jeedom, mySensors, this), "jeedom");

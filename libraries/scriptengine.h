@@ -5,6 +5,7 @@
 #include <libraries/gsm.h>
 #include <libraries/jeedom.h>
 #include <libraries/mysensors.h>
+#include <libraries/thermostat.h>
 
 #include <QObject>
 #include <QScriptEngine>
@@ -16,7 +17,7 @@ class ScriptEngine : public QObject
     Q_OBJECT
 
 public:
-    explicit ScriptEngine(Jeedom *jeedom, Gsm *gsm, MySensors *mySensors, QObject *parent = 0);
+    explicit ScriptEngine(Thermostat *thermostat, Jeedom *jeedom, Gsm *gsm, MySensors *mySensors, QObject *parent = 0);
     void init();
     QString runCmd(QString cmd);
 
@@ -39,6 +40,7 @@ protected:
     Gsm *gsm;
     Jeedom *jeedom;
     MySensors *mySensors;
+    Thermostat *thermostat;
 };
 
 #endif // SCRIPTENGINE_H

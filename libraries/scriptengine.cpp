@@ -10,8 +10,9 @@
 #include <QTime>
 #include <QJsonObject>
 
-ScriptEngine::ScriptEngine(Jeedom *jeedom, Gsm *gsm, MySensors *mySensors, QObject *parent) : QObject(parent)
+ScriptEngine::ScriptEngine(Thermostat *thermostat, Jeedom *jeedom, Gsm *gsm, MySensors *mySensors, QObject *parent) : QObject(parent)
 {
+    this->thermostat = thermostat;
     this->gsm = gsm;
     this->jeedom = jeedom;
     this->mySensors = mySensors;
@@ -25,6 +26,7 @@ void ScriptEngine::init()
     engine.globalObject().setProperty("gsm", engine.newQObject(gsm));
     engine.globalObject().setProperty("jeedom", engine.newQObject(jeedom));
     engine.globalObject().setProperty("mySensors", engine.newQObject(mySensors));
+    engine.globalObject().setProperty("thermostat", engine.newQObject(thermostat));
 
     updateSensors();
     updateSwitches();

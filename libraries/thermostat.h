@@ -22,14 +22,13 @@ public:
     };
 
     explicit Thermostat(QObject *parent = 0);
-
-    void stop();
-    void setOnBreak(int minutes);
     void check(bool resetEvents = false);
-    Status getStatus();
 
 public slots:
     void start(int delayMs = 0);
+    void stop();
+    void setOnBreak(int minutes);
+    Status getStatus();
 
 protected slots:
     void run();

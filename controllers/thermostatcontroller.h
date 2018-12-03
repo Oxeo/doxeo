@@ -10,7 +10,7 @@ class ThermostatController : public AbstractController
     Q_OBJECT
 
 public:
-    ThermostatController(QObject *parent = 0);
+    ThermostatController(Thermostat *thermostat, QObject *parent = 0);
     ~ThermostatController();
     void defaultAction();
     void stop();
