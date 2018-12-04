@@ -3,6 +3,7 @@
 
 #include <QDebug>
 #include <QMetaObject>
+#include <QMetaEnum>
 
 Thermostat::Thermostat(QObject *parent) : QObject(parent)
 {
@@ -139,6 +140,13 @@ Thermostat::Status Thermostat::getStatus()
     } else {
         return Thermostat::Stopped;
     }
+}
+
+QString Thermostat::getStatusStr()
+{
+    int index = metaObject()->indexOfEnumerator("Status");
+    QMetaEnum metaEnum = metaObject()->enumerator(index);
+    return metaEnum.valueToKey(getStatus());
 }
 
 void Thermostat::check(bool resetEvents)

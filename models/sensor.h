@@ -14,7 +14,7 @@ class Sensor : public QObject
     Q_PROPERTY(QString id READ getId)
     Q_PROPERTY(QString cmd READ getCmd)
     Q_PROPERTY(QString value READ getValue WRITE setValue)
-    Q_PROPERTY(QString lastEvent READ getLastEvent)
+    Q_PROPERTY(int lastEvent READ getLastEvent)
     Q_PROPERTY(unsigned int lastEventUtc READ getLastEventUtc)
     Q_PROPERTY(int batteryLevel READ getBatteryLevel)
 
@@ -56,7 +56,6 @@ public:
     int getBatteryLevel() const;
     void updateBatteryLevel(int level);
 
-    int getLastEvent() const;
     unsigned int getLastEventUtc() const;
     int getStartTime() const;
 
@@ -72,7 +71,8 @@ public:
     static void updateValueByCommand(QString cmd, QString value);
 
 public slots:
-    int getLastUpdate(int index) const;
+    int getLastUpdate(int index = 0) const;
+    int getLastEvent() const;
 
 protected slots:
     void updateValue(QString cmd, QString value);

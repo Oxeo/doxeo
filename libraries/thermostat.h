@@ -29,6 +29,7 @@ public slots:
     void stop();
     void setOnBreak(int minutes);
     Status getStatus();
+    QString getStatusStr();
 
 protected slots:
     void run();
