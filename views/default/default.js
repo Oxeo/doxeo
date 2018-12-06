@@ -459,6 +459,8 @@ function getSensorImage(sensor) {
         } else {
             img = "temperature_red.png";
         }
+    } else if (sensor.category === "humidity") {
+        img = "humidity.png";
     } else if (sensor.category === "door") {
         if (isSensorOn(sensor)) {
             img = "door_close.png";
@@ -503,6 +505,8 @@ function getSensorImage(sensor) {
     
     if (sensor.value === '') {
         style = ' style="opacity: 0.2; filter: alpha(opacity=20)"'
+    } else {
+        style = isSensorOutdated(sensor) ? ' style="background-color:red"' : '';
     }
 
     return '<img src="assets/images/' + img + '" alt="Icon" height="45" width="45"' + style + '>';
@@ -520,6 +524,8 @@ function getSensorStatus(sensor) {
         }
     } else if (sensor.category === 'temperature') {
         result = result + "°C";
+    } else if (sensor.category === 'humidity') {
+        result = result + "%";
     } else if (sensor.category === 'doorknob') {
         result = "";
     } else if (sensor.category === 'pir') {
@@ -539,6 +545,18 @@ function isSensorOn(sensor) {
     } else {
         return sensor.invert_binary === 'true';
     }
+}
+
+function isSensorOutdated(sensor) {
+    if (sensor.category === 'temperature' || sensor.category === 'humidity') {
+        var eventDate = new Date(sensor.last_event * 1000);
+        var todayDate = new Date();
+        if (todayDate.getTime() - eventDate.getTime() > 1200000) {
+            return true;
+        }
+    }
+    
+    return false;
 }
 
 function alert_info(message) {           
