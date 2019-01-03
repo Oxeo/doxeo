@@ -514,24 +514,28 @@ function getSensorImage(sensor) {
 
 function getSensorStatus(sensor) {
     var result = sensor.value;
+    
+    var date = new Date(sensor.last_event * 1000);
+    var lastUpdate = date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + ' ' + date.toLocaleDateString();
+    
     if (result === '') {
         // nothing to do
     } else if (sensor.category === 'door') {
         if (isSensorOn(sensor)) {
-            result = "Close";
+            result = "Closed at " + lastUpdate;
         } else {
-            result = "Open";
+            result = "Opened at " + lastUpdate;
         }
     } else if (sensor.category === 'temperature') {
         result = result + "°C";
     } else if (sensor.category === 'humidity') {
         result = result + "%";
     } else if (sensor.category === 'doorknob') {
-        result = "";
+        result = lastUpdate;
     } else if (sensor.category === 'pir') {
-        result = "";
+        result = lastUpdate;
     } else if (sensor.category === 'doormat') {
-        result = "";
+        result = lastUpdate;
     }
         
     return result;
