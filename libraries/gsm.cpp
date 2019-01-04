@@ -199,8 +199,8 @@ void Gsm::update(QString buffer) {
         if (!buffer.isEmpty()) {
             if (buffer.contains("+CMT:")) {
                 // nothing to do is a SMS
-            } else if (buffer.contains("Call Ready")) {
-                qCritical() << "gsm: SIM900 has rebooting";
+            } else if (buffer.contains("+PBREADY")) {
+                init(); // gsm module has rebooted
             } else {
                 qDebug() << "gsm:" << qPrintable(data);
             }
@@ -209,7 +209,7 @@ void Gsm::update(QString buffer) {
     case 1:
         // AT command to set SIM900 to SMS mode
         send("AT+CMGF=1\r");
-        timeoutTimer->start(2000);
+        timeoutTimer->start(5000);
         state += 1;
         break;
     case 2:
@@ -227,7 +227,7 @@ void Gsm::update(QString buffer) {
     case 3:
         // mobile numbers
         send("AT+CMGS = \"" + smsToSendList.first().numbers + "\"\r");
-        timeoutTimer->start(2000);
+        timeoutTimer->start(5000);
         state += 1;
         break;
     case 4:
@@ -246,7 +246,7 @@ void Gsm::update(QString buffer) {
     case 5:
         // message
         send(smsToSendList.first().msg + '\r');
-        timeoutTimer->start(2000);
+        timeoutTimer->start(5000);
         state += 1;
         break;
     case 6:
