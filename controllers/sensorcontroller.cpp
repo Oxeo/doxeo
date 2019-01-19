@@ -1,12 +1,14 @@
 #include "sensorcontroller.h"
 #include "models/sensor.h"
 #include "libraries/authentification.h"
+#include "libraries/settings.h"
 
 #include <QHostAddress>
 
 SensorController::SensorController(MySensors *mySensors, QObject *parent) : AbstractCrudController(parent)
 {
-    name = "sensor";
+    this->name = "sensor";
+    this->mySensors = mySensors;
  
     router.insert("set_value.js", "jsonSetValue");
     Sensor::update();
@@ -101,5 +103,18 @@ void SensorController::mySensorsDataReceived(QString messagetype, int sender, in
                 }
             }
         }
+    } else if (messagetype == "getValue") {
+        Settings *settings = new Settings("mysensors_req", this);
+        QString key = QString::number(sender) + "_" + QString::number(sensor);
+
+        qDebug() << "sensorController: " << "getValue requested with key " << qPrintable(key);
+        QString payload = settings->value(key);
+
+        if (!payload.isEmpty()) {
+            QString msgToSend = QString::number(sender) + ";" + QString::number(sensor)
+                    + ";1;0;" + QString::number(type) + ";" + payload;
+            mySensors->send(msgToSend, false, "Answer of the request " + key);
+        }
     }
+
 }

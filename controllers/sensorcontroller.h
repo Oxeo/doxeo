@@ -24,6 +24,8 @@ protected:
     QJsonArray getList();
     QJsonObject updateElement(bool createNewObject);
     bool deleteElement(QString id);
+
+    MySensors *mySensors;
 };
 
 #endif // SENSORCONTROLLER_H
