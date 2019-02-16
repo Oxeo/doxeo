@@ -485,6 +485,8 @@ function getSensorImage(sensor) {
         }
     } else if (sensor.category === "pump") {
         img = "tap.png";
+    } else if (sensor.category === "plant") {
+        img = "pot.png";
     } else if (sensor.category === "speaker") {
         img = "music.png";
     } else if (sensor.category === "light") {
@@ -528,6 +530,8 @@ function getSensorStatus(sensor) {
         }
     } else if (sensor.category === 'temperature') {
         result = result + "°C";
+    } else if (sensor.category === 'plant') {
+        result = result + "%";
     } else if (sensor.category === 'humidity') {
         result = result + "%";
     } else if (sensor.category === 'doorknob') {
