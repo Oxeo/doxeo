@@ -81,7 +81,7 @@ void MySensors::retryHandler()
     while (i.hasNext()) {
         RetryMsg *retryMsg = &i.next();
 
-        if (retryMsg->lastSendTime.addMSecs(300) < QDateTime::currentDateTime()) {
+        if (retryMsg->lastSendTime.addMSecs(800) < QDateTime::currentDateTime()) {
             if (retryMsg->retryNumber == 0) {
                 qWarning() << "mysensors: no ack reveived for the message" << qPrintable(retryMsg->msg);
                 i.remove();
