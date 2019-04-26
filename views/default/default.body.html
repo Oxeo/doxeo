@@ -5,16 +5,17 @@
 <div id="alert_placeholder"></div>
 
 <div class="row">
-  
+
   <!-- Left column -->
   <div class="col-sm-4">
-    
+
     <!-- Switch Panel -->
     <div class="panel panel-info">
       <div class="panel-heading clearfix">
         <h3 class="panel-title pull-left" style="padding-top: 2.5px;">Switch</h3>
         <div class="dropdown pull-right">
-          <button class="btn btn-link dropdown-toggle btn-xs" type="button" id="dropdownSwitch" data-toggle="dropdown" aria-expanded="true">
+          <button class="btn btn-link dropdown-toggle btn-xs" type="button" id="dropdownSwitch" data-toggle="dropdown"
+            aria-expanded="true">
             <span class="glyphicon glyphicon-menu-hamburger" aria-label="menu"></span>
           </button>
           <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownSwitch">
@@ -25,19 +26,21 @@
       <table class="table" id="switchList">
       </table>
     </div>
-    
+
     <!-- System Panel -->
     <div class="panel panel-success">
       <div class="panel-heading clearfix">
         <h3 class="panel-title pull-left" style="padding-top: 2.5px;">System</h3>
         <div class="dropdown pull-right">
-          <button class="btn btn-link dropdown-toggle btn-xs" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+          <button class="btn btn-link dropdown-toggle btn-xs" type="button" id="dropdownMenu1" data-toggle="dropdown"
+            aria-expanded="true">
             <span class="glyphicon glyphicon-menu-hamburger" aria-label="menu"></span>
           </button>
           <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
             <li role="presentation"><a role="menuitem" tabindex="-1" href="/logs">Logs</a></li>
             <li role="presentation"><a role="menuitem" tabindex="-1" href="/setting/">Settings</a></li>
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="javascript:void(0)" data-toggle="modal" data-target="#shutdownModal">Shutdown</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="javascript:void(0)" data-toggle="modal"
+                data-target="#shutdownModal">Shutdown</a></li>
           </ul>
         </div>
       </div>
@@ -54,12 +57,14 @@
           <td class="text-right" style="width: 50%">Thermostat</td>
           <td class="text-left">
             <div class="dropdown">
-              <button class="btn btn-xs dropdown-toggle" type="button" style="border: 0px; padding:0px 5px 1px 5px; font-size:11px;" id="thermostat_status_active" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <button class="btn btn-xs dropdown-toggle" type="button" style="border: 0px; padding:0px 5px 1px 5px; font-size:11px;"
+                id="thermostat_status_active" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span></span> <span class="caret"></span>
               </button>
               <ul class="dropdown-menu" aria-labelledby="dropdownMenuMode">
                 <li><a href="javascript:void(0)" class="change_thermostat_status" data-thermostat="running">Enable</a></li>
-                <li><a href="javascript:void(0)" class="change_thermostat_status" data-thermostat="onBreak" data-time="120">On Break</a></li>
+                <li><a href="javascript:void(0)" class="change_thermostat_status" data-thermostat="onBreak" data-time="120">On
+                    Break</a></li>
                 <li><a href="javascript:void(0)" class="change_thermostat_status" data-thermostat="stopped">Disable</a></li>
               </ul>
             </div>
@@ -69,7 +74,8 @@
           <td class="text-right" style="width: 50%">Temperature Logger</td>
           <td class="text-left">
             <div class="dropdown">
-              <button class="btn btn-xs dropdown-toggle" type="button" style="border: 0px; padding:0px 5px 1px 5px; font-size:11px;" id="temperaturelogger_status_active" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <button class="btn btn-xs dropdown-toggle" type="button" style="border: 0px; padding:0px 5px 1px 5px; font-size:11px;"
+                id="temperaturelogger_status_active" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span></span> <span class="caret"></span>
               </button>
               <ul class="dropdown-menu" aria-labelledby="dropdownMenuMode">
@@ -90,7 +96,7 @@
       </table>
     </div>
     <!-- End System Panel -->
-    
+
     <!-- Battery Panel -->
     <div class="panel panel-danger">
       <div class="panel-heading clearfix">
@@ -102,16 +108,17 @@
     <!-- End Battery Panel -->
 
   </div>
-  
+
   <!-- Center column -->
   <div class="col-sm-4">
-  
+
     <!-- Sensor Panel -->
     <div class="panel panel-warning">
       <div class="panel-heading clearfix">
         <h3 class="panel-title pull-left" style="padding-top: 2.5px;">Sensor</h3>
         <div class="dropdown pull-right">
-          <button class="btn btn-link dropdown-toggle btn-xs" type="button" id="dropdownSwitch" data-toggle="dropdown" aria-expanded="true">
+          <button class="btn btn-link dropdown-toggle btn-xs" type="button" id="dropdownSwitch" data-toggle="dropdown"
+            aria-expanded="true">
             <span class="glyphicon glyphicon-menu-hamburger" aria-label="menu"></span>
           </button>
           <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownSwitch">
@@ -119,17 +126,38 @@
           </ul>
         </div>
       </div>
-      <table class="table" id="sensorList">
-      </table>
+
+      <!-- Nav tabs -->
+      <ul class="nav nav-tabs" role="tablist" id="sensor_nav_tabs" style="border:0px;">
+        <li class="active" role="presentation"><a href="#sensor_pan_security" aria-controls="sensor_pan_security" role="tab"
+            data-toggle="tab" aria-expanded="true">Security</a></li>
+        <li role="presentation"><a href="#sensor_pan_energy" aria-controls="sensor_pan_energy" role="tab" data-toggle="tab">Energy</a></li>
+        <li role="presentation"><a href="#sensor_pan_automatisme" aria-controls="sensor_pan_automatisme" role="tab"
+            data-toggle="tab">Automatism</a></li>
+      </ul>
+
+      <!-- Tab panes -->
+      <div class="tab-content" id="sensor_tab_panes">
+        <div role="tabpanel" class="tab-pane active" id="sensor_pan_security">
+          <table class="table" style="margin-bottom:0px;"></table>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="sensor_pan_energy">
+          <table class="table" style="margin-bottom:0px;"></table>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="sensor_pan_automatisme">
+          <table class="table" style="margin-bottom:0px;"></table>
+        </div>
+      </div>
     </div>
     <!-- End Sensor Panel -->
-    
+
     <!-- Scenario Panel -->
     <div class="panel panel-warning">
       <div class="panel-heading clearfix">
         <h3 class="panel-title pull-left" style="padding-top: 2.5px;">Scenario</h3>
         <div class="dropdown pull-right">
-          <button class="btn btn-link dropdown-toggle btn-xs" type="button" id="dropdownSwitch" data-toggle="dropdown" aria-expanded="true">
+          <button class="btn btn-link dropdown-toggle btn-xs" type="button" id="dropdownSwitch" data-toggle="dropdown"
+            aria-expanded="true">
             <span class="glyphicon glyphicon-menu-hamburger" aria-label="menu"></span>
           </button>
           <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownSwitch">
@@ -141,18 +169,19 @@
       </table>
     </div>
     <!-- End Scenario Panel -->
-	
+
   </div>
-  
+
   <!-- Right column -->
   <div class="col-sm-4">
-    
+
     <!-- Thermostat Panel -->
     <div class="panel panel-default">
       <div class="panel-heading clearfix">
         <h3 class="panel-title pull-left" style="padding-top: 2.5px;">Thermostat</h3>
         <div class="dropdown pull-right">
-          <button class="btn btn-link dropdown-toggle btn-xs" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+          <button class="btn btn-link dropdown-toggle btn-xs" type="button" id="dropdownMenu1" data-toggle="dropdown"
+            aria-expanded="true">
             <span class="glyphicon glyphicon-menu-hamburger" aria-label="menu"></span>
           </button>
           <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
@@ -161,11 +190,12 @@
             <li role="presentation"><a role="menuitem" tabindex="-1" href="/thermostat/heaters">Heating time</a></li>
             <li role="presentation"><a role="menuitem" tabindex="-1" href="/heater/">Heater Management</a></li>
           </ul>
-        </div>        
+        </div>
       </div>
       <!-- Nav tabs -->
       <ul class="nav nav-tabs" role="tablist" id="heater_nav_tabs" style="border:0px;">
-        <li role="presentation"><a href="#heater_pan1" aria-controls="heater_pan1" role="tab" data-toggle="tab">Heater 1</a></li>
+        <li role="presentation"><a href="#heater_pan1" aria-controls="heater_pan1" role="tab" data-toggle="tab">Heater
+            1</a></li>
       </ul>
       <!-- Tab panes -->
       <div class="tab-content" id="heater_tab_panes">
@@ -177,17 +207,22 @@
             </tr>
             <tr>
               <td class="text-right" style="width: 50%">Heat setpoint</td>
-              <td class="text-left"><a href="javascript:void(0)" data-type="heat" data-increment="false" class="change_heater_setpoint"><i class="glyphicon glyphicon-arrow-down"></i></a> <span class="heat_setpoint"></span>&deg;<a href="javascript:void(0)" data-type="heat" data-increment="true" class="change_heater_setpoint"><i class="glyphicon glyphicon-arrow-up"></i></a></td>
+              <td class="text-left"><a href="javascript:void(0)" data-type="heat" data-increment="false" class="change_heater_setpoint"><i
+                    class="glyphicon glyphicon-arrow-down"></i></a> <span class="heat_setpoint"></span>&deg;<a href="javascript:void(0)"
+                  data-type="heat" data-increment="true" class="change_heater_setpoint"><i class="glyphicon glyphicon-arrow-up"></i></a></td>
             </tr>
             <tr>
               <td class="text-right">Cool setpoint</td>
-              <td class="text-left"><a href="javascript:void(0)" data-type="cool" data-increment="false" class="change_heater_setpoint"><i class="glyphicon glyphicon-arrow-down"></i></a> <span class="cool_setpoint"></span>&deg;<a href="javascript:void(0)" data-type="cool" data-increment="true" class="change_heater_setpoint"><i class="glyphicon glyphicon-arrow-up"></i></a></td>
+              <td class="text-left"><a href="javascript:void(0)" data-type="cool" data-increment="false" class="change_heater_setpoint"><i
+                    class="glyphicon glyphicon-arrow-down"></i></a> <span class="cool_setpoint"></span>&deg;<a href="javascript:void(0)"
+                  data-type="cool" data-increment="true" class="change_heater_setpoint"><i class="glyphicon glyphicon-arrow-up"></i></a></td>
             </tr>
             <tr>
               <td class="text-right">Mode</td>
               <td class="text-left">
                 <div class="dropdown">
-                  <button class="btn btn-default btn-xs dropdown-toggle" type="button" style="padding:0px 5px;" id="dropdownMenuMode" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <button class="btn btn-default btn-xs dropdown-toggle" type="button" style="padding:0px 5px;" id="dropdownMenuMode"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <span class="heater_mode"></span> <span class="caret"></span>
                   </button>
                   <ul class="dropdown-menu" aria-labelledby="dropdownMenuMode">
@@ -208,13 +243,14 @@
       </div>
     </div>
     <!-- End Thermostat Panel -->
-    
+
     <!-- Script Panel -->
-    <div class="panel panel-info">
+    <div class="panel panel-info" id="scriptPanel">
       <div class="panel-heading clearfix">
         <h3 class="panel-title pull-left" style="padding-top: 2.5px;">Script</h3>
         <div class="dropdown pull-right">
-          <button class="btn btn-link dropdown-toggle btn-xs" type="button" id="dropdownSwitch" data-toggle="dropdown" aria-expanded="true">
+          <button class="btn btn-link dropdown-toggle btn-xs" type="button" id="dropdownSwitch" data-toggle="dropdown"
+            aria-expanded="true">
             <span class="glyphicon glyphicon-menu-hamburger" aria-label="menu"></span>
           </button>
           <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownSwitch">
@@ -222,11 +258,13 @@
           </ul>
         </div>
       </div>
-      <table class="table" id="scriptList">
-      </table>
+      <div class="content"></div>
+      <div class="text-center">
+        <ul id="scriptPanel-pagination" class="pagination-sm" style="margin:6px 0 0 0"></ul>
+      </div>
     </div>
     <!-- End Script Panel -->
-    
+
   </div>
 </div>
 
@@ -255,7 +293,7 @@
       </div>
     </div>
   </div>
-</div>  
+</div>
 
 <!-- Warning Modal -->
 <div class="modal fade" id="warningModal" tabindex="-1" role="dialog" aria-labelledby="warningModalLabel">

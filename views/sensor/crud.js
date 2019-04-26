@@ -39,7 +39,7 @@ $(document).ready(function () {
             },
             category: {
                 title: 'Category',
-                options: {'temperature': 'Temperature', 'humidity': 'Humidity', 'speaker': 'Speaker', 'door': 'Door', 'pump': 'Pump', 'light': 'Light', 'doormat': 'Doormat', 'doorknob': 'Doorknob', 'pir': 'PIR', 'plant': 'Plant', 'other': 'Other'}
+                options: {'temperature': 'Temperature', 'humidity': 'Humidity', 'speaker': 'Speaker', 'door': 'Door', 'window': 'Window', 'pump': 'Pump', 'light': 'Light', 'doormat': 'Doormat', 'doorknob': 'Doorknob', 'pir': 'PIR', 'plant': 'Plant', 'other': 'Other'}
             },
             order: {
                 title: 'Order',
