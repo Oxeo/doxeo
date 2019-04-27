@@ -549,7 +549,7 @@ function getSensorStatus(sensor) {
 
     if (result === '') {
         // nothing to do
-    } else if (sensor.category === 'door') {
+    } else if (sensor.category === 'door' || sensor.category === 'window') {
         if (isSensorOn(sensor)) {
             result = "Closed at " + lastUpdate;
         } else {
