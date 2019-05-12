@@ -17,6 +17,7 @@ MySensors::MySensors(QObject *parent) : QObject(parent)
 
     connectionTimer.setSingleShot(true);
     waitRegisterMsgTimer.setSingleShot(true);
+    sendTimer.setSingleShot(true);
     retryTimer.setSingleShot(true);
 
     connect(serial, &QSerialPort::readyRead, this, &MySensors::readData);
@@ -24,6 +25,7 @@ MySensors::MySensors(QObject *parent) : QObject(parent)
             SLOT(handleError(QSerialPort::SerialPortError)));
     connect(&connectionTimer, SIGNAL(timeout()), this, SLOT(connection()), Qt::QueuedConnection);
     connect(&waitRegisterMsgTimer, SIGNAL(timeout()), this, SLOT(connection()), Qt::QueuedConnection);
+    connect(&sendTimer, SIGNAL(timeout()), this, SLOT(sendHandler()), Qt::QueuedConnection);
     connect(&retryTimer, SIGNAL(timeout()), this, SLOT(retryHandler()), Qt::QueuedConnection);
 }
 
@@ -72,6 +74,18 @@ void MySensors::handleError(QSerialPort::SerialPortError error)
         }
 
         emit dataReceived("saveGateway", 0, 0, 0, "0");
+    }
+}
+
+void MySensors::sendHandler()
+{
+    if (!sendList.isEmpty()) {
+        sendToSerial(sendList.first());
+        sendList.removeFirst();
+    }
+
+    if (!sendList.isEmpty()) {
+        sendTimer.start(1000);
     }
 }
 
@@ -127,18 +141,30 @@ void MySensors::readData()
     }
 }
 
-void MySensors::send(QString msg, bool checkAck, QString comment)
+void MySensors::send(QString msg, bool checkAck, QString comment) {
+    Msg m;
+    m.msg = msg;
+    m.checkAck = checkAck;
+    m.comment = comment;
+    sendList.append(m);
+
+    if (!sendTimer.isActive()) {
+        sendTimer.start(1);
+    }
+}
+
+void MySensors::sendToSerial(Msg msg)
 {
     if (serial->isOpen()) {
         if (settings->value("log", "info") == "debug" || settings->value("log", "info") == "info") {
-            qDebug() << "mySensors: send" << qPrintable(msg) << qPrintable("(" + comment + ")");
+            qDebug() << "mySensors: send" << qPrintable(msg.msg) << qPrintable("(" + msg.comment + ")");
         }
-        QString msgToSend = msg + "\n";
+        QString msgToSend = msg.msg + "\n";
         serial->write(msgToSend.toLatin1());
 
-        if (checkAck && msg.split(";").length() > 3 && msg.split(";").at(3).toInt() == 1) {
+        if (msg.checkAck && msg.msg.split(";").length() > 3 && msg.msg.split(";").at(3).toInt() == 1) {
             RetryMsg retryMsg;
-            retryMsg.msg = msg;
+            retryMsg.msg = msg.msg;
             retryMsg.retryNumber = 5;
             retryMsg.lastSendTime = QDateTime::currentDateTime();
             retryList.append(retryMsg);
@@ -148,7 +174,7 @@ void MySensors::send(QString msg, bool checkAck, QString comment)
             }
         }
     } else {
-        qCritical() << "mySensors: not connected to send the message" << qPrintable(msg);
+        qCritical() << "mySensors: not connected to send the message" << qPrintable(msg.msg);
     }
 }
 
@@ -317,6 +343,10 @@ void MySensors::rfReceived(QString data) {
                 break;
             default:
                 break;
+        }
+
+        if (sendTimer.isActive()) {
+            sendTimer.start(1);
         }
     }
 }

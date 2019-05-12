@@ -52,9 +52,17 @@ signals:
 protected slots:
     void connection();
     void handleError(QSerialPort::SerialPortError error);
+    void sendHandler();
     void retryHandler();
 
 protected:
+
+    struct Msg {
+      QString msg;
+      bool checkAck;
+      QString comment;
+    };
+
     struct RetryMsg {
       QString msg;
       int retryNumber;
@@ -64,6 +72,7 @@ protected:
     void readData();
     bool foundDevice(const QString port = "");
     QString encode(int destination, int sensor, int command, int acknowledge, int type, QString payload);
+    void sendToSerial(Msg msg);
     void sendTime(int destination, int sensor);
     void sendConfig(int destination);
     void appendData(QString str);
@@ -74,9 +83,11 @@ protected:
     QSerialPort *serial;
     QTimer connectionTimer;
     QTimer waitRegisterMsgTimer;
+    QTimer sendTimer;
     QString currentPortTested;
     bool systemInError;
     QTimer retryTimer;
+    QList<Msg> sendList;
     QList<RetryMsg> retryList;
     Settings *settings;
 };
