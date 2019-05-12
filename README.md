@@ -12,7 +12,7 @@
 ## Installation
 
 * Generate a MakeFile: qmake
-* Compile the application: make
+* Compile the application: make -j4
 * Configure the application: ./doxeo-monitor --configure
 * Create a new user: ./doxeo-monitor --user
 * Run : ./doxeo-monitor
@@ -33,21 +33,22 @@
 sudo apt-get install libpq-dev libmariadbclient-dev
 ```
  5. Install SSL driver on raspbian: sudo apt-get install openssl
- 6. Download Qt [here](http://download.qt.io/archive/qt/5.11/5.11.2/single/qt-everywhere-src-5.11.2.tar.xz).
- 7. Copy the folder qtbase into your raspberry pi
+ 6. Download [Qt](http://download.qt.io/archive/qt/5.11/5.11.2/single/qt-everywhere-src-5.11.2.tar.xz) with wget command.
+ 7. Uncompress the file : tar xf qt-everywhere-src-5.11.2.tar.xz
  8. create a folder qtbase-build next to qtbase folder
  9. go to qtbase-build folder
  10. configure the build
 ```
 PKG_CONFIG_LIBDIR=/usr/lib/arm-linux-gnueabihf/pkgconfig:/usr/share/pkgconfig \
 PKG_CONFIG_SYSROOT_DIR=/ \
-../qtbase/configure -v -opengl es2 -eglfs -no-gtk \
--device linux-rasp-pi-g++ -device-option CROSS_COMPILE=/usr/bin/ \
+../qtbase/configure -v -no-opengl -no-gtk \
+-device linux-rasp-pi2-g++ -device-option CROSS_COMPILE=/usr/bin/ \
 -opensource -confirm-license -release -reduce-exports \
 -force-pkg-config -no-kms -nomake examples -no-compile-examples -no-pch \
 -qt-pcre -ssl -evdev -system-freetype -fontconfig -glib -prefix /opt/Qt5.11
 ```
- 11. do: make
+> we do not used linux-rasp-pi3-g++ because qtscript don't like it ("Not supported ARM architecture")
+ 11. do: make -j4
  12. do: sudo make install
  13. do: sudo ln -s /opt/Qt5.11/bin/qmake /usr/local/bin/qmake
 
@@ -59,25 +60,21 @@ More details [here](http://www.tal.org/tutorials/building-qt-510-raspberry-pi-de
  
 ### Install QtSerialPort
 
- 1. Download Qt [here](http://download.qt.io/archive/qt/5.5/5.5.1/single/qt-everywhere-opensource-src-5.5.1.tar.xz).
- 2. Copy the folder qtserialport into your raspberry pi
- 3. Create a folder qtserialport-build next to the repository qtserialport
- 4. Go to the folder qtserialport-build and do:
+ 1. Create a folder qtserialport-build next to the repository qtserialport
+ 2. Go to the folder qtserialport-build and do:
 ```
  qmake ../qtserialport/qtserialport.pro
- make
+ make -j4
  sudo make install
 ```
  
 ### Install Qtscript
 
- 1. Download Qt [here](http://download.qt.io/archive/qt/5.5/5.5.1/single/qt-everywhere-opensource-src-5.5.1.tar.xz).
- 2. Copy the folder qtscript into your raspberry pi
- 3. Create a folder qtscript-build next to the repository qtscript
- 4. Go to the folder qtscript-build and do:
+ 1. Create a folder qtscript-build next to the repository qtscript
+ 2. Go to the folder qtscript-build and do:
 ```
  qmake ../qtscript/qtscript.pro
- make
+ make -j4
  sudo make install
 ```
  
