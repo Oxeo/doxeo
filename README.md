@@ -77,6 +77,27 @@ More details [here](http://www.tal.org/tutorials/building-qt-510-raspberry-pi-de
  make -j4
  sudo make install
 ```
+
+### Install phpmyadmin
+
+ 1. do: sudo apt-get install phpmyadmin
+ 2. let dbconfig-common configuring the database of phpmyadmin
+ 3. enter the root password of mysql
+ 4. do: sudo ln -s /usr/share/phpmyadmin/ /var/www/html/
+ 5. autorize www-data for /var/www/html/phpmyadmin
+ 6. at the command line, log in to MySQL as the root user:
+```
+mysql -u root -p
+```
+ 7. type the MySQL root password, and then press Enter.
+ 8. create database with user:
+```
+CREATE DATABASE doxeo;
+CREATE USER 'doxeo'@'localhost' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON doxeo . * TO 'doxeo'@'localhost';
+FLUSH PRIVILEGES;
+exit
+```
  
 ### Allowing your linux userid permission to use your usb device
 
