@@ -149,7 +149,7 @@ void MySensors::send(QString msg, bool checkAck, QString comment) {
     sendList.append(m);
 
     if (!sendTimer.isActive()) {
-        sendTimer.start(1);
+        sendTimer.start(5);
     }
 }
 
@@ -346,7 +346,7 @@ void MySensors::rfReceived(QString data) {
         }
 
         if (sendTimer.isActive()) {
-            sendTimer.start(1);
+            sendTimer.start(10);
         }
     }
 }
