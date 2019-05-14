@@ -13,7 +13,7 @@
 
 * Generate a MakeFile: qmake
 * Compile the application: make -j4
-* Configure the application: ./doxeo-monitor --configure
+* Configure the application: sudo ./doxeo-monitor --configure
 * Create a new user: ./doxeo-monitor --user
 * Run : ./doxeo-monitor
 * Go the web page: http://localhost:8080
@@ -98,6 +98,7 @@ GRANT ALL PRIVILEGES ON doxeo . * TO 'doxeo'@'localhost';
 FLUSH PRIVILEGES;
 exit
 ```
+> If you don't known the mysql root password you can do like [here](https://www.domo-blog.fr/comment-modifier-le-mot-de-passe-mysql-root-de-jeedom/) without omitting sudo before commands.
  
 ### Allowing your linux userid permission to use your usb device
 
