@@ -149,7 +149,7 @@ void MySensors::send(QString msg, bool checkAck, QString comment) {
     sendList.append(m);
 
     if (!sendTimer.isActive()) {
-        sendTimer.start(5);
+        sendTimer.start(10);
     }
 }
 
