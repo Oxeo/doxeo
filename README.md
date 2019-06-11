@@ -173,12 +173,23 @@ NameVirtualHost *:80
 ```
 4. do: sudo /etc/init.d/apache2 restart
 
+### Disable GSM PIN code
+ 
+```
+gsm.sendAtCmd("AT+CPIN?")
+gsm.sendAtCmd('AT+CPIN="1234"')
+gsm.sendAtCmd('AT+CLCK="SC",0,"1234"')
+gsm.sendAtCmd("AT+CPIN?")
+```
+ 
+More details [here](http://dostmuhammad.com/blog/disable-pin-code-using-gsm-modem-at-commands/).
+
 ### Install Mysql driver on windows
 
  1. Download the driver [here](https://dev.mysql.com/downloads/connector/c/).
  2. Copy libmysql.dll into C:\Program Files\Qt\5.5\mingw492_32\bin
  
- ### Install SSL driver on windows
+### Install SSL driver on windows
 
  1. Download Win32 OpenSSL v1.0.2n [here](http://slproweb.com/products/Win32OpenSSL.html).
  2. Install openSLL
