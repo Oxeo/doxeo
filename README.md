@@ -184,6 +184,18 @@ gsm.sendAtCmd("AT+CPIN?")
  
 More details [here](http://dostmuhammad.com/blog/disable-pin-code-using-gsm-modem-at-commands/).
 
+### Fix UART on Raspberry Pi 3 (Pin 8 and 10) by disable bluetooth
+
+1. Add to /boot/config.txt
+```
+dtoverlay = pi3-disable-bt
+```
+
+2. Remove to /boot/cmdline.txt
+```
+console=serial0,115200
+```
+
 ### Install Mysql driver on windows
 
  1. Download the driver [here](https://dev.mysql.com/downloads/connector/c/).
