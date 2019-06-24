@@ -50,7 +50,7 @@ void ScriptEngine::init()
 
 QString ScriptEngine::runCmd(QString cmd)
 {
-    QScriptValue result = engine.evaluate(cmd);
+    QJSValue result = engine.evaluate(cmd);
     
     return result.toString();
 }
@@ -66,10 +66,10 @@ void ScriptEngine::run(QString event)
             continue;
         }
 
-        QScriptValue result = engine.evaluate(script->getContent());
+        QJSValue result = engine.evaluate(script->getContent());
 
-        if (engine.hasUncaughtException()) {
-            int line = engine.uncaughtExceptionLineNumber();
+        if (result.isError()) {
+            int line = result.property("lineNumber").toInt();
             qCritical() << "Script " << script->getName() << ": error at line" << line << ":" << result.toString();
         } else if (!result.toString().isEmpty() && result.toString() != "undefined") {
             qDebug() << "script " << script->getName() << ": " << result.toString();

@@ -8,7 +8,7 @@
 #include <libraries/thermostat.h>
 
 #include <QObject>
-#include <QScriptEngine>
+#include <QJSEngine>
 #include <QTimer>
 #include <QString>
 
@@ -34,7 +34,7 @@ protected slots:
     void eventTimeout(QString name);
 
 protected:
-    QScriptEngine engine;
+    QJSEngine engine;
     QTimer *timer;
     QHash<QString, uint> eventList;
     Gsm *gsm;

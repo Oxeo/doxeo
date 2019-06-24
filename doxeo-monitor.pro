@@ -6,7 +6,7 @@
 
 CONFIG += debug_and_release
 
-QT       += network sql serialport script
+QT       += network sql serialport qml
 
 TARGET = doxeo-monitor
 TEMPLATE = app
