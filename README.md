@@ -68,12 +68,12 @@ More details [here](http://www.tal.org/tutorials/building-qt-510-raspberry-pi-de
  sudo make install
 ```
  
-### Install Qtscript
+### Install QtDeclarative for QJSEngine
 
- 1. Create a folder qtscript-build next to the repository qtscript
- 2. Go to the folder qtscript-build and do:
+ 1. Create a folder qtdeclarative-build next to the repository qtdeclarative
+ 2. Go to the folder qtdeclarative-build and do:
 ```
- qmake ../qtscript/qtscript.pro
+ qmake ../qtdeclarative/qtdeclarative.pro
  make -j4
  sudo make install
 ```
@@ -194,6 +194,24 @@ dtoverlay = pi3-disable-bt
 2. Remove to /boot/cmdline.txt
 ```
 console=serial0,115200
+```
+
+### Raspberry Pi - Auto WiFi Hotspot Switch
+
+See details [here](http://www.raspberryconnect.com/network/item/331-raspberry-pi-auto-wifi-hotspot-switch-no-internet-routing).
+
+If your SSID is not found then add your ssid in /usr/bin/autohotspot like: 
+```
+ssids=('mySSID1' 'mySSID2')
+```
+
+if when starting hostapd this error happen
+```
+Failed to start hostapd.service: Unit hostapd.service is masked
+```
+then do
+```
+sudo systemctl unmask hostapd
 ```
 
 ### Install Mysql driver on windows
