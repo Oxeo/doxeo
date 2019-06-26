@@ -413,13 +413,20 @@ $('.container').on('click', '.change_thermostat_status', function () {
 
 $('.container').on('click', '.change_script_status', function () {
     var data = $(this).data();
+    var text = $(this).text();
 
     $('#script_status_' + data.id).find('span').first().text("...");
 
     $.getJSON('script/set_status', data)
         .done(function (result) {
             if (result.success) {
-                update();
+                if (result.status === "on") {
+                    $('#script_status_' + data.id).find('span').first().text("Enabled");
+                    $('#script_status_' + data.id).removeClass('btn-secondary btn-info').addClass('btn-info');
+                } else {
+                    $('#script_status_' + data.id).find('span').first().text("Disabled");
+                    $('#script_status_' + data.id).removeClass('btn-secondary btn-info').addClass('btn-secondary');
+                }
             } else {
                 alert_error(result.msg);
             }
