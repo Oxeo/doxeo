@@ -5,8 +5,13 @@ HttpHeader::HttpHeader(QTcpSocket *request)
 {
     QStringList firstHeader = QString(request->readLine()).split(QRegExp("[ \r\n][ \r\n]*"));
 
-    method = firstHeader[0];
-    url = firstHeader[1];
+    if (firstHeader.size() > 1) {
+        method = firstHeader[0];
+        url = firstHeader[1];
+    } else {
+        method = "";
+        url = "";
+    }
 
     foreach(QByteArray line, request->readAll().split('\n')) {
         int colon = line.indexOf(':');

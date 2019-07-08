@@ -66,7 +66,7 @@ void HttpServer::readClient()
         socket->close();
 
         if (socket->state() == QTcpSocket::UnconnectedState) {
-            delete socket;
+            socket->deleteLater();
         }
 
         if (timer.elapsed() > 3000) {

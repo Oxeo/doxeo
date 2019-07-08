@@ -41,6 +41,7 @@ void AbstractController::loadJsonView(QJsonObject json)
 
     *output << "\r\n";
     *output << doc.toJson();
+    output->flush();
 }
 
 QByteArray AbstractController::loadHtmlView(const QString &view, const QHash<QString, QByteArray> *data, bool display)
