@@ -40,7 +40,7 @@ function update() {
             })
             $.each(result.Records, function (key, val) {
                 if (val.is_visible != "true") {
-                    continue;
+                    return true;
                 }
                 $('#switchList').append('<tr><td class="text-right" style="width: 50%">' + val.name + '</td><td class="text-left"><input id="sw_' + val.id + '" name="switch" class="switch_on_off" type="checkbox" data-id="' + val.id + '" data-size="mini"></td></tr>');
                 if (val.status == "on" || val.status == "pending") {
