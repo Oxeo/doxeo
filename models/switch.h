@@ -43,6 +43,9 @@ public:
     QString getSensor() const;
     void setSensor(const QString &value);
 
+    bool getIsVisible() const;
+    void setIsVisible(bool value);
+
     static void update();
     static bool isIdValid(QString id);
     static Switch *get(QString id);
@@ -70,6 +73,7 @@ protected:
     QString powerOffCmd;
     QString sensor;
     int order;
+    bool isVisible;
 
     QList<QDateTime> lastUpdate;
     QTimer *timerPowerOff;

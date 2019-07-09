@@ -47,6 +47,10 @@ $(document).ready(function () {
             sensor: {
                 title: 'Sensor',
             },
+            is_visible: {
+                title: 'Visible',
+                options: {'true': 'Yes', 'false': 'No'}
+            },
             status: {
                 title: 'Status',
                 options: { 'on': 'On', 'off': 'Off'}

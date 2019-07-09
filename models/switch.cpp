@@ -19,6 +19,7 @@ Switch::Switch(QString id, QObject *parent) : QObject(parent)
     this->id = id;
     this->order = 0;
     this->sensor = "";
+    this->isVisible = true;
 
     for (int i=0; i<5; i++) {
         lastUpdate.append(QDateTime::currentDateTime().addYears(-1));
@@ -127,7 +128,7 @@ void Switch::powerOff()
 void Switch::update()
 {
     QSqlQuery query = Database::getQuery();
-    query.prepare("SELECT id, status, name, category, order_by, power_on_cmd, power_off_cmd, sensor FROM switch");
+    query.prepare("SELECT id, status, name, category, order_by, power_on_cmd, power_off_cmd, sensor, is_visible FROM switch");
 
     if(Database::exec(query))
     {
@@ -145,6 +146,7 @@ void Switch::update()
             sw->powerOnCmd = query.value(5).toString();
             sw->powerOffCmd = query.value(6).toString();
             sw->sensor = query.value(7).toString();
+            sw->isVisible = query.value(8).toBool();
 
             switchList.insert(sw->id, sw);
         }
@@ -196,6 +198,7 @@ QJsonObject Switch::toJson() const
     result.insert("power_off_cmd", powerOffCmd);
     result.insert("status", status);
     result.insert("sensor", sensor);
+    result.insert("is_visible", isVisible ? "true" : "false");
     result.insert("sensor_status", getSensorStatus());
 
     return result;
@@ -241,10 +244,10 @@ bool Switch::flush()
     QSqlQuery query = Database::getQuery();
 
     if (switchList.contains(id)) {
-        query.prepare("UPDATE switch SET name=?, category=?, order_by=?, power_on_cmd=?, power_off_cmd=?, status=?, sensor=? WHERE id=?");
+        query.prepare("UPDATE switch SET name=?, category=?, order_by=?, power_on_cmd=?, power_off_cmd=?, status=?, sensor=?, is_visible=? WHERE id=?");
     } else {
-        query.prepare("INSERT INTO switch (name, category, order_by, power_on_cmd, power_off_cmd, status, sensor, id) "
-                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        query.prepare("INSERT INTO switch (name, category, order_by, power_on_cmd, power_off_cmd, status, sensor, is_visible, id) "
+                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
     }
     query.addBindValue(name);
     query.addBindValue(category);
@@ -253,6 +256,7 @@ bool Switch::flush()
     query.addBindValue(powerOffCmd);
     query.addBindValue(status);
     query.addBindValue(sensor);
+    query.addBindValue(isVisible);
     query.addBindValue(id);
 
     if (Database::exec(query)) {
@@ -296,6 +300,16 @@ void Switch::updateValue(QString id, QString value)
         setStatus("off");
     }
 }
+bool Switch::getIsVisible() const
+{
+    return isVisible;
+}
+
+void Switch::setIsVisible(bool value)
+{
+    isVisible = value;
+}
+
 void Switch::setMySensors(MySensors *value)
 {
     mySensors = value;

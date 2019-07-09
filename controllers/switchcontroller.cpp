@@ -51,6 +51,7 @@ QJsonObject SwitchController::updateElement(bool createNewObject)
     sw->setPowerOffCmd(query->getItem("power_off_cmd"));
     sw->setStatus(query->getItem("status"));
     sw->setSensor(query->getItem("sensor"));
+    sw->setIsVisible(query->getItem("is_visible") == "true" ? true : false);
     sw->flush();
     
     return sw->toJson();
