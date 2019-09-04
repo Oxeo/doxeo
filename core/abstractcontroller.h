@@ -29,6 +29,9 @@ public:
 protected:
     void loadJsonView(QJsonObject json);
     QByteArray loadHtmlView(const QString &view, const QHash<QString, QByteArray> *data = NULL, bool display = true);
+    void loadByteArray(const QByteArray &byteArray, QString contentType);
+    void notFound(QString message);
+    void forbidden(QString message);
     void redirect(QString url);
 
     QTextStream *output;

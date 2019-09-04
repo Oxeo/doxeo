@@ -57,7 +57,9 @@ SOURCES += main.cpp\
     controllers/jeedomcontroller.cpp \
     controllers/heatercontroller.cpp \
     libraries/settings.cpp \
-    models/session.cpp
+    models/session.cpp \
+    controllers/cameracontroller.cpp \
+    models/camera.cpp
 
 HEADERS  += \
     controllers/switchcontroller.h \
@@ -105,6 +107,8 @@ HEADERS  += \
     controllers/jeedomcontroller.h \
     controllers/heatercontroller.h \
     libraries/settings.h \
-    models/session.h
+    models/session.h \
+    models/camera.h \
+    controllers/cameracontroller.h
 
 RESOURCES +=

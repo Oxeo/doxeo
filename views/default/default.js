@@ -253,6 +253,25 @@ function update() {
         updateError = true;
         alert_error("Request Failed: " + error);
     });
+    
+    $.getJSON('camera/list.js').done(function (result) {
+        if (result.Result == "OK") {
+            $('#cameraList').html('');
+            $.each(result.Records, function (key, val) {
+                if (val.hide != "true") {
+                    $('#cameraList').append('<tr><td><a href="/camera/image/?id=' + val.id + '"><img src="/camera/image/?id=' + val.id + '" style="max-width:100%"></a></td></tr>');
+                }
+            });
+        } else {
+            $('#cameraList').html('<tr><td></td></tr>');
+            updateError = true;
+            alert_error(result.msg);
+        }
+    }).fail(function (jqxhr, textStatus, error) {
+        $('#cameraList').html('<tr><td></td></tr>');
+        updateError = true;
+        alert_error("Request Failed: " + error);
+    });
 }
 
 function updateScriptPanel() {

@@ -74,11 +74,41 @@ QByteArray AbstractController::loadHtmlView(const QString &view, const QHash<QSt
     }
 }
 
+void AbstractController::loadByteArray(const QByteArray &byteArray, QString contentType)
+{
+
+        *output << "HTTP/1.0 200 Ok\r\n";
+        *output << "Content-Type: " + contentType + "\r\n\r\n";
+        output->flush();
+
+        socket->write(byteArray);
+}
+
+void AbstractController::notFound(QString message)
+{
+    *output << "HTTP/1.0 404 Not Found\r\n";
+    *output << "\r\n";
+    *output << message;
+    
+    output->flush();
+}
+
+void AbstractController::forbidden(QString message)
+{
+    *output << "HTTP/1.0 403 Forbidden\r\n";
+    *output << "\r\n";
+    *output << message;
+    
+    output->flush();
+}
+
 void AbstractController::redirect(QString url)
 {
     *output << "HTTP/1.0 302 Found\r\n";
     *output << "Location: " + url + "\r\n";
     *output << "\r\n";
+    
+    output->flush();
 }
 
 QHash<QString, QString> AbstractController::getRouter() const
