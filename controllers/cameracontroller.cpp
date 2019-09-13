@@ -34,29 +34,26 @@ void CameraController::image()
     } else if (!Camera::isIdValid(query->getItem("id").toInt())) {
         forbidden("Camera Id invalid");
     } else {
-        Camera *s = Camera::get(query->getItem("id").toInt());
+        //Camera *s = Camera::get(query->getItem("id").toInt());
+        //QNetworkReply* reply = networkManager->get(QNetworkRequest(QUrl(s->getUrl())));
+        //QEventLoop* eventLoop = new QEventLoop();
+
+        //QTimer::singleShot(1000, eventLoop, SLOT(quit()));
+        //connect(reply, SIGNAL(finished()), eventLoop, SLOT(quit()));
+        //eventLoop->exec();
         
-        QNetworkReply* reply = networkManager->get(QNetworkRequest(QUrl(s->getUrl())));
-        QEventLoop eventLoop;
-        QTimer timer;
-        timer.setSingleShot(true);
-        connect(&timer, SIGNAL(timeout()), &eventLoop, SLOT(quit()));
-        connect(reply, SIGNAL(finished()), &eventLoop, SLOT(quit()));
-        timer.start(700);
-        eventLoop.exec();
-        
-        if (timer.isActive() && reply->error() == QNetworkReply::NoError){
-          timer.stop();
-          QByteArray byteArray = reply->readAll();
-          loadByteArray(byteArray, "image/jpeg");
-        } else {
+        //if (reply->isReadable() && reply->error() == QNetworkReply::NoError){
+        //  QByteArray byteArray = reply->readAll();
+        //  loadByteArray(byteArray, "image/jpeg");
+        //} else {
             QFile file(QDir::currentPath() + "/views/camera/no_video.jpg");
             file.open(QIODevice::ReadOnly);
             loadByteArray(file.readAll(), "image/jpeg");
             file.close();
-        }
+       // }
         
-        reply->deleteLater();
+        //reply->deleteLater();
+        //eventLoop->deleteLater();
     }
 }
 
