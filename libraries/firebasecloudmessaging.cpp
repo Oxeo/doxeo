@@ -68,7 +68,7 @@ void FirebaseCloudMessaging::networkReply(QNetworkReply *reply)
        qWarning() << "fcm: error" << qPrintable(reply->errorString());
    }
    
-   delete reply;
+   reply->deleteLater();
 }
 
 void FirebaseCloudMessaging::setServerKey(QString serverKey)
