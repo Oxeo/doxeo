@@ -18,8 +18,23 @@ CameraController::CameraController(QObject *parent) : AbstractCrudController(par
     Camera::update();
     
     this->networkManager = new QNetworkAccessManager(this);
+    connect(networkManager, SIGNAL(finished(QNetworkReply *)), this, SLOT(networkReply(QNetworkReply*)));
     
     router.insert("image", "image");
+
+    QFile file(QDir::currentPath() + "/views/camera/no_video.jpg");
+    file.open(QIODevice::ReadOnly);
+    imageNoVideo = file.readAll();
+    file.close();
+
+    foreach (Camera *camera, Camera::getCameraList().values()) {
+        Screenshoot s;
+        s.id = camera->getId();
+        s.url = camera->getUrl();
+        s.date = QDateTime::currentDateTime();
+        s.image = imageNoVideo;
+        screenList.append(s);
+    }
 }
 
 CameraController::~CameraController()
@@ -34,27 +49,34 @@ void CameraController::image()
     } else if (!Camera::isIdValid(query->getItem("id").toInt())) {
         forbidden("Camera Id invalid");
     } else {
-        //Camera *s = Camera::get(query->getItem("id").toInt());
-        //QNetworkReply* reply = networkManager->get(QNetworkRequest(QUrl(s->getUrl())));
-        //QEventLoop* eventLoop = new QEventLoop();
+        foreach (const Screenshoot &s, screenList) {
+            if (s.id == query->getItem("id").toInt()) {
+                networkManager->get(QNetworkRequest(QUrl(s.url)));
 
-        //QTimer::singleShot(1000, eventLoop, SLOT(quit()));
-        //connect(reply, SIGNAL(finished()), eventLoop, SLOT(quit()));
-        //eventLoop->exec();
-        
-        //if (reply->isReadable() && reply->error() == QNetworkReply::NoError){
-        //  QByteArray byteArray = reply->readAll();
-        //  loadByteArray(byteArray, "image/jpeg");
-        //} else {
-            QFile file(QDir::currentPath() + "/views/camera/no_video.jpg");
-            file.open(QIODevice::ReadOnly);
-            loadByteArray(file.readAll(), "image/jpeg");
-            file.close();
-       // }
-        
-        //reply->deleteLater();
-        //eventLoop->deleteLater();
+                if (s.date > QDateTime::currentDateTime().addSecs(-10)) {
+                    loadByteArray(s.image, "image/jpeg");
+                } else {
+                    loadByteArray(imageNoVideo, "image/jpeg");
+                }
+
+                break;
+            }
+        }
     }
+}
+
+void CameraController::networkReply(QNetworkReply *reply)
+{
+    if (reply->error() == QNetworkReply::NoError) {
+        for (int i=0; i<screenList.size(); i++) {
+            if (reply->url().url().contains(screenList.at(i).url)) {
+                screenList[i].image = reply->readAll();
+                screenList[i].date = QDateTime::currentDateTime();
+            }
+        }
+    }
+
+    reply->deleteLater();
 }
 
 QJsonArray CameraController::getList()

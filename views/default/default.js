@@ -8,7 +8,7 @@ jQuery(document).ready(function () {
     update();
     updateScriptPanel();
     setInterval(update, 30000);
-    setInterval(refreshCameras, 10000);
+    setInterval(refreshCameras, 1000);
 });
 
 function update() {
@@ -259,7 +259,7 @@ function update() {
         if (result.Result == "OK") {
             $('#cameraList').html('');
             $.each(result.Records, function (key, val) {
-                $('#cameraList').append('<tr><td class="camera"><a href="' + val.url + '"><img src="' + val.url + '?u=1" style="max-width:100%; min-width:50px; min-height:50px"></a></td></tr>');
+                $('#cameraList').append('<tr><td class="camera"><a href="/camera/image/?id=' + val.id + '"><img src="/camera/image/?id=' + val.id + '&u=1" style="max-width:100%; min-width:50px; min-height:50px"></a></td></tr>');
             });
         } else {
             $('#cameraList').html('<tr><td></td></tr>');
@@ -274,7 +274,7 @@ function update() {
 }
 
 function refreshCameras() {
-  $('.camera img').attr('src', function(i, old) { return old.replace(/\?u.+/,"?u=" + (Math.random()*1000)); });
+  $('.camera img').attr('src', function(i, old) { return old.replace(/&u.+/,"&u=" + (Math.random()*1000)); });
 }
 
 function updateScriptPanel() {
