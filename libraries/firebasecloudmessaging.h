@@ -23,7 +23,7 @@ public:
 
 public slots:
     void networkReply(QNetworkReply*);
-    void error(QNetworkReply::NetworkError code);
+    void errorReply(QNetworkReply::NetworkError code);
 
 protected:
     QJsonObject buildJsonMessage(Message message);
