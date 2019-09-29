@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QJsonObject>
 #include <QNetworkAccessManager>
+#include <QNetworkReply>
 
 class FirebaseCloudMessaging : public QObject
 {
@@ -22,6 +23,7 @@ public:
 
 public slots:
     void networkReply(QNetworkReply*);
+    void error(QNetworkReply::NetworkError code);
 
 protected:
     QJsonObject buildJsonMessage(Message message);

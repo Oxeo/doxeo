@@ -35,7 +35,7 @@ void FirebaseCloudMessaging::send(Message message)
     
     qDebug() << "fcm:" << qPrintable(message.type) << qPrintable(message.title) << qPrintable(message.body);
     QNetworkReply *reply = manager->post(request, postMessage.toUtf8());
-    Q_UNUSED(reply);
+    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(error(QNetworkReply::NetworkError)));
 }
 
 QJsonObject FirebaseCloudMessaging::buildJsonMessage(FirebaseCloudMessaging::Message message)
@@ -69,6 +69,11 @@ void FirebaseCloudMessaging::networkReply(QNetworkReply *reply)
    }
    
    reply->deleteLater();
+}
+
+void FirebaseCloudMessaging::error(QNetworkReply::NetworkError code)
+{
+    qWarning() << "fcm: error reply" << qPrintable(code);
 }
 
 void FirebaseCloudMessaging::setServerKey(QString serverKey)
