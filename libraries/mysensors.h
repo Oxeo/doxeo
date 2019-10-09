@@ -8,6 +8,7 @@
 #include <QTimer>
 #include <QDateTime>
 #include <QList>
+#include <QMap>
 
 const int BROADCAST_ADDRESS = 255;
 const int NODE_SENSOR_ID    = 255;
@@ -42,6 +43,7 @@ public:
     explicit MySensors(QObject *parent = 0);
     void start();
     bool isConnected();
+    void addSensorName(int nodeId, int sensorId, QString name);
 
 public slots:
     void send(QString msg, bool checkAck = true, QString comment = "");
@@ -90,6 +92,7 @@ protected:
     QList<Msg> sendList;
     QList<RetryMsg> retryList;
     Settings *settings;
+    QMap<QString, QString> sensorIdMap;
 };
 
 #endif // MYSENSORS_H

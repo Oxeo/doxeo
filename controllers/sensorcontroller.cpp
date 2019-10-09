@@ -10,12 +10,13 @@ SensorController::SensorController(MySensors *mySensors, QObject *parent) : Abst
     this->name = "sensor";
     this->mySensors = mySensors;
  
-    router.insert("set_value.js", "jsonSetValue");
-    Sensor::update();
+    connect(Sensor::getEvent(), SIGNAL(dataChanged()), this, SLOT(sensorsDataHasChanged()), Qt::QueuedConnection);
 
     connect(mySensors, SIGNAL(dataReceived(QString, int, int, int, QString)),
             this, SLOT(mySensorsDataReceived(QString, int, int, int, QString)),
             Qt::QueuedConnection);
+    router.insert("set_value.js", "jsonSetValue");
+    Sensor::update();
 }
 
 QJsonArray SensorController::getList()
@@ -117,4 +118,13 @@ void SensorController::mySensorsDataReceived(QString messagetype, int sender, in
         }
     }
 
+}
+void SensorController::sensorsDataHasChanged()
+{
+    foreach (Sensor* s, Sensor::getSensorList()) {
+        QStringList args = s->getCmd().split(";");
+        if (args.size() > 2 && args.at(0) == "ms") {
+            mySensors->addSensorName(args.at(1).toInt(), args.at(2).toInt(), s->getName());
+        }
+    }
 }

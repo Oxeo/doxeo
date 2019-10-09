@@ -278,7 +278,11 @@ void MySensors::rfReceived(QString data) {
 
         if ((settings->value("log", "info") == "info" && type != I_LOG_MESSAGE) ||
                 settings->value("log", "info") == "debug") {
+            if (sensorIdMap.contains(sender + ";" + sensor)) {
+                qDebug() << "mySensors:" << qPrintable(data) << qPrintable("(" + sensorIdMap.value(sender + ";" + sensor) + ")");
+            } else {
             qDebug() << "mySensors:" << qPrintable(data);
+            }
         }
 
         switch (command) {
@@ -361,3 +365,7 @@ void MySensors::removeRetryMsg(QString msg)
     }
 }
 
+void MySensors::addSensorName(int nodeId, int sensorId, QString name)
+{
+    sensorIdMap.insert(nodeId + ";" + sensorId, name);
+}
