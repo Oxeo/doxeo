@@ -156,9 +156,29 @@ void MySensors::send(QString msg, bool checkAck, QString comment) {
 void MySensors::sendToSerial(Msg msg)
 {
     if (serial->isOpen()) {
-        if (settings->value("log", "info") == "debug" || settings->value("log", "info") == "info") {
-            qDebug() << "mySensors: send" << qPrintable(msg.msg) << qPrintable("(" + msg.comment + ")");
+        if (settings->value("log", "default") == "default"
+            || settings->value("log", "default") == "info"
+            || settings->value("log", "default") == "debug") {
+
+            QStringList datas = msg.msg.split(";");
+            QString log = "mySensors TX:";
+
+            if (datas.size() > 1 && sensorIdMap.contains(datas.at(0) + ";" + datas.at(1))) {
+                log += " [" + sensorIdMap.value(datas.at(0) + ";" + datas.at(1)) + "]";
+
+                if (datas.size() > 5) {
+                    log += " " + datas.at(5);
+                }
+
+                log += " (" + msg.msg + ")";
+            } else {
+                log += " " + msg.msg;
+            }
+
+            log += " - " + msg.comment;
+            qDebug() << qPrintable(log);
         }
+
         QString msgToSend = msg.msg + "\n";
         serial->write(msgToSend.toLatin1());
 
@@ -268,7 +288,7 @@ void MySensors::rfReceived(QString data) {
         int sender = datas.at(0).toInt();
         int sensor = datas.at(1).toInt();
         int command = datas.at(2).toInt();
-        //int ack = datas.at(3).toInt();
+        int ack = datas.at(3).toInt();
         int type = datas.at(4).toInt();
 
         QString payload = "";
@@ -276,16 +296,40 @@ void MySensors::rfReceived(QString data) {
             payload = datas.at(5).trimmed();
         }
 
-        if ((settings->value("log", "info") == "info" && type != I_LOG_MESSAGE) ||
-                settings->value("log", "info") == "debug") {
+        if ((settings->value("log", "default") == "default" && command != C_INTERNAL)
+            || (settings->value("log", "default") == "info" && type != I_LOG_MESSAGE)
+            || settings->value("log", "default") == "debug") {
             
             QString key = QString::number(sender) + ";" + QString::number(sensor);
-                    
+            QString log = "mySensors RX:";
+
             if (sensorIdMap.contains(key)) {
-                qDebug() << "mySensors:" << qPrintable(data) << qPrintable("- " + sensorIdMap.value(key) + ": " + payload);
+                log += " [" + sensorIdMap.value(key) + "]";
+
+                if (ack == 1) {
+                    log += " ACK";
+                } else if (payload != "") {
+                    if (command == C_SET || command == C_REQ) {
+                        if (type == V_TEMP) {
+                            log += " " + payload + "°";
+                        } else if (type == V_HUM) {
+                            log += " " + payload + "%";
+                        } else if (type == V_STATUS) {
+                            log += (payload == "1") ? " on" : " off";
+                        } else {
+                            log += " " + payload;
+                        }
+                    } else {
+                        log += " " + payload;
+                    }
+                }
+
+                log += " (" + data + ")";
             } else {
-                qDebug() << "mySensors:" << qPrintable(data);
+                log += " " + data;
             }
+
+            qDebug() << qPrintable(log);
         }
 
         switch (command) {

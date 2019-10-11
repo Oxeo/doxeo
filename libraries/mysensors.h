@@ -19,6 +19,10 @@ const int C_REQ             = 2;
 const int C_INTERNAL        = 3;
 const int C_STREAM          = 4;
 
+const int V_TEMP            = 0;
+const int V_HUM             = 1;
+const int V_STATUS          = 2;
+
 const int I_BATTERY_LEVEL   = 0;
 const int I_TIME            = 1;
 const int I_VERSION         = 2;
