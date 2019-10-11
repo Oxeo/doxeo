@@ -284,7 +284,7 @@ void MySensors::rfReceived(QString data) {
             if (sensorIdMap.contains(key)) {
                 qDebug() << "mySensors:" << qPrintable(data) << qPrintable("- " + sensorIdMap.value(key) + ": " + payload);
             } else {
-            qDebug() << "mySensors:" << qPrintable(data);
+                qDebug() << "mySensors:" << qPrintable(data);
             }
         }
 

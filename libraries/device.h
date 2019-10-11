@@ -6,6 +6,7 @@
 #include <QTimer>
 #include <QList>
 #include <QtSerialPort/QSerialPort>
+#include <QMap>
 
 class Device : public QObject
 {
@@ -17,6 +18,7 @@ public:
 
     void send(QString data, QString comment);
     bool isConnected();
+    void addSensorName(QString id, QString name);
 
 signals:
     void dataReceived(QString id, QString value);
@@ -40,6 +42,7 @@ protected:
     QList<QString> msgToSend;
     QTimer *sendTimer;
     Settings *settings;
+    QMap<QString, QString> sensorIdMap;
 
     static Device *instance;
 

@@ -91,10 +91,22 @@ void Device::readData()
        data = serial->readLine();
        QString msg = QString( data ).remove("\r").remove("\n");
        QStringList args = msg.split(";");
-
+       
+       // Print log
        if (settings->value("log", "info") == "debug" || settings->value("log", "info") == "info") {
-            qDebug() << qPrintable(deviceName) << qPrintable(msg);
-       }
+            QString logMsg = deviceName;
+            
+            if (args.length() > 1 && sensorIdMap.contains(args.value(0) + ";" + args.value(1))) {
+                logMsg += " [" + sensorIdMap.value(args.value(0) + ";" + args.value(1)) + "]";
+            }
+            
+            if (args.length() > 2) {
+                logMsg += " " + args.value(2);
+            }
+            
+            logMsg += " (" + msg + ")";
+            qDebug() << qPrintable(logMsg);
+        }
        
        if (waitRegisterMsgTimer.isActive() && msg.contains("doxeoboard", Qt::CaseInsensitive)) {
             waitRegisterMsgTimer.stop();
@@ -192,3 +204,7 @@ bool Device::foundDevice(const QString port)
     return false;
 }
 
+void Device::addSensorName(QString id, QString name)
+{
+    sensorIdMap.insert(id, name);
+}
