@@ -102,7 +102,7 @@ void MySensors::retryHandler()
             } else {
                 retryMsg->lastSendTime = QDateTime::currentDateTime();
                 retryMsg->retryNumber--;
-                send(retryMsg->msg, false, "Retry");
+                send(retryMsg->msg, false, "RETRY");
             }
         }
     }
