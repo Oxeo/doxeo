@@ -18,7 +18,7 @@ Device* Device::Instance()
 
 Device::Device(QString deviceName, QObject *parent) : QObject(parent)
 {
-    this->deviceName = deviceName + ":";
+    this->deviceName = deviceName;
     currentPortTested = "";
     systemInError = false;
     settings = new Settings("device", this);
@@ -48,7 +48,7 @@ Device::Device(QString deviceName, QObject *parent) : QObject(parent)
     }
     
     if (!success && !foundDevice()) {
-        qCritical() << qPrintable(deviceName) << "unable to connect";
+        qCritical() << qPrintable(deviceName + " unable to connect");
         connectionTimer.start(5000);
     }
 }
@@ -59,7 +59,7 @@ void Device::connection()
     
     if (serial->isOpen()) {
         serial->close();
-        qDebug() << qPrintable(deviceName) << "disconnected because the registered message has not been send during the last 5 seconds";
+        qDebug() << qPrintable(deviceName + " disconnected because the registered message has not been send during the last 5 seconds");
     }
     
     waitRegisterMsgTimer.stop();
@@ -72,7 +72,7 @@ void Device::connection()
 void Device::handleError(QSerialPort::SerialPortError error)
 {
     if (error != QSerialPort::NoError && systemInError == false) {
-        qCritical() << qPrintable(deviceName) << "has been disconnected because" << qPrintable(serial->errorString());
+        qCritical() << qPrintable(deviceName + " has been disconnected because " + serial->errorString());
         systemInError = true;
         
         waitRegisterMsgTimer.stop();
@@ -94,17 +94,20 @@ void Device::readData()
        
        // Print log
        if (settings->value("log", "info") == "debug" || settings->value("log", "info") == "info") {
-            QString logMsg = deviceName;
+            QString logMsg = deviceName + " RX:";
             
             if (args.length() > 1 && sensorIdMap.contains(args.value(0) + ";" + args.value(1))) {
                 logMsg += " [" + sensorIdMap.value(args.value(0) + ";" + args.value(1)) + "]";
+                
+                if (args.length() > 2) {
+                    logMsg += " " + args.value(2);
+                }
+                
+                logMsg += " (" + msg + ")";
+            } else {
+                logMsg += " " + msg;
             }
             
-            if (args.length() > 2) {
-                logMsg += " " + args.value(2);
-            }
-            
-            logMsg += " (" + msg + ")";
             qDebug() << qPrintable(logMsg);
         }
        
@@ -116,11 +119,11 @@ void Device::readData()
             
             currentPortTested = "";
             
-            qDebug() << qPrintable(deviceName) << "registered with success!";
+            qDebug() << qPrintable(deviceName + ": registered with success!");
        }
 
        if (msg.startsWith("error", Qt::CaseInsensitive)) {
-           qCritical() << qPrintable(deviceName) << qPrintable(msg);
+           qCritical() << qPrintable(deviceName + ": " + msg);
        }
 
        if (args.length() == 3) {
@@ -132,8 +135,29 @@ void Device::readData()
 
 void Device::send(QString data, QString comment)
 {
+    QStringList args = data.split(";");
+    
+    // Print log
     if (settings->value("log", "info") == "debug" || settings->value("log", "info") == "info") {
-        qDebug() << qPrintable(deviceName) << "send" << qPrintable(data) << qPrintable("(" + comment + ")");
+        QString logMsg = deviceName + " TX:";
+        
+        if (args.length() > 1 && sensorIdMap.contains(args.value(0) + ";" + args.value(1))) {
+            logMsg += " [" + sensorIdMap.value(args.value(0) + ";" + args.value(1)) + "]";
+            
+            if (args.length() > 2) {
+                logMsg += " " + args.value(2);
+            }
+            
+            logMsg += " (" + data + ")";
+        } else {
+            logMsg += " " + data;
+        }
+        
+        if (comment != "") {
+            logMsg += " - " + comment;
+        }
+        
+        qDebug() << qPrintable(logMsg);
     }
 
     msgToSend.append(data + "\n");
@@ -149,7 +173,7 @@ void Device::sendProcess()
         if (serial->isOpen()) {
             serial->write(msgToSend.first().toLatin1());
         } else {
-            qCritical() << qPrintable(deviceName) << "not connected to send the message" << qPrintable(msgToSend.first());
+            qCritical() << qPrintable(deviceName + ": not connected to send the message " + msgToSend.first());
         }
         msgToSend.removeFirst();
 
@@ -194,7 +218,7 @@ bool Device::foundDevice(const QString port)
         if (serial->open(QIODevice::ReadWrite)) {
             currentPortTested = info.portName();
             waitRegisterMsgTimer.start(5000);
-            qDebug() << qPrintable(deviceName) << "connected on port" << qPrintable(info.portName()) << "(waiting of the registered message)";
+            qDebug() << qPrintable(deviceName + ": connected on port " + info.portName() + " (waiting of the registered message)");
 
             return true;
         }

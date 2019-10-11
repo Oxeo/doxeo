@@ -18,7 +18,7 @@ jQuery(document).ready(function() {
       });
     });
     
-    setInterval(updateLogs, 3000);
+    setInterval(updateLogs, 1000);
 });
 
 function updateLogs(force = false) {
@@ -39,6 +39,11 @@ function updateLogs(force = false) {
                     $('#logsTable').prepend('<tr class="warning"><td>'+val.date+'</td><td>'+val.message+'</td></tr>')
                 } else {
                     var msg = val.message;
+                    
+                    msg = msg.replace('TX', '<span class="label label-primary">TX</span>');
+                    msg = msg.replace('RX', '<span class="label label-default">RX</span>');
+                    msg = msg.replace('ACK', '<span class="label label-success">ACK</span>');
+                    
                     $('#logsTable').prepend('<tr><td>'+val.date+'</td><td>'+msg+'</td></tr>')
                 }
                 lastLogId = val.id + 1;

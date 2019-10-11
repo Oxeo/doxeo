@@ -175,7 +175,10 @@ void MySensors::sendToSerial(Msg msg)
                 log += " " + msg.msg;
             }
 
-            log += " - " + msg.comment;
+            if (msg.comment != "") {
+                log += " - " + msg.comment;
+            }
+            
             qDebug() << qPrintable(log);
         }
 
