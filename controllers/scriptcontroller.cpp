@@ -96,6 +96,7 @@ QJsonObject ScriptController::updateElement(bool createNewObject)
     script->setName(query->getItem("name"));
     script->setStatus(query->getItem("status"));
     script->setDescription(query->getItem("description"));
+    script->setVisibility(query->getItem("visibility"));
     script->setContent(query->getItem("content"));
     script->flush();
     

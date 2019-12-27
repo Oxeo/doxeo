@@ -33,6 +33,10 @@ $(document).ready(function () {
             description: {
                 title: 'Description',
             },
+            visibility: {
+                title: 'Visibility',
+                options: { 'hide': 'Hide', 'dashboard': 'Dashboard', 'mobile': 'Mobile' }
+            },
 			content: {
                 title: 'Content',
 				type: 'hidden',

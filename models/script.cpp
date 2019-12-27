@@ -26,7 +26,7 @@ int Script::getId() const
 void Script::update()
 {
     QSqlQuery query = Database::getQuery();
-    query.prepare("SELECT id, status, name, description, content FROM script");
+    query.prepare("SELECT id, status, name, description, visibility, content FROM script");
 
     if(Database::exec(query))
     {
@@ -38,7 +38,8 @@ void Script::update()
             sw->status = query.value(1).toString();
             sw->name = query.value(2).toString();
             sw->description = query.value(3).toString();
-            sw->content = query.value(4).toString();
+            sw->visibility = query.value(4).toString();
+            sw->content = query.value(5).toString();
 
             scriptList.insert(sw->id, sw);
         }
@@ -64,6 +65,7 @@ QJsonObject Script::toJson() const
     result.insert("id", id);
     result.insert("name", name);
     result.insert("description", description);
+    result.insert("visibility", visibility);
     result.insert("content", content);
     result.insert("status", status);
 
@@ -101,6 +103,7 @@ void Script::setDescription(const QString &value)
 {
     description = value;
 }
+
 QString Script::getContent() const
 {
     return content;
@@ -111,18 +114,30 @@ void Script::setContent(const QString &value)
     content = value;
 }
 
+QString Script::getVisibility() const
+{
+    return visibility;
+}
+
+void Script::setVisibility(const QString &value)
+{
+    visibility = value;
+}
+
+
 bool Script::flush()
 {
     QSqlQuery query = Database::getQuery();
 
     if (scriptList.contains(id)) {
-        query.prepare("UPDATE script SET name=?, description=?, content=?, status=? WHERE id=?");
+        query.prepare("UPDATE script SET name=?, description=?, visibility=?, content=?, status=? WHERE id=?");
     } else {
-        query.prepare("INSERT INTO script (name, description, content, status) "
-                      "VALUES (?, ?, ?, ?)");
+        query.prepare("INSERT INTO script (name, description, visibility, content, status) "
+                      "VALUES (?, ?, ?, ?, ?)");
     }
     query.addBindValue(name);
     query.addBindValue(description);
+    query.addBindValue(visibility);
     query.addBindValue(content);
     query.addBindValue(status);
 

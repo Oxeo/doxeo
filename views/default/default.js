@@ -293,6 +293,10 @@ function updateScriptPanel() {
             var number = 0;
             const numberByPage = 10;
             $.each(result.Records, function (key, val) {
+                
+                if(val.visibility === 'hide') {
+                    return;
+                }
 
                 if ((number % numberByPage) == 0) {
                     var pageNumber = number / numberByPage + 1;

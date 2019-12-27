@@ -34,12 +34,16 @@ public:
     QString getContent() const;
     void setContent(const QString &value);
 
+    QString getVisibility() const;
+    void setVisibility(const QString &value);
+
 protected:
 
     int id;
     QString name;
     QString status;
     QString description;
+    QString visibility;
     QString content;
 
     static QMap<int, Script*> scriptList;
