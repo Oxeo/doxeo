@@ -10,34 +10,35 @@
 #include <QList>
 #include <QMap>
 
-const int BROADCAST_ADDRESS = 255;
-const int NODE_SENSOR_ID    = 255;
+const int BROADCAST_ADDRESS     = 255;
+const int NODE_SENSOR_ID        = 255;
 
-const int C_PRESENTATION    = 0;
-const int C_SET             = 1;
-const int C_REQ             = 2;
-const int C_INTERNAL        = 3;
-const int C_STREAM          = 4;
+const int C_PRESENTATION        = 0;
+const int C_SET                 = 1;
+const int C_REQ                 = 2;
+const int C_INTERNAL            = 3;
+const int C_STREAM              = 4;
 
-const int V_TEMP            = 0;
-const int V_HUM             = 1;
-const int V_STATUS          = 2;
+const int V_TEMP                = 0;
+const int V_HUM                 = 1;
+const int V_STATUS              = 2;
 
-const int I_BATTERY_LEVEL   = 0;
-const int I_TIME            = 1;
-const int I_VERSION         = 2;
-const int I_ID_REQUEST      = 3;
-const int I_ID_RESPONSE     = 4;
-const int I_INCLUSION_MODE  = 5;
-const int I_CONFIG          = 6;
-const int I_PING            = 7;
-const int I_PING_ACK        = 8;
-const int I_LOG_MESSAGE     = 9;
-const int I_CHILDREN        = 10;
-const int I_SKETCH_NAME     = 11;
-const int I_SKETCH_VERSION  = 12;
-const int I_REBOOT          = 13;
-const int I_PONG            = 25;
+const int I_BATTERY_LEVEL       = 0;
+const int I_TIME                = 1;
+const int I_VERSION             = 2;
+const int I_ID_REQUEST          = 3;
+const int I_ID_RESPONSE         = 4;
+const int I_INCLUSION_MODE      = 5;
+const int I_CONFIG              = 6;
+const int I_PING                = 7;
+const int I_PING_ACK            = 8;
+const int I_LOG_MESSAGE         = 9;
+const int I_CHILDREN            = 10;
+const int I_SKETCH_NAME         = 11;
+const int I_SKETCH_VERSION      = 12;
+const int I_REBOOT              = 13;
+const int I_HEARTBEAT_RESPONSE  = 22;
+const int I_PONG                = 25;
 
 class MySensors : public QObject
 {

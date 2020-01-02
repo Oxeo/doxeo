@@ -387,8 +387,12 @@ void MySensors::rfReceived(QString data) {
                         break;
                     case I_REBOOT:
                         break;
+                    case I_HEARTBEAT_RESPONSE:
+                        emit dataReceived("saveValue", sender, sensor, type, payload);
+                        break;
                     case I_PONG:
                         emit dataReceived("saveValue", sender, sensor, type, payload);
+                        break;
                     default:
                         break;
                 }
