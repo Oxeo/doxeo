@@ -77,6 +77,10 @@ void AuthController::jsonChangePassword()
         error = "You are not logged!";
     }
 
+    if (user == NULL) {
+        error = "You are not logged!";
+    }
+
     if (error.isEmpty() && (oldPassword == "" || newPassword == "")) {
         error = "Fields cannot be empty!";
     }
