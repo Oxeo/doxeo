@@ -129,11 +129,11 @@ void SensorController::sensorsDataHasChanged()
         QStringList args = s->getCmd().split(";");
         
         if (args.size() > 2 && args.at(0) == "ms") {
-            mySensors->addSensorName(args.at(1).toInt(), args.at(2).toInt(), s->getName());
+            mySensors->addSensorName(args.at(1).toInt(), args.at(2).toInt(), s->getFullName());
         }
         
         if (args.size() > 1 && (args.at(0) == "rf" || args.at(0) == "dio")) {
-            Device::Instance()->addSensorName(args.at(0) + ";" + args.at(1), s->getName());
+            Device::Instance()->addSensorName(args.at(0) + ";" + args.at(1), s->getFullName());
         }
     }
 }

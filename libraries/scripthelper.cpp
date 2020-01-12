@@ -3,6 +3,7 @@
 #include "firebasecloudmessaging.h"
 #include "messagelogger.h"
 #include "models/script.h"
+#include "models/setting.h"
 
 #include <QDate>
 #include <QTime>
@@ -132,6 +133,21 @@ void ScriptHelper::setWarning(QString warning)
 void ScriptHelper::setAlert(QString alert)
 {
     MessageLogger::logger().addMessage("critical", alert);
+}
+
+void ScriptHelper::setSetting(QString id, QString value)
+{
+    Setting *setting = Setting::get(id);
+
+    if (setting != NULL) {
+        if (setting->getValue() != value) {
+            setting->setValue(value);
+            setting->flush();
+            qDebug() << qPrintable("setting " + id + " set to " + value);
+        }
+    } else {
+        qWarning("id setting not valid in script helper (setSetting)");
+    }
 }
 
 QString ScriptHelper::value(QString key)
