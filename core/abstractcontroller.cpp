@@ -74,6 +74,14 @@ QByteArray AbstractController::loadHtmlView(const QString &view, const QHash<QSt
     }
 }
 
+QByteArray AbstractController::loadScript(const QString &javaScript)
+{
+    QString open = "<script>";
+    QString close = "</script>";
+
+    return open.toUtf8() + loadHtmlView(javaScript, NULL, false) + close.toUtf8();
+}
+
 void AbstractController::loadByteArray(const QByteArray &byteArray, QString contentType)
 {
 

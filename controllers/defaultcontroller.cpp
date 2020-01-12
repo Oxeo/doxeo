@@ -37,7 +37,8 @@ void DefaultController::defaultAction()
     QHash<QString, QByteArray> view;
     view["head"] = loadHtmlView("views/default/default.head.html", NULL, false);
     view["content"] = loadHtmlView("views/default/default.body.html", NULL, false);
-    view["bottom"] = loadHtmlView("views/default/default.js", NULL, false);
+    view["bottom"] = loadHtmlView("views/default/default.footer.html", NULL, false) +
+                     loadScript("views/default/default.js");
     loadHtmlView("views/template.html", &view);
 }
 

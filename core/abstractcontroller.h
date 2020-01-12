@@ -29,6 +29,7 @@ public:
 protected:
     void loadJsonView(QJsonObject json);
     QByteArray loadHtmlView(const QString &view, const QHash<QString, QByteArray> *data = NULL, bool display = true);
+    QByteArray loadScript(const QString &javaScript);
     void loadByteArray(const QByteArray &byteArray, QString contentType);
     void notFound(QString message);
     void forbidden(QString message);

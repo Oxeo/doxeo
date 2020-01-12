@@ -1,7 +1,3 @@
-<script src="../assets/bootstrap-switch/bootstrap-switch.min.js" type="text/javascript"></script>
-<script src="../assets/jquery-twbs-pagination/jquery.twbsPagination.min.js"></script>
-
-<script>
 var updateError = false;
 
 jQuery(document).ready(function () {
@@ -197,11 +193,13 @@ function update() {
                     var date = new Date(val.last_event * 1000);;
                     var lastUpdate = date.toLocaleTimeString() + ' ' + date.toLocaleDateString();
                     var target = '#sensor_pan_automatisme';
-                    
+
                     if (val.category === 'door' || val.category === 'window' || val.category === 'doormat' || val.category === 'pir' || val.category === 'doorknob') {
                         target = '#sensor_pan_security';
                     } else if (val.category === 'temperature') {
                         target = '#sensor_pan_energy'
+                    } else if (val.category === 'heartbeat') {
+                        target = '#sensor_pan_mon'
                     }
                     $(target + ' .table').append('<tr><td class="text-right" style="width: 40%"><span data-toggle="tooltip" data-placement="left" title="' + lastUpdate + '">' + getSensorImage(val) + '</span></td><td class="text-left">' + val.name + '<br />' + getSensorStatus(val) + '</td></tr>');
                 }
@@ -254,7 +252,7 @@ function update() {
         updateError = true;
         alert_error("Request Failed: " + error);
     });
-    
+
     $.getJSON('camera/list.js').done(function (result) {
         if (result.Result == "OK") {
             $('#cameraList').html('');
@@ -274,7 +272,7 @@ function update() {
 }
 
 function refreshCameras() {
-  $('.camera img').attr('src', function(i, old) { return old.replace(/&u.+/,"&u=" + (Math.random()*1000)); });
+    $('.camera img').attr('src', function (i, old) { return old.replace(/&u.+/, "&u=" + (Math.random() * 1000)); });
 }
 
 function updateScriptPanel() {
@@ -293,8 +291,8 @@ function updateScriptPanel() {
             var number = 0;
             const numberByPage = 10;
             $.each(result.Records, function (key, val) {
-                
-                if(val.visibility === 'hide') {
+
+                if (val.visibility === 'hide') {
                     return;
                 }
 
@@ -686,5 +684,3 @@ function managePagination(panelId) {
         }
     });
 }
-
-</script>
