@@ -552,6 +552,8 @@ function getSensorImage(sensor) {
         img = "music.png";
     } else if (sensor.category === "light") {
         img = "bulb.png";
+    } else if (sensor.category === "heartbeat") {
+        img = "signal.png";
     } else if (sensor.category === "doormat") {
         var eventDate = new Date(sensor.last_event * 1000);
         var todayDate = new Date();
@@ -577,17 +579,15 @@ function getSensorImage(sensor) {
 
 function getSensorStatus(sensor) {
     var result = sensor.value;
-
     var date = new Date(sensor.last_event * 1000);
-    var lastUpdate = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' ' + date.toLocaleDateString();
 
     if (result === '') {
         // nothing to do
     } else if (sensor.category === 'door' || sensor.category === 'window') {
         if (isSensorOn(sensor)) {
-            result = "Closed at " + lastUpdate;
+            result = "Closed " + timeAgo(date) + ' ago';
         } else {
-            result = "Opened at " + lastUpdate;
+            result = "Opened " + timeAgo(date) + ' ago';
         }
     } else if (sensor.category === 'temperature') {
         result = result + "°C";
@@ -595,12 +595,16 @@ function getSensorStatus(sensor) {
         result = result + "%";
     } else if (sensor.category === 'humidity') {
         result = result + "%";
+    } else if (sensor.category === 'light') {
+        result = result + "%";
     } else if (sensor.category === 'doorknob') {
-        result = lastUpdate;
+        result = timeAgo(date) + ' ago';
     } else if (sensor.category === 'pir') {
-        result = lastUpdate;
+        result = timeAgo(date) + ' ago';
     } else if (sensor.category === 'doormat') {
-        result = lastUpdate;
+        result = timeAgo(date) + ' ago';
+    } else if (sensor.category === 'heartbeat') {
+        result = timeAgo(date);
     }
 
     return result;
@@ -617,10 +621,19 @@ function isSensorOn(sensor) {
 }
 
 function isSensorOutdated(sensor) {
-    if (sensor.category === 'temperature' || sensor.category === 'humidity') {
-        var eventDate = new Date(sensor.last_event * 1000);
-        var todayDate = new Date();
-        if (todayDate.getTime() - eventDate.getTime() > 1200000) {
+    var eventDate = new Date(sensor.last_event * 1000);
+    var todayDate = new Date();
+
+    if (sensor.category === 'temperature' || sensor.category === 'humidity' || sensor.category === 'light') {
+        if (todayDate.getTime() - eventDate.getTime() > 1200000) { // 20 minutes
+            return true;
+        }
+    } else if (sensor.category === 'plant') {
+        if (todayDate.getTime() - eventDate.getTime() > 21600000) { // 6 hours
+            return true;
+        }
+    } else if (sensor.category === 'heartbeat') {
+        if (todayDate.getTime() - eventDate.getTime() > 60000) { // 60 seconds
             return true;
         }
     }
@@ -683,4 +696,30 @@ function managePagination(panelId) {
             $(panelId + '-page-' + page).show();
         }
     });
+}
+
+function timeAgo(date) {
+    var seconds = Math.floor((new Date() - date) / 1000);
+    var interval = Math.floor(seconds / 31536000);
+
+    if (interval > 1) {
+        return interval + " years";
+    }
+    interval = Math.floor(seconds / 2592000);
+    if (interval > 1) {
+        return interval + " months";
+    }
+    interval = Math.floor(seconds / 86400);
+    if (interval > 1) {
+        return interval + " days";
+    }
+    interval = Math.floor(seconds / 3600);
+    if (interval > 1) {
+        return interval + " hours";
+    }
+    interval = Math.floor(seconds / 60);
+    if (interval > 1) {
+        return interval + " minutes";
+    }
+    return Math.floor(seconds) + " seconds";
 }
