@@ -77,10 +77,6 @@ void AuthController::jsonChangePassword()
         error = "You are not logged!";
     }
 
-    if (user == NULL) {
-        error = "You are not logged!";
-    }
-
     if (error.isEmpty() && (oldPassword == "" || newPassword == "")) {
         error = "Fields cannot be empty!";
     }
@@ -89,17 +85,19 @@ void AuthController::jsonChangePassword()
         error = "The password is too short!";
     }
 
-    if (error.isEmpty() && !user->passwordValid(oldPassword)) {
-        error = "Old password incorrect!";
-    }
+    if (user != NULL) {
+        if (error.isEmpty() && !user->passwordValid(oldPassword)) {
+            error = "Old password incorrect!";
+        }
 
-    if (error.isEmpty()) {
-        user->setPassword(newPassword);
-        if (user->flush()) {
-            Authentification::auth().removeUserAutoconnect(user->getUsername());
-            json.insert("success", true);
-        } else {
-            error = "Unknown error!";
+        if (error.isEmpty()) {
+            user->setPassword(newPassword);
+            if (user->flush()) {
+                Authentification::auth().removeUserAutoconnect(user->getUsername());
+                json.insert("success", true);
+            } else {
+                error = "Unknown error!";
+            }
         }
     }
 
