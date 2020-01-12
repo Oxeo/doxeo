@@ -45,9 +45,10 @@ QJsonObject SensorController::updateElement(bool createNewObject)
 
     sensor->setCmd(query->getItem("cmd"));
     sensor->setName(query->getItem("name"));
+    sensor->setFullName(query->getItem("full_name"));
     sensor->setCategory(query->getItem("category"));
     sensor->setOrder(query->getItem("order").toInt());
-    sensor->setHide(query->getItem("hide") == "true" ? true : false);
+    sensor->setVisibility(query->getItem("visibility"));
     sensor->setInvertBinary(query->getItem("invert_binary") == "true" ? true : false);
     sensor->setValue(query->getItem("value"));
     sensor->flush();

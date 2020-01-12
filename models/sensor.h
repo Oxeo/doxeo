@@ -36,6 +36,9 @@ public:
     QString getName() const;
     void setName(const QString &value);
 
+    QString getFullName() const;
+    void setFullName(const QString &value);
+
     QString getCategory() const;
     void setCategory(const QString &value);
 
@@ -49,8 +52,8 @@ public:
     int getOrder() const;
     void setOrder(int value);
 
-    bool getHide() const;
-    void setHide(bool value);
+    QString getVisibility() const;
+    void setVisibility(const QString &value);
 
     bool getInvertBinary() const;
     void setInvertBinary(bool value);
@@ -85,9 +88,10 @@ protected:
     QString id;
     QString cmd;
     QString name;
+    QString fullName;
     QString category;
     int order;
-    bool hide;
+    QString visibility;
     QString value;
     QList<QDateTime> lastUpdate;
     QDateTime lastEvent;

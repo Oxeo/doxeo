@@ -193,7 +193,7 @@ function update() {
             })
             $.each(result.Records, function (key, val) {
                 // update sensor panel
-                if (val.hide != "true") {
+                if (val.visibility != "hide") {
                     var date = new Date(val.last_event * 1000);;
                     var lastUpdate = date.toLocaleTimeString() + ' ' + date.toLocaleDateString();
                     var target = '#sensor_pan_automatisme';
@@ -208,7 +208,7 @@ function update() {
 
                 // update battery panel
                 if (val.battery > 0) {
-                    date = new Date(val.battery_update * 1000);;
+                    date = new Date(val.battery_update * 1000);
                     lastUpdate = date.toLocaleTimeString() + ' ' + date.toLocaleDateString();
                     $('#batteryList').append('<tr><td class="text-right" style="width: 50%">' + val.name + '</td><td class="text-left"><span data-toggle="tooltip" data-placement="right" title="' + lastUpdate + '">' + val.battery + '%</span></td></tr>');
                 }

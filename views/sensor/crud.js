@@ -33,20 +33,23 @@ $(document).ready(function () {
             name: {
                 title: 'Name',
             },
+            full_name: {
+                title: 'Full name',
+            },
             value: {
                 title: 'Value',
                 edit: true
             },
             category: {
                 title: 'Category',
-                options: {'temperature': 'Temperature', 'humidity': 'Humidity', 'speaker': 'Speaker', 'door': 'Door', 'window': 'Window', 'pump': 'Pump', 'light': 'Light', 'doormat': 'Doormat', 'doorknob': 'Doorknob', 'pir': 'PIR', 'plant': 'Plant', 'other': 'Other'}
+                options: {'temperature': 'Temperature', 'humidity': 'Humidity', 'speaker': 'Speaker', 'door': 'Door', 'window': 'Window', 'pump': 'Pump', 'light': 'Light', 'doormat': 'Doormat', 'doorknob': 'Doorknob', 'pir': 'PIR', 'plant': 'Plant', 'heartbeat': 'HeartBeat', 'other': 'Other'}
             },
             order: {
                 title: 'Order',
             },
-            hide: {
-                title: 'Hide',
-                options: { 'false': 'No', 'true': 'Yes'}
+            visibility: {
+                title: 'Visibility',
+                options: { 'hide': 'Hide', 'dashboard': 'Dashboard', 'mobile': 'Mobile' }
             },
             invert_binary: {
                 title: 'Invert',

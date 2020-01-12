@@ -13,9 +13,10 @@ Sensor::Sensor(QString id, QObject *parent) : QObject(parent)
     this->id = id;
     cmd = "";
     name = "";
+    fullName = "";
     category = "";
     order = 1;
-    hide = false;
+    visibility = "";
     value = "";
     lastEvent = QDateTime::currentDateTime().addMonths(-6);
     startTime = QDateTime::currentDateTime();
@@ -37,9 +38,10 @@ QJsonObject Sensor::toJson() const
     result.insert("id", id);
     result.insert("cmd", cmd);
     result.insert("name", name);
+    result.insert("full_name", fullName);
     result.insert("category", category);
     result.insert("order", order);
-    result.insert("hide", hide ? "true" : "false");
+    result.insert("visibility", visibility);
     result.insert("value", value);
     result.insert("last_update", QString::number(lastUpdate.at(0).toTime_t()));
     result.insert("last_event", QString::number(lastEvent.toTime_t()));
@@ -115,7 +117,7 @@ Sensor *Sensor::get(QString id)
 void Sensor::update()
 {
     QSqlQuery query = Database::getQuery();
-    query.prepare("SELECT id, cmd, name, category, order_by, hide, invert_binary FROM sensor");
+    query.prepare("SELECT id, cmd, name, full_name, category, order_by, visibility, invert_binary, battery_level FROM sensor");
 
     if(Database::exec(query))
     {
@@ -127,10 +129,12 @@ void Sensor::update()
             Sensor* s = new Sensor(query.value(0).toString());
             s->cmd = query.value(1).toString();
             s->name = query.value(2).toString();
-            s->category = query.value(3).toString();
-            s->order = query.value(4).toInt();
-            s->hide = query.value(5).toBool();
-            s->invertBinary = query.value(6).toBool();
+            s->fullName = query.value(3).toString();
+            s->category = query.value(4).toString();
+            s->order = query.value(5).toInt();
+            s->visibility = query.value(6).toString();
+            s->invertBinary = query.value(7).toBool();
+            s->batteryLevel = query.value(8).toInt();
             s->value = "";
 
             sensorList.insert(s->getId(), s);
@@ -161,18 +165,20 @@ bool Sensor::flush()
     QSqlQuery query = Database::getQuery();
 
     if (sensorList.contains(id)) {
-        query.prepare("UPDATE sensor SET cmd=?, name=?, category=?, order_by=?, hide=?, invert_binary=? WHERE id=?");
+        query.prepare("UPDATE sensor SET cmd=?, name=?, full_name=?, category=?, order_by=?, visibility=?, invert_binary=?, battery_level=? WHERE id=?");
     } else {
-        query.prepare("INSERT INTO sensor (cmd, name, category, order_by, hide, invert_binary, id) "
-                      "VALUES (?, ?, ?, ?, ?, ?, ?)");
+        query.prepare("INSERT INTO sensor (cmd, name, full_name, category, order_by, visibility, invert_binary, battery_level, id) "
+                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
     }
 
     query.addBindValue(cmd);
     query.addBindValue(name);
+    query.addBindValue(fullName);
     query.addBindValue(category);
     query.addBindValue(order);
-    query.addBindValue(hide);
+    query.addBindValue(visibility);
     query.addBindValue(invertBinary);
+    query.addBindValue(batteryLevel);
     query.addBindValue(id);
 
     if (Database::exec(query)) {
@@ -259,6 +265,26 @@ bool Sensor::compareByOrder(Sensor *s1, Sensor *s2)
         return s1->order < s2->order;
     }
 }
+QString Sensor::getVisibility() const
+{
+    return visibility;
+}
+
+void Sensor::setVisibility(const QString &value)
+{
+    visibility = value;
+}
+
+QString Sensor::getFullName() const
+{
+    return fullName;
+}
+
+void Sensor::setFullName(const QString &value)
+{
+    fullName = value;
+}
+
 bool Sensor::getInvertBinary() const
 {
     return invertBinary;
@@ -267,17 +293,6 @@ bool Sensor::getInvertBinary() const
 void Sensor::setInvertBinary(bool value)
 {
     invertBinary = value;
-}
-
-
-bool Sensor::getHide() const
-{
-    return hide;
-}
-
-void Sensor::setHide(bool value)
-{
-    hide = value;
 }
 
 int Sensor::getOrder() const
@@ -331,5 +346,6 @@ void Sensor::updateBatteryLevel(int level)
 {
     batteryLevel = level;
     batteryLevelUpdate = QDateTime::currentDateTime();
+    flush();
     emit Sensor::event.valueUpdated(id, "battery", QString::number(batteryLevel));
 }
