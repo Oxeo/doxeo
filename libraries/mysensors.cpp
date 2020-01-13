@@ -315,7 +315,7 @@ void MySensors::rfReceived(QString data) {
                     if (command == C_SET || command == C_REQ) {
                         if (type == V_TEMP) {
                             log += " " + payload + "°";
-                        } else if (type == V_HUM) {
+                        } else if (type == V_HUM || type == V_LIGHT_LEVEL) {
                             log += " " + payload + "%";
                         } else if (type == V_STATUS) {
                             log += (payload == "1") ? " on" : " off";
