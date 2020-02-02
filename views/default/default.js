@@ -590,13 +590,13 @@ function getSensorStatus(sensor) {
             result = "Opened " + timeAgo(date) + ' ago';
         }
     } else if (sensor.category === 'temperature') {
-        result = result + "°C";
+        result = result + "°C (" + timeAgo(date) + " ago)";
     } else if (sensor.category === 'plant') {
-        result = result + "%";
+        result = result + "% (" + timeAgo(date) + " ago)";
     } else if (sensor.category === 'humidity') {
-        result = result + "%";
+        result = result + "% (" + timeAgo(date) + " ago)";
     } else if (sensor.category === 'light') {
-        result = result + "%";
+        result = result + "% (" + timeAgo(date) + " ago)";
     } else if (sensor.category === 'doorknob') {
         result = timeAgo(date) + ' ago';
     } else if (sensor.category === 'pir') {
@@ -605,6 +605,8 @@ function getSensorStatus(sensor) {
         result = timeAgo(date) + ' ago';
     } else if (sensor.category === 'heartbeat') {
         result = timeAgo(date);
+    } else {
+        result = result + " (" + timeAgo(date) + ' ago)';
     }
 
     return result;
