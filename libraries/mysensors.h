@@ -22,6 +22,7 @@ const int C_STREAM              = 4;
 const int V_TEMP                = 0;
 const int V_HUM                 = 1;
 const int V_STATUS              = 2;
+const int V_LIGHT_LEVEL         = 23;
 
 const int I_BATTERY_LEVEL       = 0;
 const int I_TIME                = 1;
