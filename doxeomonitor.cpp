@@ -24,6 +24,7 @@
 #include "libraries/jeedom.h"
 #include "libraries/mysensors.h"
 #include "libraries/settings.h"
+#include "libraries/websocketevent.h"
 #include "models/setting.h"
 #include "models/switch.h"
 #include "models/session.h"
@@ -123,8 +124,11 @@ int DoxeoMonitor::start()
     // Initialise Script Engine
     ScriptEngine *scriptEngine = new ScriptEngine(thermostat, jeedom, gsm, mySensors, this);
 
+    // Initialise WebSocketEvent
+    WebSocketEvent *webSocketEvent = new WebSocketEvent(1234);
+
     // Add controller
-    httpServer->addController(new DefaultController(mySensors, fcm, gsm, this), "default");
+    httpServer->addController(new DefaultController(mySensors, fcm, gsm, webSocketEvent, this), "default");
     httpServer->addController(new AssetController(), "assets");
     httpServer->addController(new SwitchController(mySensors, this), "switch");
     httpServer->addController(new SensorController(mySensors, this), "sensor");

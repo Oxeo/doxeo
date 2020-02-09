@@ -69,6 +69,8 @@ void MessageLogger::addMessage(QString type, QString msg)
     if (messages.size() > 3000) {
         messages.removeFirst();
     }
+
+    emit newMessage(type, msg);
 }
 
 void MessageLogger::setFirebaseCloudMessaging(FirebaseCloudMessaging *fcm)

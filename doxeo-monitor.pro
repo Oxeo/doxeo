@@ -6,7 +6,7 @@
 
 CONFIG += debug_and_release
 
-QT       += network sql serialport qml
+QT       += network sql serialport qml websockets
 
 TARGET = doxeo-monitor
 TEMPLATE = app
@@ -59,7 +59,8 @@ SOURCES += main.cpp\
     libraries/settings.cpp \
     models/session.cpp \
     controllers/cameracontroller.cpp \
-    models/camera.cpp
+    models/camera.cpp \
+    libraries/websocketevent.cpp
 
 HEADERS  += \
     controllers/switchcontroller.h \
@@ -109,6 +110,7 @@ HEADERS  += \
     libraries/settings.h \
     models/session.h \
     models/camera.h \
-    controllers/cameracontroller.h
+    controllers/cameracontroller.h \
+    libraries/websocketevent.h
 
 RESOURCES +=

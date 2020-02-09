@@ -7,8 +7,10 @@
 #include <QString>
 #include <QDateTime>
 
-class MessageLogger
+class MessageLogger : public QObject
 {
+    Q_OBJECT
+
 public:
     struct Log{
         int id;
@@ -25,6 +27,9 @@ public:
 
     static MessageLogger& logger();
     static void messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);
+
+signals:
+    void newMessage(QString type, QString message);
 
 protected:
     MessageLogger();

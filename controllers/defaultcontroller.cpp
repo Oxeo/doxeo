@@ -11,11 +11,16 @@
 #include <QTimer>
 #include <QHostAddress>
 
-DefaultController::DefaultController(MySensors *mySensors, FirebaseCloudMessaging *fcm, Gsm *gsm, QObject *parent) : AbstractController(parent)
+DefaultController::DefaultController(MySensors *mySensors, FirebaseCloudMessaging *fcm, Gsm *gsm, WebSocketEvent *webSocketEvent, QObject *parent) : AbstractController(parent)
 {
     this->mySensors = mySensors;
     this->gsm = gsm;
     this->fcm = fcm;
+    this->webSocketEvent = webSocketEvent;
+
+    connect(&MessageLogger::logger(), SIGNAL(newMessage(QString, QString)),
+            this, SLOT(newMessageFromMessageLogger(QString, QString)),
+            Qt::QueuedConnection);
 
     router.insert("stop", "stopApplication");
     router.insert("logs", "logs");
@@ -243,5 +248,10 @@ void DefaultController::jsonMySensors()
     }
 
     loadJsonView(result);
+}
+
+void DefaultController::newMessageFromMessageLogger(QString type, QString message)
+{
+    webSocketEvent->sendMessage(type + ": " + message);
 }
 
