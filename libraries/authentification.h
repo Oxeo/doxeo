@@ -5,6 +5,7 @@
 #include <models/user.h>
 #include <QHash>
 #include <QString>
+#include <QNetworkCookie>
 
 class Authentification
 {
@@ -12,6 +13,7 @@ public:
     bool connection(QString &login, QString &password, QString &cookie, QString &error);
     void disconnection(HttpHeader *header, QString &cookie);
     bool isConnected(HttpHeader *header, QString &cookie);
+    bool isConnected(QList<QNetworkCookie> cookies);
     User& getConnectedUser(HttpHeader *header, QString &cookie);
     void removeUserAutoconnect(QString login);
 
@@ -28,6 +30,7 @@ protected:
     void clearCookies(QString &cookie);
     void insertRememberCode(QString id, Remember remember);
     void removeRememberCode(QString id);
+    bool isIdValid(QString id, QString login, QString code);
 
     QHash<QString,Remember> rememberList;
 };

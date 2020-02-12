@@ -1,4 +1,5 @@
 #include "websocketevent.h"
+#include "libraries/authentification.h"
 
 #include <QtWebSockets>
 #include <QtCore>
@@ -14,62 +15,70 @@ static QString getIdentifier(QWebSocket *peer)
                                        QString::number(peer->peerPort()));
 }
 
-WebSocketEvent::WebSocketEvent(quint16 port, QObject *parent) :
-    QObject(parent),
-    m_pWebSocketServer(new QWebSocketServer(QStringLiteral("Chat Server"),
-                                            QWebSocketServer::NonSecureMode,
-                                            this))
+WebSocketEvent::WebSocketEvent(quint16 port, QObject *parent)
+    : QObject(parent), server(new QWebSocketServer(QStringLiteral("Chat Server"),
+                                                   QWebSocketServer::NonSecureMode,
+                                                   this))
 {
-    if (m_pWebSocketServer->listen(QHostAddress::Any, port))
-    {
-        QTextStream(stdout) << "WebSocketEvent listening on port " << port << '\n';
-        connect(m_pWebSocketServer, &QWebSocketServer::newConnection,
-                this, &WebSocketEvent::onNewConnection);
+    if (server->listen(QHostAddress::Any, port)) {
+        qDebug() << "WebSocketEvent listening on port " << port << '\n';
+        connect(server, &QWebSocketServer::newConnection, this, &WebSocketEvent::onNewConnection);
     }
 }
 
 WebSocketEvent::~WebSocketEvent()
 {
-    m_pWebSocketServer->close();
+    server->close();
 }
 
 void WebSocketEvent::sendMessage(QString message)
 {
-    foreach (QWebSocket *pClient, m_clients) {
-        pClient->sendTextMessage(message);
+    foreach (QWebSocket *client, clients) {
+        client->sendTextMessage(message);
     }
 }
 
 void WebSocketEvent::onNewConnection()
 {
-    QWebSocket *pSocket = m_pWebSocketServer->nextPendingConnection();
-    QTextStream(stdout) << getIdentifier(pSocket) << " connected!\n";
-    pSocket->setParent(this);
+    QWebSocket *socket = server->nextPendingConnection();
 
-    connect(pSocket, &QWebSocket::textMessageReceived,
-            this, &WebSocketEvent::processMessage);
-    connect(pSocket, &QWebSocket::disconnected,
-            this, &WebSocketEvent::socketDisconnected);
+    QList<QNetworkCookie> cookies
+        = socket->request().header(QNetworkRequest::CookieHeader).value<QList<QNetworkCookie>>();
 
-    m_clients << pSocket;
+    if (!Authentification::auth().isConnected(cookies)) {
+        socket->sendTextMessage("User session not valid!");
+        socket->flush();
+        socket->abort();
+        socket->deleteLater();
+        return;
+    }
+
+    qDebug() << getIdentifier(socket) << " connected!\n";
+    socket->setParent(this);
+
+    connect(socket, &QWebSocket::textMessageReceived, this, &WebSocketEvent::processMessage);
+    connect(socket, &QWebSocket::disconnected, this, &WebSocketEvent::socketDisconnected);
+
+    clients << socket;
 }
 
 void WebSocketEvent::processMessage(const QString &message)
 {
     QWebSocket *pSender = qobject_cast<QWebSocket *>(sender());
-    foreach (QWebSocket *pClient, m_clients) {
-        if (pClient != pSender) //don't echo message back to sender
-            pClient->sendTextMessage(message);
+
+    foreach (QWebSocket *client, clients) {
+        if (client != pSender) //don't echo message back to sender
+            client->sendTextMessage(message);
     }
 }
 
 void WebSocketEvent::socketDisconnected()
 {
-    QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
-    QTextStream(stdout) << getIdentifier(pClient) << " disconnected!\n";
-    if (pClient)
-    {
-        m_clients.removeAll(pClient);
-        pClient->deleteLater();
+    QWebSocket *client = qobject_cast<QWebSocket *>(sender());
+    QTextStream(stdout) << getIdentifier(client) << " disconnected!\n";
+
+    if (client) {
+        clients.removeAll(client);
+        client->deleteLater();
     }
 }

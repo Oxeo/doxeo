@@ -11,6 +11,7 @@ QT_FORWARD_DECLARE_CLASS(QString)
 class WebSocketEvent : public QObject
 {
     Q_OBJECT
+
 public:
     explicit WebSocketEvent(quint16 port, QObject *parent = 0);
     ~WebSocketEvent();
@@ -23,8 +24,8 @@ private slots:
     void socketDisconnected();
 
 private:
-    QWebSocketServer *m_pWebSocketServer;
-    QList<QWebSocket *> m_clients;
+    QWebSocketServer *server;
+    QList<QWebSocket *> clients;
 };
 
 #endif // WEBSOCKETEVENT_H

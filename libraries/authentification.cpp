@@ -82,25 +82,51 @@ bool Authentification::isConnected(HttpHeader *header, QString &cookie)
     QString login = header->getCookie("doxeomonitor_login");
     QString code = header->getCookie("doxeomonitor_remember_code");
     
+    if (isIdValid(id, login, code)) {
+        return true;
+    } else {
+        clearCookies(cookie);
+        return false;
+    }
+}
+
+bool Authentification::isConnected(QList<QNetworkCookie> cookies)
+{
+    QString id = "";
+    QString login = "";
+    QString code = "";
+
+    for (QNetworkCookie &cookie : cookies) {
+        if (cookie.name() == "doxeomonitor_id") {
+            id = cookie.value();
+        } else if (cookie.name() == "doxeomonitor_login") {
+            login = cookie.value();
+        } else if (cookie.name() == "doxeomonitor_remember_code") {
+            code = cookie.value();
+        }
+    }
+
+    return isIdValid(id, login, code);
+}
+
+bool Authentification::isIdValid(QString id, QString login, QString code)
+{
     if (id == "") {
         return false;
     }
 
     if (login == "" || code.length() < 10) {
         qDebug() << "Authentification failed: login or code is empty [" + login + "] [" + code + "]";
-        clearCookies(cookie);
         return false;
     }
 
     if (!rememberList.contains(id)) {
         qDebug() << "Authentification failed: id not in the rememberList [" + id + "]";
-        clearCookies(cookie);
         return false;
     }
 
     if (rememberList[id].login != login || rememberList[id].code != code) {
         qDebug() << "Authentification failed: login or code is incorrect [" + login + "] [" + code + "]";
-        clearCookies(cookie);
         removeRememberCode(id);
         return false;
     }
