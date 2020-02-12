@@ -6,23 +6,22 @@
 
 #include "abstractcontroller.h"
 
-class HttpServer : public QTcpServer {
+class HttpServer : public QObject {
     Q_OBJECT
 
 public:
     HttpServer(int port, QObject* parent = 0);
+    bool isListening();
     void addController(AbstractController *controller, QString params);
     QHash<QString, AbstractController*> getControllers();
 
-
 private slots:
+    void newConnection();
     void readClient();
-    void discardClient();
 
 private:
-    void incomingConnection(int socket);
-
-    QHash<QString, AbstractController*> controllers;
+   QTcpServer *tcpServer = nullptr;
+   QHash<QString, AbstractController*> controllers;
 };
 
 #endif	/* HTTPSERVER_H */

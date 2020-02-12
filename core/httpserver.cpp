@@ -4,17 +4,27 @@
 #include <QElapsedTimer>
 
 
-HttpServer::HttpServer(int port, QObject* parent): QTcpServer(parent)
+HttpServer::HttpServer(int port, QObject* parent): QObject(parent)
 {
-    listen(QHostAddress::Any, (quint16)port);
+    tcpServer = new QTcpServer(this);
+
+    connect(tcpServer, SIGNAL(newConnection()), this, SLOT(newConnection()));
+
+    if (!tcpServer->listen(QHostAddress::Any, (quint16)port)) {
+        qCritical("Server could not start");
+    }
 }
 
-void HttpServer::incomingConnection(int socket)
+bool HttpServer::isListening()
 {
-    QTcpSocket* s = new QTcpSocket(this);
-    connect(s, SIGNAL(readyRead()), this, SLOT(readClient()));
-    connect(s, SIGNAL(disconnected()), this, SLOT(discardClient()));
-    s->setSocketDescriptor(socket);
+    return tcpServer->isListening();
+}
+
+void HttpServer::newConnection()
+{
+    QTcpSocket *socket = tcpServer->nextPendingConnection();
+    connect(socket, SIGNAL(readyRead()), this, SLOT(readClient()));
+    connect(socket, &QAbstractSocket::disconnected, socket, &QObject::deleteLater);
 }
 
 void HttpServer::addController(AbstractController *controller, QString params)
@@ -74,10 +84,3 @@ void HttpServer::readClient()
         }
     }
 }
-
-void HttpServer::discardClient()
-{
-    QTcpSocket* socket = (QTcpSocket*)sender();
-    socket->deleteLater();
-}
-
