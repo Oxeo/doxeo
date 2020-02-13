@@ -60,30 +60,35 @@ int DoxeoMonitor::start()
 
     // Set application path
     QString appDir = settings.value("application/path", "").toString();
-    if (appDir != "" && appDir != "none") {
+    if (appDir != "" && appDir != "none")
+    {
         QDir::setCurrent(appDir);
     }
-    
+
     // Command line parser
-    if (commandLineParser(&error)) {
-        return (error?-1:0);
+    if (commandLineParser(&error))
+    {
+        return (error ? -1 : 0);
     }
 
     // Start Http server
     httpServer = new HttpServer(8080, this);
-    if (!httpServer->isListening()) {
+    if (!httpServer->isListening())
+    {
         qCritical() << applicationName() + " stopped: http server already running";
         return -1;
     }
 
     // Connection to Mysql Database
     Database::initialize("QMYSQL");
-    if(!Database::open()) {
+    if (!Database::open())
+    {
         qCritical() << applicationName() + " Mysql connection failed";
     }
 
     // Initialize logger messages
-    if (!verbose) {
+    if (!verbose)
+    {
         qInstallMessageHandler(MessageLogger::messageHandler);
     }
 
@@ -125,7 +130,7 @@ int DoxeoMonitor::start()
     ScriptEngine *scriptEngine = new ScriptEngine(thermostat, jeedom, gsm, mySensors, this);
 
     // Initialise WebSocketEvent
-    WebSocketEvent *webSocketEvent = new WebSocketEvent(1234);
+    WebSocketEvent *webSocketEvent = new WebSocketEvent(8081);
 
     // Add controller
     httpServer->addController(new DefaultController(mySensors, fcm, gsm, webSocketEvent, this), "default");
@@ -152,7 +157,8 @@ void DoxeoMonitor::closeApplication()
     qInstallMessageHandler(0);
 
     QHash<QString, AbstractController *> controllers = httpServer->getControllers();
-    foreach (AbstractController *ctrl, controllers) {
+    foreach (AbstractController *ctrl, controllers)
+    {
         ctrl->stop();
     }
 }
@@ -169,7 +175,8 @@ QString DoxeoMonitor::commandLine(QString title)
         QString line = Qin.readLine();
         if (!line.isNull())
         {
-            if (line != "") {
+            if (line != "")
+            {
                 result = line;
             }
             break;
@@ -187,31 +194,36 @@ void DoxeoMonitor::configure()
 
     oldValue = settings.value("application/path", "").toString();
     userInput = commandLine("Enter absolute path of the application directory (" + oldValue + "):");
-    if (userInput != "") {
+    if (userInput != "")
+    {
         settings.setValue("application/path", userInput);
     }
 
     oldValue = settings.value("database/hostname", "").toString();
     userInput = commandLine("Enter database host name (" + oldValue + "):");
-    if (userInput != "") {
+    if (userInput != "")
+    {
         settings.setValue("database/hostname", userInput);
     }
 
     oldValue = settings.value("database/username", "").toString();
     userInput = commandLine("Enter database username (" + oldValue + ")");
-    if (userInput != "") {
+    if (userInput != "")
+    {
         settings.setValue("database/username", userInput);
     }
 
     oldValue = settings.value("database/password", "").toString();
     userInput = commandLine("Enter database password (" + oldValue + "):");
-    if (userInput != "") {
+    if (userInput != "")
+    {
         settings.setValue("database/password", userInput);
     }
 
     oldValue = settings.value("database/databasename", "").toString();
     userInput = commandLine("Enter database name (" + oldValue + "):");
-    if (userInput != "") {
+    if (userInput != "")
+    {
         settings.setValue("database/databasename", userInput);
     }
 }
@@ -225,7 +237,8 @@ void DoxeoMonitor::createUser()
 
     // Connection to Mysql Database
     Database::initialize("QMYSQL");
-    if(!Database::open()) {
+    if (!Database::open())
+    {
         cout << "Mysql connection failed!";
         return;
     }
@@ -233,17 +246,23 @@ void DoxeoMonitor::createUser()
     userName = commandLine("email:");
     password = commandLine("password:");
 
-    if (userName != "" && password != "") {
+    if (userName != "" && password != "")
+    {
         newUser.setUsername(userName);
         newUser.setPassword(password);
 
-        if (newUser.flush()) {
+        if (newUser.flush())
+        {
             cout << "User created with success!" << endl;
             cout << "The application shall be restared to take into acount the new user!" << endl;
-        } else {
+        }
+        else
+        {
             cout << "User not created: unknown error!" << endl;
         }
-    } else {
+    }
+    else
+    {
         cout << "User not created: email or password empty!" << endl;
     }
 }
@@ -257,42 +276,56 @@ bool DoxeoMonitor::commandLineParser(bool *error)
     parser.addHelpOption();
     parser.addVersionOption();
 
-    QCommandLineOption configureOption(QStringList() << "c" << "configure", "Configure the programme.");
+    QCommandLineOption configureOption(QStringList() << "c"
+                                                     << "configure",
+                                       "Configure the programme.");
     parser.addOption(configureOption);
 
-    QCommandLineOption userOption(QStringList() << "u" << "user", "create a new user");
+    QCommandLineOption userOption(QStringList() << "u"
+                                                << "user",
+                                  "create a new user");
     parser.addOption(userOption);
 
-    QCommandLineOption debugOption(QStringList() << "d" << "debug", "Print debug logs in stderr/console.");
+    QCommandLineOption debugOption(QStringList() << "d"
+                                                 << "debug",
+                                   "Print debug logs in stderr/console.");
     parser.addOption(debugOption);
 
-    QCommandLineOption stopOption(QStringList() << "q" << "quit", "Quit the application.");
+    QCommandLineOption stopOption(QStringList() << "q"
+                                                << "quit",
+                                  "Quit the application.");
     parser.addOption(stopOption);
 
-    QCommandLineOption applicationPathOption(QStringList() << "p" << "path",
-                                         "Set the absolute path of the application directory.", "path");
+    QCommandLineOption applicationPathOption(QStringList() << "p"
+                                                           << "path",
+                                             "Set the absolute path of the application directory.", "path");
     parser.addOption(applicationPathOption);
 
     parser.process(*this);
 
-    if (parser.isSet(configureOption)) {
+    if (parser.isSet(configureOption))
+    {
         configure();
         return true;
     }
 
-    if (parser.isSet(userOption)) {
+    if (parser.isSet(userOption))
+    {
         createUser();
         return true;
     }
 
-    if (parser.isSet(stopOption)) {
-        if (!stopApplication()) {
+    if (parser.isSet(stopOption))
+    {
+        if (!stopApplication())
+        {
             *error = true;
         }
         return true;
     }
 
-    if (parser.value(applicationPathOption) != "") {
+    if (parser.value(applicationPathOption) != "")
+    {
         QDir::setCurrent(parser.value(applicationPathOption));
     }
 
@@ -305,25 +338,30 @@ bool DoxeoMonitor::stopApplication()
 {
     QEventLoop eventLoop;
     QNetworkAccessManager mgr;
-    QObject::connect(&mgr, SIGNAL(finished(QNetworkReply*)), &eventLoop, SLOT(quit()));
+    QObject::connect(&mgr, SIGNAL(finished(QNetworkReply *)), &eventLoop, SLOT(quit()));
 
     QNetworkRequest req(QUrl(QString("http://127.0.0.1:8080/stop")));
     QNetworkReply *reply = mgr.get(req);
     eventLoop.exec();
 
-    if (reply->error() == QNetworkReply::NoError) {
+    if (reply->error() == QNetworkReply::NoError)
+    {
         QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
-        QJsonObject json= doc.object();
+        QJsonObject json = doc.object();
 
-        if (json.contains("success") && json.value("success").toBool(false)) {
+        if (json.contains("success") && json.value("success").toBool(false))
+        {
             delete reply;
             return true;
-        } else {
+        }
+        else
+        {
             qCritical() << "Error: " << json.value("msg").toString();
         }
     }
-    else {
-        qCritical() << "Error: " <<reply->errorString();
+    else
+    {
+        qCritical() << "Error: " << reply->errorString();
     }
 
     delete reply;

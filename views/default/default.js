@@ -1,11 +1,24 @@
 var updateError = false;
+var socket = new WebSocket("ws://" + window.location.hostname + ":8081");
 
 jQuery(document).ready(function () {
     update();
     updateScriptPanel();
-    setInterval(update, 30000);
     setInterval(refreshCameras, 1000);
 });
+
+socket.onopen = function (event) {
+    console.log("Websocket connected!");
+
+    this.onclose = function (event) {
+        console.log("Websocket closed!");
+    };
+
+    this.onmessage = function (event) {
+        console.log("Message:", event.data);
+        update();
+    };
+};
 
 function update() {
     if (updateError) {
@@ -178,6 +191,7 @@ function update() {
         if (result.Result == "OK") {
             $('#sensor_tab_panes .table').empty();
             $('#batteryList').html('');
+            var batteryNames = [];
             result.Records.sort(function (a, b) {
                 if (a.order < b.order) {
                     return -1;
@@ -205,10 +219,11 @@ function update() {
                 }
 
                 // update battery panel
-                if (val.battery > 0) {
+                if (val.battery > 0 && !batteryNames.includes(val.full_name)) {
+                    batteryNames.push(val.full_name);
                     date = new Date(val.battery_update * 1000);
                     lastUpdate = date.toLocaleTimeString() + ' ' + date.toLocaleDateString();
-                    $('#batteryList').append('<tr><td class="text-right" style="width: 50%">' + val.name + '</td><td class="text-left"><span data-toggle="tooltip" data-placement="right" title="' + lastUpdate + '">' + val.battery + '%</span></td></tr>');
+                    $('#batteryList').append('<tr><td class="text-right" style="width: 50%">' + val.full_name + '</td><td class="text-left"><span data-toggle="tooltip" data-placement="right" title="' + lastUpdate + '">' + val.battery + '%</span></td></tr>');
                 }
             });
             $('[data-toggle="tooltip"]').tooltip();

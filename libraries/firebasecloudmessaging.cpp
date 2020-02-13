@@ -34,8 +34,8 @@ void FirebaseCloudMessaging::send(Message message)
     request.setRawHeader("Authorization", QString("key=" + serverKey).toUtf8());
     
     qDebug() << "fcm:" << qPrintable(message.type) << qPrintable(message.title) << qPrintable(message.body);
-    QNetworkReply *reply = manager->post(request, postMessage.toUtf8());
-    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(errorReply(QNetworkReply::NetworkError)));
+    manager->post(request, postMessage.toUtf8());
+    //connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(errorReply(QNetworkReply::NetworkError)));
 }
 
 QJsonObject FirebaseCloudMessaging::buildJsonMessage(FirebaseCloudMessaging::Message message)
