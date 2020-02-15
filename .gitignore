@@ -11,4 +11,5 @@ nbproject/*
 object_script.*
 *.log
 .qmake.stash
+.vscode/*
 

@@ -33,8 +33,9 @@ DefaultController::DefaultController(MySensors *mySensors, FirebaseCloudMessagin
 }
 
 void DefaultController::defaultAction()
-{   
-    if (!Authentification::auth().isConnected(header, cookie)) {
+{
+    if (!Authentification::auth().isConnected(header, cookie))
+    {
         redirect("/auth");
         return;
     }
@@ -49,7 +50,6 @@ void DefaultController::defaultAction()
 
 void DefaultController::stop()
 {
-
 }
 
 void DefaultController::stopApplication()
@@ -57,11 +57,13 @@ void DefaultController::stopApplication()
     QJsonObject result;
 
     if (Authentification::auth().isConnected(header, cookie) ||
-            socket->peerAddress().toString().contains("127.0.0.1"))
+        socket->peerAddress().toString().contains("127.0.0.1"))
     {
-       QTimer::singleShot(100, QCoreApplication::instance(), SLOT(quit()));
-       result.insert("success", true);
-    } else {
+        QTimer::singleShot(100, QCoreApplication::instance(), SLOT(quit()));
+        result.insert("success", true);
+    }
+    else
+    {
         result.insert("msg", "You are not logged.");
         result.insert("success", false);
     }
@@ -71,14 +73,16 @@ void DefaultController::stopApplication()
 
 void DefaultController::logs()
 {
-    if (!Authentification::auth().isConnected(header, cookie)) {
+    if (!Authentification::auth().isConnected(header, cookie))
+    {
         redirect("/auth");
         return;
     }
 
     QHash<QString, QByteArray> view;
-    view["content"] = loadHtmlView("views/default/logs.html", NULL, false);
-    view["bottom"] = loadHtmlView("views/default/logs.js", NULL, false);
+    view["content"] = loadHtmlView("views/default/logs.body.html", NULL, false);
+    view["bottom"] = loadHtmlView("views/default/logs.footer.html", NULL, false) +
+                     loadScript("views/default/logs.js");
     loadHtmlView("views/template.html", &view);
 }
 
@@ -90,35 +94,42 @@ void DefaultController::jsonLogs()
     QDate day = QDate::fromString(query->getItem("day"), "yyyy-MM-dd");
     QString request = query->getItem("type");
     int startId = query->getItem("startid").toInt(&ok, 10);
-    
-    if (!ok) {
+
+    if (!ok)
+    {
         startId = 0;
     }
 
-    if (!Authentification::auth().isConnected(header, cookie)) {
+    if (!Authentification::auth().isConnected(header, cookie))
+    {
         result.insert("msg", "You are not logged.");
         result.insert("success", false);
         loadJsonView(result);
         return;
     }
-    
+
     QList<MessageLogger::Log> &logs = MessageLogger::logger().getMessages();
     QJsonArray jsonArray;
 
-    foreach (const MessageLogger::Log &log, logs) {
-        if (day.isValid() && log.date.date() != day) {
+    foreach (const MessageLogger::Log &log, logs)
+    {
+        if (day.isValid() && log.date.date() != day)
+        {
             continue;
         }
 
-        if (startId !=0 && log.id < startId) {
+        if (startId != 0 && log.id < startId)
+        {
             continue;
         }
 
-        if (request == "warning" && log.type != "warning" && log.type != "critical") {
+        if (request == "warning" && log.type != "warning" && log.type != "critical")
+        {
             continue;
         }
 
-        if (request == "critical" && log.type != "critical") {
+        if (request == "critical" && log.type != "critical")
+        {
             continue;
         }
 
@@ -139,34 +150,40 @@ void DefaultController::jsonClearLogs()
 {
     QJsonObject result;
 
-    if (!Authentification::auth().isConnected(header, cookie)) {
+    if (!Authentification::auth().isConnected(header, cookie))
+    {
         result.insert("msg", "You are not logged.");
         result.insert("success", false);
         loadJsonView(result);
         return;
     }
-    
+
     bool ok = false;
     int id = query->getItem("id").toInt(&ok, 10);
-    
-    if (!ok || id < 0) {
+
+    if (!ok || id < 0)
+    {
         result.insert("success", false);
         result.insert("msg", "ID param is not a number!");
         loadJsonView(result);
         return;
     }
-    
-    if (query->getItem("type") == "") {
+
+    if (query->getItem("type") == "")
+    {
         result.insert("success", false);
         result.insert("msg", "TYPE param is missing!");
         loadJsonView(result);
         return;
     }
-    
-    if (query->getItem("type") == "warningandcritical") {
+
+    if (query->getItem("type") == "warningandcritical")
+    {
         MessageLogger::logger().removeBeforeId(id, "warning");
         MessageLogger::logger().removeBeforeId(id, "critical");
-    } else {
+    }
+    else
+    {
         MessageLogger::logger().removeBeforeId(id, query->getItem("type"));
     }
     result.insert("success", true);
@@ -178,7 +195,8 @@ void DefaultController::jsonSystem()
 {
     QJsonObject result;
 
-    if (!Authentification::auth().isConnected(header, cookie)) {
+    if (!Authentification::auth().isConnected(header, cookie))
+    {
         result.insert("Result", "ERROR");
         result.insert("Message", "You are not logged.");
         loadJsonView(result);
@@ -196,11 +214,13 @@ void DefaultController::jsonSms()
     QJsonObject result;
 
     if (Authentification::auth().isConnected(header, cookie) ||
-            socket->peerAddress().toString().contains("127.0.0.1"))
+        socket->peerAddress().toString().contains("127.0.0.1"))
     {
-       gsm->sendSMS(query->getItem("number"), query->getItem("message"));
-       result.insert("success", true);
-    } else {
+        gsm->sendSMS(query->getItem("number"), query->getItem("message"));
+        result.insert("success", true);
+    }
+    else
+    {
         result.insert("msg", "You are not logged.");
         result.insert("success", false);
     }
@@ -213,12 +233,14 @@ void DefaultController::jsonFcm()
     QJsonObject result;
 
     if (Authentification::auth().isConnected(header, cookie) ||
-            socket->peerAddress().toString().contains("127.0.0.1"))
+        socket->peerAddress().toString().contains("127.0.0.1"))
     {
-       FirebaseCloudMessaging::Message msg = {query->getItem("type"), query->getItem("title"), query->getItem("message")};
-       fcm->send(msg);
-       result.insert("success", true);
-    } else {
+        FirebaseCloudMessaging::Message msg = {query->getItem("type"), query->getItem("title"), query->getItem("message")};
+        fcm->send(msg);
+        result.insert("success", true);
+    }
+    else
+    {
         result.insert("msg", "You are not logged.");
         result.insert("success", false);
     }
@@ -231,18 +253,23 @@ void DefaultController::jsonMySensors()
     QJsonObject result;
 
     if (Authentification::auth().isConnected(header, cookie) ||
-            socket->peerAddress().toString().contains("127.0.0.1"))
+        socket->peerAddress().toString().contains("127.0.0.1"))
     {
-       QString msg = query->getItem("msg").trimmed();
+        QString msg = query->getItem("msg").trimmed();
 
-       if (!msg.isEmpty()) {
-           mySensors->send(msg);
-           result.insert("success", true);
-       } else {
-           result.insert("msg", "msg is empty!");
-           result.insert("success", false);
-       }
-    } else {
+        if (!msg.isEmpty())
+        {
+            mySensors->send(msg);
+            result.insert("success", true);
+        }
+        else
+        {
+            result.insert("msg", "msg is empty!");
+            result.insert("success", false);
+        }
+    }
+    else
+    {
         result.insert("msg", "You are not logged.");
         result.insert("success", false);
     }
@@ -253,27 +280,32 @@ void DefaultController::jsonMySensors()
 void DefaultController::newMessageFromMessageLogger(QString type, QString message)
 {
     // send to websocket
-    if (webSocketEvent != nullptr) {
+    if (webSocketEvent != nullptr)
+    {
         webSocketEvent->sendMessage(type + ": " + message);
     }
 
     // send to FirebaseCloudMessaging
-    if (fcm != nullptr) {
-        if (type == "warning" || type == "critical") {
+    if (fcm != nullptr)
+    {
+        if (type == "warning" || type == "critical")
+        {
             bool alreadySameType = false;
 
-            foreach (const MessageLogger::Log &log, MessageLogger::logger().getMessages()) {
-                if (log.type == type) {
+            foreach (const MessageLogger::Log &log, MessageLogger::logger().getMessages())
+            {
+                if (log.type == type)
+                {
                     alreadySameType = true;
                     break;
                 }
             }
 
-            if (alreadySameType == false) {
+            if (alreadySameType == false)
+            {
                 FirebaseCloudMessaging::Message msg = {"WARNING", "Doxeo", message};
                 fcm->send(msg);
             }
         }
     }
 }
-

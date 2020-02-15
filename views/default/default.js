@@ -4,6 +4,7 @@ var socket = new WebSocket("ws://" + window.location.hostname + ":8081");
 jQuery(document).ready(function () {
     update();
     updateScriptPanel();
+    updateCameraPanel();
     setInterval(refreshCameras, 1000);
 });
 
@@ -267,7 +268,9 @@ function update() {
         updateError = true;
         alert_error("Request Failed: " + error);
     });
+}
 
+function updateCameraPanel() {
     $.getJSON('camera/list.js').done(function (result) {
         if (result.Result == "OK") {
             $('#cameraList').html('');
@@ -276,12 +279,10 @@ function update() {
             });
         } else {
             $('#cameraList').html('<tr><td></td></tr>');
-            updateError = true;
             alert_error(result.msg);
         }
     }).fail(function (jqxhr, textStatus, error) {
         $('#cameraList').html('<tr><td></td></tr>');
-        updateError = true;
         alert_error("Request Failed: " + error);
     });
 }
@@ -343,11 +344,9 @@ function updateScriptPanel() {
 
             managePagination('#scriptPanel');
         } else {
-            updateError = true;
             alert_error(result.msg);
         }
     }).fail(function (jqxhr, textStatus, error) {
-        updateError = true;
         alert_error("Request Failed: " + error);
     });
 }
