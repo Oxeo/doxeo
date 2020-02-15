@@ -245,23 +245,12 @@ function nextCmd() {
 }
 
 function sendCmd(cmdToSend) {
-    var param = {
-        cmd: cmdToSend
-    };
-
-    $('#logsTable').prepend('<tr class="active"><td></td><td>' + cmdToSend + '</td></tr>')
-
-    $.getJSON('/script/execute_cmd.js', param)
-        .done(function (result) {
-            if (result.success) {
-                $('#sendContent').val(result.msg);
-                updateCmdList();
-            } else {
-                alert_error(result.msg);
-            }
-        }).fail(function (jqxhr, textStatus, error) {
-            alert_error("Request Failed: " + error);
-        });
+    try {
+        socket.send(cmdToSend);
+        $('#logsTable').prepend('<tr class="active"><td></td><td>' + cmdToSend + '</td></tr>');
+    } catch (e) {
+        alert_error(e);
+    }
 }
 
 $('#clearSearch').click(function (event) {

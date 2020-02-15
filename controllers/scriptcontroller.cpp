@@ -14,7 +14,7 @@ ScriptController::ScriptController(ScriptEngine *scriptEngine,
     : AbstractCrudController(parent)
 {
     name = "script";
-    
+
     router.insert("editor", "editor");
     router.insert("export", "exportScripts");
     router.insert("set_status", "jsonChangeScriptStatus");
@@ -38,7 +38,8 @@ ScriptController::ScriptController(ScriptEngine *scriptEngine,
 
 void ScriptController::editor()
 {
-    if (!Authentification::auth().isConnected(header, cookie)) {
+    if (!Authentification::auth().isConnected(header, cookie))
+    {
         redirect("/auth");
         return;
     }
@@ -49,15 +50,17 @@ void ScriptController::editor()
 
 void ScriptController::exportScripts()
 {
-    if (!Authentification::auth().isConnected(header, cookie)) {
+    if (!Authentification::auth().isConnected(header, cookie))
+    {
         redirect("/auth");
         return;
     }
 
-    QList<Script*> list = Script::getScriptList().values();
+    QList<Script *> list = Script::getScriptList().values();
     QString result;
 
-    foreach (const Script *sw, list) {
+    foreach (const Script *sw, list)
+    {
         result += " /*\n";
         result += " * Title: " + sw->getName() + "\n";
         result += " * Id: " + QString::number(sw->getId()) + "\n";
@@ -81,12 +84,13 @@ void ScriptController::exportScripts()
 QJsonArray ScriptController::getList()
 {
     QJsonArray result;
-    
-    QList<Script*> list = Script::getScriptList().values();
-    foreach (const Script *sw, list) {
+
+    QList<Script *> list = Script::getScriptList().values();
+    foreach (const Script *sw, list)
+    {
         result.push_back(sw->toJson());
     }
-    
+
     return result;
 }
 
@@ -96,9 +100,12 @@ QJsonObject ScriptController::updateElement(bool createNewObject)
     int id = query->getItem("id").toInt();
     Script *script;
 
-    if (Script::isIdValid(id)) {
+    if (Script::isIdValid(id))
+    {
         script = Script::get(id);
-    } else {
+    }
+    else
+    {
         script = new Script(id);
     }
 
@@ -108,7 +115,7 @@ QJsonObject ScriptController::updateElement(bool createNewObject)
     script->setVisibility(query->getItem("visibility"));
     script->setContent(query->getItem("content"));
     script->flush();
-    
+
     return script->toJson();
 }
 
@@ -116,9 +123,12 @@ bool ScriptController::deleteElement(QString id)
 {
     Script s(id.toInt());
 
-    if (s.remove()) {
+    if (s.remove())
+    {
         return true;
-    } else {
+    }
+    else
+    {
         return false;
     }
 }
@@ -127,30 +137,39 @@ void ScriptController::jsonChangeScriptStatus()
 {
     QJsonObject result;
 
-    if (!Authentification::auth().isConnected(header, cookie)) {
+    if (!Authentification::auth().isConnected(header, cookie))
+    {
         result.insert("msg", "You are not logged.");
         result.insert("success", false);
     }
-    else if (Script::isIdValid(query->getItem("id").toInt())) {
+    else if (Script::isIdValid(query->getItem("id").toInt()))
+    {
         Script *s = Script::get(query->getItem("id").toInt());
 
-        if (query->getItem("status").toLower() == "on") {
+        if (query->getItem("status").toLower() == "on")
+        {
             s->setStatus("on");
             s->flush();
             result.insert("status", "on");
             result.insert("success", true);
-        } else if (query->getItem("status").toLower() == "off") {
+        }
+        else if (query->getItem("status").toLower() == "off")
+        {
             s->setStatus("off");
             s->flush();
             result.insert("status", "off");
             result.insert("success", true);
-        } else {
+        }
+        else
+        {
             result.insert("msg", "Unknown status");
             result.insert("success", false);
         }
-    } else {
-       result.insert("msg", "Script Id invalid");
-       result.insert("success", false);
+    }
+    else
+    {
+        result.insert("msg", "Script Id invalid");
+        result.insert("success", false);
     }
 
     loadJsonView(result);
@@ -160,18 +179,22 @@ void ScriptController::jsonSetScriptBody()
 {
     QJsonObject result;
 
-    if (!Authentification::auth().isConnected(header, cookie)) {
+    if (!Authentification::auth().isConnected(header, cookie))
+    {
         result.insert("msg", "You are not logged.");
         result.insert("success", false);
     }
-    else if (Script::isIdValid(query->getItem("id").toInt())) {
+    else if (Script::isIdValid(query->getItem("id").toInt()))
+    {
         Script *s = Script::get(query->getItem("id").toInt());
         s->setContent(query->getItem("content"));
         s->flush();
         result.insert("success", true);
-    } else {
-       result.insert("msg", "Script Id invalid");
-       result.insert("success", false);
+    }
+    else
+    {
+        result.insert("msg", "Script Id invalid");
+        result.insert("success", false);
     }
 
     loadJsonView(result);
@@ -181,17 +204,21 @@ void ScriptController::jsonGetScript()
 {
     QJsonObject result;
 
-    if (!Authentification::auth().isConnected(header, cookie)) {
+    if (!Authentification::auth().isConnected(header, cookie))
+    {
         result.insert("msg", "You are not logged.");
         result.insert("success", false);
     }
-    else if (Script::isIdValid(query->getItem("id").toInt())) {
+    else if (Script::isIdValid(query->getItem("id").toInt()))
+    {
         Script *s = Script::get(query->getItem("id").toInt());
         result.insert("script", s->toJson());
         result.insert("success", true);
-    } else {
-       result.insert("msg", "Script Id invalid");
-       result.insert("success", false);
+    }
+    else
+    {
+        result.insert("msg", "Script Id invalid");
+        result.insert("success", false);
     }
 
     loadJsonView(result);
@@ -201,7 +228,8 @@ void ScriptController::jsonCmdList()
 {
     QJsonObject result;
 
-    if (!Authentification::auth().isConnected(header, cookie)) {
+    if (!Authentification::auth().isConnected(header, cookie))
+    {
         result.insert("Result", "ERROR");
         result.insert("Message", "You are not logged.");
         loadJsonView(result);
@@ -210,7 +238,8 @@ void ScriptController::jsonCmdList()
 
     QJsonArray array;
 
-    foreach (Command *cmd, Command::getAll()) {
+    foreach (Command *cmd, Command::getAll())
+    {
         array.push_back(cmd->toJson());
     }
 
@@ -224,17 +253,21 @@ void ScriptController::jsonDeleteCmd()
 {
     QJsonObject result;
 
-    if (!Authentification::auth().isConnected(header, cookie)) {
+    if (!Authentification::auth().isConnected(header, cookie))
+    {
         result.insert("Result", "ERROR");
         result.insert("Message", "You are not logged.");
         loadJsonView(result);
         return;
     }
 
-    if (Command::removeCommand(query->getItem("cmd"))) {
+    if (Command::removeCommand(query->getItem("cmd")))
+    {
         Command::update();
         result.insert("Result", "OK");
-    } else {
+    }
+    else
+    {
         result.insert("Result", "ERROR");
     }
 
@@ -245,12 +278,16 @@ void ScriptController::newMessageFromWebSocket(QString sender, QString message)
 {
     Q_UNUSED(sender);
     QString result = scriptEngine->runCmd(message);
-    webSocketEvent->sendMessage(result);
 
-    if (Command::getAll().isEmpty()
-        || query->getItem("cmd").compare(Command::getAll().last()->getCmd()) != 0) {
+    if (result != "undefined")
+    {
+        webSocketEvent->sendMessage(result);
+    }
+
+    if (Command::getAll().isEmpty() || message.compare(Command::getAll().last()->getCmd()) != 0)
+    {
         Command *cmd = new Command(this);
-        cmd->setCmd(query->getItem("cmd"));
+        cmd->setCmd(message);
         Command::addCommand(cmd);
     }
 }
