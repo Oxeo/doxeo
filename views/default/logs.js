@@ -1,8 +1,23 @@
-var updateInterval = true;
-var lastLogId = 0;
+var socket = new WebSocket("ws://" + window.location.hostname + ":8081");
+var stopWebsocket = false;
 var listCmd = [];
 var listCmdPosition = -1;
 var day = null;
+
+socket.onopen = function (event) {
+    console.log("Websocket connected!");
+
+    this.onclose = function (event) {
+        console.log("Websocket closed!");
+    };
+
+    this.onmessage = function (event) {
+        if (!stopWebsocket && (day == null || moment().diff(day, 'days') == 0)) {
+            var date = moment().format('DD/MM/YYYY HH:mm:ss')
+            addLogMessage('', event.data.replace('debug:', ''), date);
+        }
+    };
+};
 
 jQuery(document).ready(function () {
     $('#button_newer').hide();
@@ -16,37 +31,15 @@ jQuery(document).ready(function () {
             $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
         });
     });
-
-    setInterval(updateLogs, 1000);
 });
 
-function updateLogs(force = false) {
-    if (!updateInterval && force == false) {
-        return;
-    }
-
-    $.getJSON('logs.js?log=debug&startid=' + lastLogId + '&day=' + day.format('YYYY-MM-DD')).done(function (result) {
+function updateLogs() {
+    $.getJSON('logs.js?log=debug&day=' + day.format('YYYY-MM-DD')).done(function (result) {
         if (result.success) {
-            if (lastLogId == 0) {
-                $('#logsTable').html("");
-            }
+            $('#logsTable').html("");
 
             $.each(result.messages, function (key, val) {
-                if (val.type === "critical") {
-                    $('#logsTable').prepend('<tr class="danger"><td>' + val.date + '</td><td>' + val.message + '</td></tr>')
-                } else if (val.type === "warning") {
-                    $('#logsTable').prepend('<tr class="warning"><td>' + val.date + '</td><td>' + val.message + '</td></tr>')
-                } else {
-                    var msg = val.message;
-
-                    msg = msg.replace('TX', '<span class="label label-primary">TX</span>');
-                    msg = msg.replace('RX', '<span class="label label-default">RX</span>');
-                    msg = msg.replace('ACK', '<span class="label label-success">ACK</span>');
-                    msg = msg.replace('RETRY', '<span class="label label-danger">RETRY</span>');
-
-                    $('#logsTable').prepend('<tr><td>' + val.date + '</td><td>' + msg + '</td></tr>')
-                }
-                lastLogId = val.id + 1;
+                addLogMessage(val.type, val.message, val.date);
             });
 
             // filter
@@ -55,15 +48,28 @@ function updateLogs(force = false) {
                 $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
             });
         } else {
-            updateInterval = false;
             $('#stop_logs').text("Continue");
             alert_error(result.msg);
         }
     }).fail(function (jqxhr, textStatus, error) {
-        updateInterval = false;
         $('#stop_logs').text("Continue");
         alert_error("Request Failed: " + error);
     });
+}
+
+function addLogMessage(type, message, date) {
+    if (type === "critical") {
+        $('#logsTable').prepend('<tr class="danger"><td>' + date + '</td><td>' + message + '</td></tr>')
+    } else if (type === "warning") {
+        $('#logsTable').prepend('<tr class="warning"><td>' + date + '</td><td>' + message + '</td></tr>')
+    } else {
+        message = message.replace('TX', '<span class="label label-primary">TX</span>');
+        message = message.replace('RX', '<span class="label label-default">RX</span>');
+        message = message.replace('ACK', '<span class="label label-success">ACK</span>');
+        message = message.replace('RETRY', '<span class="label label-danger">RETRY</span>');
+
+        $('#logsTable').prepend('<tr><td>' + date + '</td><td>' + message + '</td></tr>')
+    }
 }
 
 function updateCmdList() {
@@ -88,25 +94,21 @@ function updateCmdList() {
 
 $('a[href="#older"]').click(function () {
     day.subtract(1, 'day');
-    lastLogId = 0;
     $('#logsTable').html('<td colspan="2" class="text-center"><img src="./assets/images/spinner.gif" alt="wait"/></td>');
     updateLogs(true);
     $('#button_newer').show();
 
-    updateInterval = false;
     $('#stop_logs').text("Continue");
 });
 
 $('a[href="#newer"]').click(function () {
     day.add(1, 'day');
-    lastLogId = 0;
     $('#logsTable').html('<td colspan="2" class="text-center"><img src="./assets/images/spinner.gif" alt="wait"/></td>');
     updateLogs(true);
 
     if (moment().diff(day, 'days') == 0) {
         $('#button_newer').hide();
 
-        updateInterval = true;
         $('#stop_logs').text("Stop");
     }
 });
@@ -188,25 +190,14 @@ $('#clear_logs').click(function (event) {
     };
 
     $('#logsTable').text("");
-
-    /*$.getJSON('clear_logs.js', param)
-        .done(function(result) {
-            if (result.success) {
-                //history.back();
-            } else {
-                alert_error(result.msg);
-            }
-        }).fail(function(jqxhr, textStatus, error) {
-            alert_error("Request Failed: " + error);
-    });*/
 });
 
 $('#stop_logs').click(function (event) {
-    if (updateInterval == true) {
-        updateInterval = false;
+    if (stopWebsocket == true) {
+        stopWebsocket = false;
         $('#stop_logs').text("Continue");
     } else {
-        updateInterval = true;
+        stopWebsocket = true;
         $('#stop_logs').text("Stop");
     }
 });

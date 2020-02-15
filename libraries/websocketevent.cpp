@@ -20,7 +20,8 @@ WebSocketEvent::WebSocketEvent(quint16 port, QObject *parent)
                                                    QWebSocketServer::NonSecureMode,
                                                    this))
 {
-    if (server->listen(QHostAddress::Any, port)) {
+    if (server->listen(QHostAddress::Any, port))
+    {
         qDebug() << "WebSocketEvent listening on port " << port << '\n';
         connect(server, &QWebSocketServer::newConnection, this, &WebSocketEvent::onNewConnection);
     }
@@ -33,7 +34,8 @@ WebSocketEvent::~WebSocketEvent()
 
 void WebSocketEvent::sendMessage(QString message)
 {
-    foreach (QWebSocket *client, clients) {
+    foreach (QWebSocket *client, clients)
+    {
         client->sendTextMessage(message);
     }
 }
@@ -42,10 +44,10 @@ void WebSocketEvent::onNewConnection()
 {
     QWebSocket *socket = server->nextPendingConnection();
 
-    QList<QNetworkCookie> cookies
-        = socket->request().header(QNetworkRequest::CookieHeader).value<QList<QNetworkCookie>>();
+    QList<QNetworkCookie> cookies = socket->request().header(QNetworkRequest::CookieHeader).value<QList<QNetworkCookie>>();
 
-    if (!Authentification::auth().isConnected(cookies)) {
+    if (!Authentification::auth().isConnected(cookies))
+    {
         socket->sendTextMessage("User session not valid!");
         socket->flush();
         socket->abort();
@@ -53,7 +55,7 @@ void WebSocketEvent::onNewConnection()
         return;
     }
 
-    qDebug() << getIdentifier(socket) << " connected!\n";
+    //qDebug() << getIdentifier(socket) << " connected!\n";
     socket->setParent(this);
 
     connect(socket, &QWebSocket::textMessageReceived, this, &WebSocketEvent::processMessage);
@@ -66,7 +68,8 @@ void WebSocketEvent::processMessage(const QString &message)
 {
     QWebSocket *pSender = qobject_cast<QWebSocket *>(sender());
 
-    foreach (QWebSocket *client, clients) {
+    foreach (QWebSocket *client, clients)
+    {
         if (client != pSender) //don't echo message back to sender
             client->sendTextMessage(message);
     }
@@ -75,9 +78,10 @@ void WebSocketEvent::processMessage(const QString &message)
 void WebSocketEvent::socketDisconnected()
 {
     QWebSocket *client = qobject_cast<QWebSocket *>(sender());
-    qDebug() << getIdentifier(client) << " disconnected!\n";
+    //qDebug() << getIdentifier(client) << " disconnected!\n";
 
-    if (client) {
+    if (client)
+    {
         clients.removeAll(client);
         client->deleteLater();
     }
