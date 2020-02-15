@@ -4,7 +4,6 @@
 MessageLogger::MessageLogger()
 {
     idCpt = 1;
-    fcm = NULL;
 }
 
 MessageLogger::~MessageLogger()
@@ -37,25 +36,6 @@ void MessageLogger::messageHandler(QtMsgType type, const QMessageLogContext &con
         fprintf(stderr, "Fatal: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
         abort();
     }
-
-    FirebaseCloudMessaging *fcm = MessageLogger::logger().getFCM();
-    if (fcm != NULL) {
-        if (typeString == "warning" || typeString == "critical") {
-            bool alreadySameType = false;
-
-            foreach (const MessageLogger::Log &log, MessageLogger::logger().getMessages()) {
-                if (log.type == typeString) {
-                    alreadySameType = true;
-                    break;
-                }
-            }
-
-            if (alreadySameType == false) {
-                FirebaseCloudMessaging::Message msg = {"WARNING", "Doxeo", localMsg};
-                fcm->send(msg);
-            }
-        }
-    }
     
     MessageLogger::logger().addMessage(typeString, localMsg);
 }
@@ -71,16 +51,6 @@ void MessageLogger::addMessage(QString type, QString msg)
     }
 
     emit newMessage(type, msg);
-}
-
-void MessageLogger::setFirebaseCloudMessaging(FirebaseCloudMessaging *fcm)
-{
-    this->fcm = fcm;
-}
-
-FirebaseCloudMessaging* MessageLogger::getFCM()
-{
-    return fcm;
 }
 
 QList<MessageLogger::Log>& MessageLogger::getMessages()

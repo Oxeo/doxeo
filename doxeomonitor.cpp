@@ -1,34 +1,35 @@
 #include "doxeomonitor.h"
 
-#include "models/user.h"
-#include "models/heater.h"
-#include "controllers/switchcontroller.h"
-#include "controllers/defaultcontroller.h"
 #include "controllers/assetcontroller.h"
 #include "controllers/authcontroller.h"
-#include "controllers/thermostatcontroller.h"
-#include "controllers/sensorcontroller.h"
-#include "controllers/scriptcontroller.h"
-#include "controllers/scenariocontroller.h"
-#include "controllers/jeedomcontroller.h"
-#include "controllers/settingcontroller.h"
-#include "controllers/heatercontroller.h"
 #include "controllers/cameracontroller.h"
-#include "libraries/thermostat.h"
-#include "libraries/messagelogger.h"
+#include "controllers/defaultcontroller.h"
+#include "controllers/heatercontroller.h"
+#include "controllers/jeedomcontroller.h"
+#include "controllers/scenariocontroller.h"
+#include "controllers/scriptcontroller.h"
+#include "controllers/sensorcontroller.h"
+#include "controllers/settingcontroller.h"
+#include "controllers/switchcontroller.h"
+#include "controllers/thermostatcontroller.h"
+#include "core/database.h"
 #include "libraries/authentification.h"
 #include "libraries/device.h"
 #include "libraries/firebasecloudmessaging.h"
 #include "libraries/gsm.h"
-#include "libraries/scriptengine.h"
 #include "libraries/jeedom.h"
+#include "libraries/messagelogger.h"
 #include "libraries/mysensors.h"
+#include "libraries/scriptengine.h"
+#include "libraries/scripthelper.h"
 #include "libraries/settings.h"
+#include "libraries/thermostat.h"
 #include "libraries/websocketevent.h"
+#include "models/heater.h"
+#include "models/session.h"
 #include "models/setting.h"
 #include "models/switch.h"
-#include "models/session.h"
-#include "core/database.h"
+#include "models/user.h"
 
 #include <QDir>
 #include <iostream>
@@ -102,7 +103,9 @@ int DoxeoMonitor::start()
     // Initialize Firebase Cloud Messaging
     FirebaseCloudMessaging *fcm = new FirebaseCloudMessaging(mySettings.value("fcm_projectname", "doxeo"), this);
     fcm->setServerKey(mySettings.value("fcm_serverkey", ""));
-    MessageLogger::logger().setFirebaseCloudMessaging(fcm);
+
+    // Initialise ScriptHelper
+    ScriptHelper::setFirebaseCloudMessaging(fcm);
 
     // Initialise SIM900 GSM module
     Gsm *gsm = new Gsm(Gsm::M590, this);

@@ -252,6 +252,28 @@ void DefaultController::jsonMySensors()
 
 void DefaultController::newMessageFromMessageLogger(QString type, QString message)
 {
-    webSocketEvent->sendMessage(type + ": " + message);
+    // send to websocket
+    if (webSocketEvent != nullptr) {
+        webSocketEvent->sendMessage(type + ": " + message);
+    }
+
+    // send to FirebaseCloudMessaging
+    if (fcm != nullptr) {
+        if (type == "warning" || type == "critical") {
+            bool alreadySameType = false;
+
+            foreach (const MessageLogger::Log &log, MessageLogger::logger().getMessages()) {
+                if (log.type == type) {
+                    alreadySameType = true;
+                    break;
+                }
+            }
+
+            if (alreadySameType == false) {
+                FirebaseCloudMessaging::Message msg = {"WARNING", "Doxeo", message};
+                fcm->send(msg);
+            }
+        }
+    }
 }
 

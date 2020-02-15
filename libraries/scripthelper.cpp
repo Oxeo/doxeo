@@ -1,6 +1,5 @@
 #include "scripthelper.h"
 #include "device.h"
-#include "firebasecloudmessaging.h"
 #include "messagelogger.h"
 #include "models/script.h"
 #include "models/setting.h"
@@ -12,6 +11,7 @@
 #include <QDir>
 
 QHash<QString, QString> ScriptHelper::data;
+FirebaseCloudMessaging *ScriptHelper::fcm = nullptr;
 
 ScriptHelper::ScriptHelper(QObject *parent) : QObject(parent)
 {
@@ -160,9 +160,16 @@ void ScriptHelper::setValue(QString key, QString value)
     data.insert(key, value);
 }
 
+void ScriptHelper::setFirebaseCloudMessaging(FirebaseCloudMessaging *firebaseCloudMessaging)
+{
+    fcm = firebaseCloudMessaging;
+}
+
 void ScriptHelper::sendFCM(QString type, QString name, QString body)
 {
-    FirebaseCloudMessaging *fcm = MessageLogger::logger().getFCM();
     FirebaseCloudMessaging::Message msg = {type.toUpper(), name, body};
-    fcm->send(msg);
+
+    if (fcm != nullptr) {
+        fcm->send(msg);
+    }
 }

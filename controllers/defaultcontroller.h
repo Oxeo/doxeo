@@ -31,10 +31,10 @@ protected slots:
     void newMessageFromMessageLogger(QString type, QString message);
     
 protected:
-    Gsm *gsm;
-    FirebaseCloudMessaging *fcm;
-    MySensors *mySensors;
-    WebSocketEvent *webSocketEvent;
+    Gsm *gsm = nullptr;
+    FirebaseCloudMessaging *fcm = nullptr;
+    MySensors *mySensors = nullptr;
+    WebSocketEvent *webSocketEvent = nullptr;
 };
 
 #endif // DEFAULTCONTROLLER_H

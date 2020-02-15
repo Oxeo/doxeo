@@ -75,7 +75,7 @@ void WebSocketEvent::processMessage(const QString &message)
 void WebSocketEvent::socketDisconnected()
 {
     QWebSocket *client = qobject_cast<QWebSocket *>(sender());
-    QTextStream(stdout) << getIdentifier(client) << " disconnected!\n";
+    qDebug() << getIdentifier(client) << " disconnected!\n";
 
     if (client) {
         clients.removeAll(client);
