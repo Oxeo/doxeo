@@ -15,6 +15,7 @@ socket.onopen = function (event) {
         if (!stopWebsocket && (day == null || moment().diff(day, 'days') == 0)) {
             var date = moment().format('DD/MM/YYYY HH:mm:ss')
             addLogMessage('', event.data.replace('debug:', ''), date);
+            applyFilter();
         }
     };
 };
@@ -42,11 +43,7 @@ function updateLogs() {
                 addLogMessage(val.type, val.message, val.date);
             });
 
-            // filter
-            var value = $("#searchInput").val().toLowerCase();
-            $("#logsTable tr").filter(function () {
-                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-            });
+            applyFilter();
         } else {
             $('#stop_logs').text("Continue");
             alert_error(result.msg);
@@ -54,6 +51,13 @@ function updateLogs() {
     }).fail(function (jqxhr, textStatus, error) {
         $('#stop_logs').text("Continue");
         alert_error("Request Failed: " + error);
+    });
+}
+
+function applyFilter() {
+    var value = $("#searchInput").val().toLowerCase();
+    $("#logsTable tr").filter(function () {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
 }
 
@@ -255,6 +259,7 @@ function sendCmd(cmdToSend) {
 
 $('#clearSearch').click(function (event) {
     $('#searchInput').val("");
+    applyFilter();
 });
 
 $('#clearCmdContent').click(function (event) {
