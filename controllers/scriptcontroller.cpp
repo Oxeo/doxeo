@@ -8,7 +8,10 @@
 #include <QJsonArray>
 #include <QHostAddress>
 
-ScriptController::ScriptController(ScriptEngine *scriptEngine, QObject *parent) : AbstractCrudController(parent)
+ScriptController::ScriptController(ScriptEngine *scriptEngine,
+                                   WebSocketEvent *webSocketEvent,
+                                   QObject *parent)
+    : AbstractCrudController(parent)
 {
     name = "script";
     
@@ -17,11 +20,17 @@ ScriptController::ScriptController(ScriptEngine *scriptEngine, QObject *parent) 
     router.insert("set_status", "jsonChangeScriptStatus");
     router.insert("set_body", "jsonSetScriptBody");
     router.insert("get_script.js", "jsonGetScript");
-    router.insert("execute_cmd.js", "jsonExecuteCmd");
     router.insert("cmd_list.js", "jsonCmdList");
     router.insert("delete_cmd.js", "jsonDeleteCmd");
 
     this->scriptEngine = scriptEngine;
+    this->webSocketEvent = webSocketEvent;
+
+    connect(webSocketEvent,
+            SIGNAL(newMessage(QString, QString)),
+            this,
+            SLOT(newMessageFromWebSocket(QString, QString)),
+            Qt::QueuedConnection);
 
     Script::update();
     Command::update();
@@ -188,33 +197,6 @@ void ScriptController::jsonGetScript()
     loadJsonView(result);
 }
 
-void ScriptController::jsonExecuteCmd()
-{
-    QJsonObject result;
-
-    if (!Authentification::auth().isConnected(header, cookie) &&
-            !socket->peerAddress().toString().contains("127.0.0.1")) {
-        result.insert("msg", "You are not logged.");
-        result.insert("success", false);
-    }
-    else if (query->getItem("cmd").isEmpty()) {
-        result.insert("msg", "cmd paramater missing!");
-        result.insert("success", false);
-    } else {
-        result.insert("result", scriptEngine->runCmd(query->getItem("cmd")));
-        result.insert("success", true);
-
-        if (Command::getAll().isEmpty() ||
-                query->getItem("cmd").compare(Command::getAll().last()->getCmd()) != 0) {
-            Command *cmd = new Command(this);
-            cmd->setCmd(query->getItem("cmd"));
-            Command::addCommand(cmd);
-        }
-    }
-
-    loadJsonView(result);
-}
-
 void ScriptController::jsonCmdList()
 {
     QJsonObject result;
@@ -257,4 +239,18 @@ void ScriptController::jsonDeleteCmd()
     }
 
     loadJsonView(result);
+}
+
+void ScriptController::newMessageFromWebSocket(QString sender, QString message)
+{
+    Q_UNUSED(sender);
+    QString result = scriptEngine->runCmd(message);
+    webSocketEvent->sendMessage(result);
+
+    if (Command::getAll().isEmpty()
+        || query->getItem("cmd").compare(Command::getAll().last()->getCmd()) != 0) {
+        Command *cmd = new Command(this);
+        cmd->setCmd(query->getItem("cmd"));
+        Command::addCommand(cmd);
+    }
 }

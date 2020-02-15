@@ -142,7 +142,7 @@ int DoxeoMonitor::start()
     httpServer->addController(new SensorController(mySensors, this), "sensor");
     httpServer->addController(new AuthController(this), "auth");
     httpServer->addController(new ThermostatController(thermostat, this), "thermostat");
-    httpServer->addController(new ScriptController(scriptEngine, this), "script");
+    httpServer->addController(new ScriptController(scriptEngine, webSocketEvent, this), "script");
     httpServer->addController(new ScenarioController(scriptEngine, this), "scenario");
     httpServer->addController(new JeedomController(jeedom, mySensors, this), "jeedom");
     httpServer->addController(new SettingController(this), "setting");

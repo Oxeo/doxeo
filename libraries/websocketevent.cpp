@@ -68,11 +68,7 @@ void WebSocketEvent::processMessage(const QString &message)
 {
     QWebSocket *pSender = qobject_cast<QWebSocket *>(sender());
 
-    foreach (QWebSocket *client, clients)
-    {
-        if (client != pSender) //don't echo message back to sender
-            client->sendTextMessage(message);
-    }
+    emit newMessage(getIdentifier(pSender), message);
 }
 
 void WebSocketEvent::socketDisconnected()

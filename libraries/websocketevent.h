@@ -18,6 +18,9 @@ public:
 
     void sendMessage(QString message);
 
+signals:
+    void newMessage(QString sender, QString message);
+
 private slots:
     void onNewConnection();
     void processMessage(const QString &message);

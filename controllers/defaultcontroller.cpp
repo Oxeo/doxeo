@@ -18,8 +18,10 @@ DefaultController::DefaultController(MySensors *mySensors, FirebaseCloudMessagin
     this->fcm = fcm;
     this->webSocketEvent = webSocketEvent;
 
-    connect(&MessageLogger::logger(), SIGNAL(newMessage(QString, QString)),
-            this, SLOT(newMessageFromMessageLogger(QString, QString)),
+    connect(&MessageLogger::logger(),
+            SIGNAL(newMessage(QString, QString)),
+            this,
+            SLOT(newMessageFromMessageLogger(QString, QString)),
             Qt::QueuedConnection);
 
     router.insert("stop", "stopApplication");
