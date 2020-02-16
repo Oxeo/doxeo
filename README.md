@@ -219,6 +219,19 @@ sudo systemctl unmask hostapd
  1. Download the driver [here](https://dev.mysql.com/downloads/connector/c/).
  2. Copy libmysql.dll into C:\Program Files\Qt\5.5\mingw492_32\bin
  
+### Build QMYSQL driver on windows
+
+Open cmd line and run the code:
+```
+cd %QTDIR%\qtbase\src\plugins\sqldrivers
+qmake -- MYSQL_INCDIR="%Mysql%/MySQL Server 8.0/include"  MYSQL_LIBDIR="%Mysql%/MySQL Server 8.0/lib"
+mingw32-make
+mingw32-make install
+```
+%QTDIR% is the root direction for qt,
+%Mysql% is the root direction for mysql,
+See details [here](https://forum.qt.io/topic/110176/build-qmysql-driver-under-windows-10-a-sample-solution-for-qsqldatabase-qmysql-driver-not-loaded).
+ 
 ### Install SSL driver on windows
 
  1. Download Win32 OpenSSL v1.0.2n [here](http://slproweb.com/products/Win32OpenSSL.html).
