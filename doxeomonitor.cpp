@@ -74,9 +74,9 @@ int DoxeoMonitor::start()
 
     // Start Http server
     httpServer = new HttpServer(8080, this);
-    //QFile keyFile(QDir::currentPath() + "/key.pem");
-    //QFile certFile(QDir::currentPath() + "/certificate.pem");
-    //httpServer->enableSsl(keyFile, certFile);
+    QFile keyFile(QDir::currentPath() + "/key.pem");
+    QFile certFile(QDir::currentPath() + "/certificate.pem");
+    httpServer->enableSsl(keyFile, certFile);
     if (!httpServer->start()) {
         qCritical() << applicationName() + " stopped: http server already running";
         return -1;

@@ -20,21 +20,7 @@ void AssetController::defaultAction()
     fileName += query->getAllQuery().join("/");
 
     QFile file(fileName);
-    if (!file.open(QIODevice::ReadOnly)) {
-        pageNotFound();
-        return;
-    }
-
-    QMimeDatabase db;
-    QMimeType mimeType = db.mimeTypeForFile(fileName);
-
-    *output << "HTTP/1.0 200 Ok\r\n";
-    *output << "Content-Type: " + mimeType.name() + "\r\n\r\n";
-    output->flush();
-
-    // Streaming the file
-    QByteArray block = file.readAll();
-    socket->write(block);
+    loadFile(file);
 }
 
 void AssetController::stop()

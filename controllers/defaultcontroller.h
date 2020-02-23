@@ -26,6 +26,7 @@ public slots:
     void jsonSms();
     void jsonFcm();
     void jsonMySensors();
+    void wellKnown();
 
 protected slots:
     void newMessageFromMessageLogger(QString type, QString message);

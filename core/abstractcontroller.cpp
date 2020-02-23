@@ -1,7 +1,8 @@
 #include "abstractcontroller.h"
-#include <QJsonDocument>
 #include <QDir>
-#include <QFile>
+#include <QJsonDocument>
+#include <QMimeDatabase>
+#include <QMimeType>
 
 AbstractController::AbstractController(QObject *parent) : QObject(parent)
 {
@@ -90,6 +91,25 @@ void AbstractController::loadByteArray(const QByteArray &byteArray, QString cont
         output->flush();
 
         socket->write(byteArray);
+}
+
+void AbstractController::loadFile(QFile &file)
+{
+    if (!file.open(QIODevice::ReadOnly)) {
+        notFound("Oops, we are sorry but the page you are looking for was not found...");
+        return;
+    }
+
+    QMimeDatabase db;
+    QMimeType mimeType = db.mimeTypeForFile(file.fileName());
+
+    *output << "HTTP/1.0 200 Ok\r\n";
+    *output << "Content-Type: " + mimeType.name() + "\r\n\r\n";
+    output->flush();
+
+    // Streaming the file
+    QByteArray block = file.readAll();
+    socket->write(block);
 }
 
 void AbstractController::notFound(QString message)

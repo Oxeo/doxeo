@@ -6,10 +6,11 @@
 #include "models/switch.h"
 
 #include <QCoreApplication>
+#include <QDir>
+#include <QHostAddress>
 #include <QJsonArray>
 #include <QTime>
 #include <QTimer>
-#include <QHostAddress>
 
 DefaultController::DefaultController(MySensors *mySensors, FirebaseCloudMessaging *fcm, Gsm *gsm, WebSocketEvent *webSocketEvent, QObject *parent) : AbstractController(parent)
 {
@@ -32,6 +33,7 @@ DefaultController::DefaultController(MySensors *mySensors, FirebaseCloudMessagin
     router.insert("sms.js", "jsonSms");
     router.insert("fcm.js", "jsonFcm");
     router.insert("mysensors.js", "jsonMySensors");
+    router.insert(".well-known", "wellKnown"); // used for Let’s Encrypt
 }
 
 void DefaultController::defaultAction()
@@ -277,6 +279,20 @@ void DefaultController::jsonMySensors()
     }
 
     loadJsonView(result);
+}
+
+void DefaultController::wellKnown()
+{
+    if (query->getQuery(0) == "") {
+        notFound("Oops, we are sorry but the page you are looking for was not found...");
+        return;
+    }
+
+    QString fileName = QDir::currentPath() + "/";
+    fileName += query->getAllQuery().join("/");
+
+    QFile file(fileName);
+    loadFile(file);
 }
 
 void DefaultController::newMessageFromMessageLogger(QString type, QString message)

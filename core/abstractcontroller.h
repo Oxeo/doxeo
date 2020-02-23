@@ -1,15 +1,15 @@
 #ifndef ABSTRACTCONTROLLER_H
 #define ABSTRACTCONTROLLER_H
 
-#include <QObject>
-#include <QString>
-#include <QTextStream>
-#include <QTcpSocket>
-#include <QJsonObject>
-#include <QHash>
 #include "httpheader.h"
 #include "urlquery.h"
-
+#include <QFile>
+#include <QHash>
+#include <QJsonObject>
+#include <QObject>
+#include <QString>
+#include <QTcpSocket>
+#include <QTextStream>
 
 class AbstractController : public QObject
 {
@@ -31,6 +31,7 @@ protected:
     QByteArray loadHtmlView(const QString &view, const QHash<QString, QByteArray> *data = NULL, bool display = true);
     QByteArray loadScript(const QString &javaScript);
     void loadByteArray(const QByteArray &byteArray, QString contentType);
+    void loadFile(QFile &file);
     void notFound(QString message);
     void forbidden(QString message);
     void redirect(QString url);

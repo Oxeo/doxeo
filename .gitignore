@@ -13,3 +13,4 @@ object_script.*
 .qmake.stash
 .vscode/*
 
+/.well-known/*
