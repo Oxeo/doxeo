@@ -1,28 +1,40 @@
 #ifndef HTTPSERVER_H
 #define	HTTPSERVER_H
 
-#include <QTcpServer>
+#include <QFile>
 #include <QHash>
+#include <QSslError>
+#include <QSslKey>
+#include <QTcpServer>
 
 #include "abstractcontroller.h"
 
-class HttpServer : public QObject {
+class HttpServer : public QTcpServer
+{
     Q_OBJECT
 
 public:
     HttpServer(int port, QObject* parent = 0);
-    bool isListening();
+    void enableSsl(QFile &keyFile, QFile &certificateFile);
     void addController(AbstractController *controller, QString params);
     QHash<QString, AbstractController*> getControllers();
+    bool start();
 
 private slots:
-    void newConnection();
+    void encrypted();
+    void newClient();
     void readClient();
+    void discardClient();
+    void sslErrors(const QList<QSslError> &errors);
 
 private:
-   QTcpServer *tcpServer = nullptr;
-   QHash<QString, AbstractController*> controllers;
+    void incomingConnection(qintptr socketDescriptor);
+
+    quint16 port;
+    bool sslEnable = false;
+    QSslKey key;
+    QSslCertificate certificate;
+    QHash<QString, AbstractController *> controllers;
 };
 
-#endif	/* HTTPSERVER_H */
-
+#endif

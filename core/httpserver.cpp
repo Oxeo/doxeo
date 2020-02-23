@@ -1,40 +1,74 @@
 #include "httpserver.h"
 #include "httpheader.h"
-#include <qtcpsocket.h>
+#include <QDir>
 #include <QElapsedTimer>
+#include <QSslConfiguration>
+#include <QSslKey>
+#include <QSslSocket>
 
-
-HttpServer::HttpServer(int port, QObject* parent): QObject(parent)
+HttpServer::HttpServer(int port, QObject *parent) : QTcpServer(parent)
 {
-    tcpServer = new QTcpServer(this);
+    this->port = (quint16) port;
+    connect(this, &HttpServer::newConnection, this, &HttpServer::newClient);
+}
 
-    connect(tcpServer, SIGNAL(newConnection()), this, SLOT(newConnection()));
+bool HttpServer::start()
+{
+    return listen(QHostAddress::Any, port);
+}
 
-    if (!tcpServer->listen(QHostAddress::Any, (quint16)port)) {
-        qCritical("Server could not start");
+void HttpServer::enableSsl(QFile &keyFile, QFile &certificateFile)
+{
+    // add Ssl key
+    keyFile.open(QIODevice::ReadOnly);
+    key = QSslKey(&keyFile, QSsl::Rsa, QSsl::Pem, QSsl::PrivateKey, "server");
+    keyFile.close();
+
+    // add Ssl certificate
+    certificateFile.open(QIODevice::ReadOnly);
+    certificate = QSslCertificate(&certificateFile, QSsl::Pem);
+    certificateFile.close();
+
+    sslEnable = true;
+}
+
+void HttpServer::incomingConnection(qintptr socketDescriptor)
+{
+    if (!sslEnable) {
+        QTcpSocket *socket = new QTcpSocket(this);
+        socket->setSocketDescriptor(socketDescriptor);
+        addPendingConnection(socket);
+    } else {
+        QSslSocket *socket = new QSslSocket(this);
+
+        if (socket->setSocketDescriptor(socketDescriptor)) {
+            connect(socket, &QSslSocket::encrypted, this, &HttpServer::encrypted);
+            connect(socket,
+                    SIGNAL(sslErrors(QList<QSslError>)),
+                    this,
+                    SLOT(sslErrors(QList<QSslError>)));
+
+            socket->setProtocol(QSsl::TlsV1_3);
+            socket->addCaCertificate(certificate);
+            socket->setLocalCertificate(certificate);
+            socket->setPrivateKey(key);
+            socket->startServerEncryption();
+
+            addPendingConnection(socket);
+        } else {
+            socket->deleteLater();
+        }
     }
 }
 
-bool HttpServer::isListening()
-{
-    return tcpServer->isListening();
-}
+void HttpServer::encrypted() {}
 
-void HttpServer::newConnection()
+void HttpServer::newClient()
 {
-    QTcpSocket *socket = tcpServer->nextPendingConnection();
+    QTcpSocket *socket = nextPendingConnection();
+
     connect(socket, SIGNAL(readyRead()), this, SLOT(readClient()));
-    connect(socket, &QAbstractSocket::disconnected, socket, &QObject::deleteLater);
-}
-
-void HttpServer::addController(AbstractController *controller, QString params)
-{
-    controllers.insert(params, controller);
-}
-
-QHash<QString, AbstractController *> HttpServer::getControllers()
-{
-    return controllers;
+    connect(socket, SIGNAL(disconnected()), this, SLOT(discardClient()));
 }
 
 void HttpServer::readClient()
@@ -42,8 +76,8 @@ void HttpServer::readClient()
     QElapsedTimer timer;
     timer.start();
 
-    QTcpSocket* socket = (QTcpSocket*)sender();
-    AbstractController* controller;
+    QTcpSocket *socket = (QTcpSocket *) sender();
+    AbstractController *controller;
 
     if (socket->canReadLine()) {
         QTextStream os(socket);
@@ -67,12 +101,13 @@ void HttpServer::readClient()
         controller->setOutput(&os);
 
         if (controller->getRouter().contains(function.toStdString().c_str())) {
-            QMetaObject::invokeMethod(controller, controller->getRouter()[function].toStdString().c_str(),
+            QMetaObject::invokeMethod(controller,
+                                      controller->getRouter()[function].toStdString().c_str(),
                                       Qt::DirectConnection);
         } else {
             controller->defaultAction();
         }
-        
+
         socket->close();
 
         if (socket->state() == QTcpSocket::UnconnectedState) {
@@ -83,4 +118,27 @@ void HttpServer::readClient()
             qDebug() << httpHeader.getUrl() << "took" << timer.elapsed() << "milliseconds.";
         }
     }
+}
+
+void HttpServer::discardClient()
+{
+    QTcpSocket *socket = (QTcpSocket *) sender();
+    socket->deleteLater();
+}
+
+void HttpServer::sslErrors(const QList<QSslError> &errors)
+{
+    for (QSslError error : errors) {
+        qWarning() << "Ssl error: " << error.errorString();
+    }
+}
+
+void HttpServer::addController(AbstractController *controller, QString params)
+{
+    controllers.insert(params, controller);
+}
+
+QHash<QString, AbstractController *> HttpServer::getControllers()
+{
+    return controllers;
 }
