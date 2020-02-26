@@ -110,6 +110,7 @@ void AbstractController::loadFile(QFile &file)
     // Streaming the file
     QByteArray block = file.readAll();
     socket->write(block);
+    file.close();
 }
 
 void AbstractController::notFound(QString message)

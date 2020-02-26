@@ -26,6 +26,7 @@ private slots:
     void readClient();
     void discardClient();
     void sslErrors(const QList<QSslError> &errors);
+    void peerVerifyError(const QSslError &error);
 
 private:
     void incomingConnection(qintptr socketDescriptor);

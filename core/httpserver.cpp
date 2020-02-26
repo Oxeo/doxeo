@@ -47,11 +47,13 @@ void HttpServer::incomingConnection(qintptr socketDescriptor)
                     SIGNAL(sslErrors(QList<QSslError>)),
                     this,
                     SLOT(sslErrors(QList<QSslError>)));
+            connect(socket, &QSslSocket::peerVerifyError, this, &HttpServer::peerVerifyError);
 
-            socket->setProtocol(QSsl::TlsV1_3);
-            socket->addCaCertificate(certificate);
+            socket->setProtocol(QSsl::TlsV1_2);
             socket->setLocalCertificate(certificate);
             socket->setPrivateKey(key);
+            socket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
+            socket->setPeerVerifyMode(QSslSocket::QueryPeer);
             socket->startServerEncryption();
 
             addPendingConnection(socket);
@@ -108,7 +110,7 @@ void HttpServer::readClient()
             controller->defaultAction();
         }
 
-        socket->close();
+        socket->disconnectFromHost();
 
         if (socket->state() == QTcpSocket::UnconnectedState) {
             socket->deleteLater();
@@ -131,6 +133,11 @@ void HttpServer::sslErrors(const QList<QSslError> &errors)
     for (QSslError error : errors) {
         qWarning() << "Ssl error: " << error.errorString();
     }
+}
+
+void HttpServer::peerVerifyError(const QSslError &error)
+{
+    qWarning() << "Ssl error: " << error.errorString();
 }
 
 void HttpServer::addController(AbstractController *controller, QString params)
