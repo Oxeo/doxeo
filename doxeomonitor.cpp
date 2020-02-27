@@ -31,18 +31,20 @@
 #include "models/switch.h"
 #include "models/user.h"
 
-#include <QDir>
 #include <iostream>
-#include <QCommandLineParser>
-#include <QCommandLineOption>
-#include <QTextStream>
-#include <QtDebug>
-#include <QNetworkRequest>
-#include <QNetworkReply>
-#include <QJsonObject>
-#include <QJsonDocument>
 #include <stdio.h>
 #include <stdlib.h>
+#include <QCommandLineOption>
+#include <QCommandLineParser>
+#include <QDir>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QList>
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QPair>
+#include <QTextStream>
+#include <QtDebug>
 
 DoxeoMonitor::DoxeoMonitor(int &argc, char **argv) : QCoreApplication(argc, argv)
 {
@@ -74,12 +76,18 @@ int DoxeoMonitor::start()
 
     // Start Http server
     httpServer = new HttpServer(8080, this);
-    QFile keyFile(QDir::currentPath() + "/privkey.pem");
-    QFile certFile(QDir::currentPath() + "/cert.pem");
-    httpServer->enableSsl(keyFile, certFile);
     if (!httpServer->start()) {
         qCritical() << applicationName() + " stopped: http server already running";
         return -1;
+    }
+
+    // Start Https server
+    HttpServer *httpsServer = new HttpServer(8085, this);
+    QFile keyFile(QDir::currentPath() + "/privkey.pem");
+    QFile certFile(QDir::currentPath() + "/cert.pem");
+    httpsServer->enableSsl(keyFile, certFile);
+    if (!httpsServer->start()) {
+        qWarning() << "Https server not started";
     }
 
     // Connection to Mysql Database
@@ -137,19 +145,27 @@ int DoxeoMonitor::start()
     // Initialise WebSocketEvent
     WebSocketEvent *webSocketEvent = new WebSocketEvent(8081);
 
-    // Add controller
-    httpServer->addController(new DefaultController(mySensors, fcm, gsm, webSocketEvent, this), "default");
-    httpServer->addController(new AssetController(), "assets");
-    httpServer->addController(new SwitchController(mySensors, this), "switch");
-    httpServer->addController(new SensorController(mySensors, this), "sensor");
-    httpServer->addController(new AuthController(this), "auth");
-    httpServer->addController(new ThermostatController(thermostat, this), "thermostat");
-    httpServer->addController(new ScriptController(scriptEngine, webSocketEvent, this), "script");
-    httpServer->addController(new ScenarioController(scriptEngine, this), "scenario");
-    httpServer->addController(new JeedomController(jeedom, mySensors, this), "jeedom");
-    httpServer->addController(new SettingController(this), "setting");
-    httpServer->addController(new HeaterController(this), "heater");
-    httpServer->addController(new CameraController(this), "camera");
+    // Add controllers
+    QList<QPair<AbstractController *, QString>> controllers;
+    controllers.append(qMakePair(new DefaultController(mySensors, fcm, gsm, webSocketEvent, this),
+                                 QString("default")));
+    controllers.append(qMakePair(new AssetController(), QString("assets")));
+    controllers.append(qMakePair(new SwitchController(mySensors, this), QString("switch")));
+    controllers.append(qMakePair(new SensorController(mySensors, this), QString("sensor")));
+    controllers.append(qMakePair(new AuthController(this), QString("auth")));
+    controllers.append(qMakePair(new ThermostatController(thermostat, this), QString("thermostat")));
+    controllers.append(
+        qMakePair(new ScriptController(scriptEngine, webSocketEvent, this), QString("script")));
+    controllers.append(qMakePair(new ScenarioController(scriptEngine, this), QString("scenario")));
+    controllers.append(qMakePair(new JeedomController(jeedom, mySensors, this), QString("jeedom")));
+    controllers.append(qMakePair(new SettingController(this), QString("setting")));
+    controllers.append(qMakePair(new HeaterController(this), QString("heater")));
+    controllers.append(qMakePair(new CameraController(this), QString("camera")));
+
+    for (QPair<AbstractController *, QString> pair : controllers) {
+        httpServer->addController(pair.first, pair.second);
+        httpsServer->addController(pair.first, pair.second);
+    }
 
     scriptEngine->init();
 
