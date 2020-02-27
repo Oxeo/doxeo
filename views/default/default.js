@@ -1,5 +1,4 @@
 var updateError = false;
-var socket = new WebSocket("ws://" + window.location.hostname + ":8081");
 
 jQuery(document).ready(function () {
     update();
@@ -8,18 +7,22 @@ jQuery(document).ready(function () {
     setInterval(refreshCameras, 1000);
 });
 
-socket.onopen = function (event) {
-    console.log("Websocket connected!");
+if (location.protocol !== 'https:') {
+    var socket = new WebSocket("ws://" + window.location.hostname + ":8081");
+    
+    socket.onopen = function (event) {
+        console.log("Websocket connected!");
 
-    this.onclose = function (event) {
-        console.log("Websocket closed!");
-    };
+        this.onclose = function (event) {
+            console.log("Websocket closed!");
+        };
 
-    this.onmessage = function (event) {
-        console.log("Message:", event.data);
-        update();
+        this.onmessage = function (event) {
+            console.log("Message:", event.data);
+            update();
+        };
     };
-};
+}
 
 function update() {
     if (updateError) {
