@@ -11,10 +11,6 @@ FirebaseCloudMessaging::FirebaseCloudMessaging(QString projectName, QObject *par
     this->projectName = projectName;
     this->manager = new QNetworkAccessManager(this);
     this->serverKey = "";
-
-    if (!QSslSocket::supportsSsl()) {
-        qCritical() << "fcm: SSL not supported: FirebaseCloudMessaging cannot be used!";
-    }
     
     connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(networkReply(QNetworkReply*)));
 }

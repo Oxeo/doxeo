@@ -2,6 +2,8 @@
 #define WEBSOCKETEVENT_H
 
 #include <QObject>
+#include <QSslError>
+#include <QWebSocketProtocol>
 #include <QtCore/QList>
 
 QT_FORWARD_DECLARE_CLASS(QWebSocketServer)
@@ -22,12 +24,15 @@ signals:
     void newMessage(QString sender, QString message);
 
 private slots:
+    void onError(QWebSocketProtocol::CloseCode closeCode);
     void onNewConnection();
     void processMessage(const QString &message);
+    void onPeerVerifyError(const QSslError &error);
+    void onSslErrors(const QList<QSslError> &errors);
     void socketDisconnected();
 
 private:
-    QWebSocketServer *server;
+    QWebSocketServer *server = nullptr;
     QList<QWebSocket *> clients;
 };
 
