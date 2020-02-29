@@ -14,11 +14,11 @@ class HttpServer : public QTcpServer
     Q_OBJECT
 
 public:
-    HttpServer(int port, QObject* parent = 0);
+    HttpServer(QObject *parent = 0);
     void enableSsl(QFile &keyFile, QFile &certificateFile);
     void addController(AbstractController *controller, QString params);
     QHash<QString, AbstractController*> getControllers();
-    bool start();
+    bool start(quint16 port);
 
 private slots:
     void encrypted();
@@ -31,7 +31,6 @@ private slots:
 private:
     void incomingConnection(qintptr socketDescriptor);
 
-    quint16 port;
     bool sslEnable = false;
     QSslKey key;
     QSslCertificate certificate;

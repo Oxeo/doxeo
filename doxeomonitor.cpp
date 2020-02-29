@@ -74,20 +74,29 @@ int DoxeoMonitor::start()
         return (error ? -1 : 0);
     }
 
+    // get certificate files for SSL
+    QFile keyFile(QDir::currentPath() + "/privkey.pem");
+    QFile certFile(QDir::currentPath() + "/cert.pem");
+
     // Start Http server
-    httpServer = new HttpServer(8080, this);
-    if (!httpServer->start()) {
+    httpServer = new HttpServer(this);
+    if (!httpServer->start(8080)) {
         qCritical() << applicationName() + " stopped: http server already running";
         return -1;
     }
 
     // Start Https server
-    HttpServer *httpsServer = new HttpServer(8085, this);
-    QFile keyFile(QDir::currentPath() + "/privkey.pem");
-    QFile certFile(QDir::currentPath() + "/cert.pem");
+    HttpServer *httpsServer = new HttpServer(this);
     httpsServer->enableSsl(keyFile, certFile);
-    if (!httpsServer->start()) {
+    if (!httpsServer->start(8085)) {
         qWarning() << "Https server not started";
+    }
+
+    // Start WebSocket
+    WebSocketEvent *webSocketEvent = new WebSocketEvent(this);
+    webSocketEvent->enableSsl(keyFile, certFile);
+    if (!webSocketEvent->start(8081)) {
+        qWarning() << "Websocket not started";
     }
 
     // Connection to Mysql Database
@@ -141,9 +150,6 @@ int DoxeoMonitor::start()
 
     // Initialise Script Engine
     ScriptEngine *scriptEngine = new ScriptEngine(thermostat, jeedom, gsm, mySensors, this);
-
-    // Initialise WebSocketEvent
-    WebSocketEvent *webSocketEvent = new WebSocketEvent(8081);
 
     // Add controllers
     QList<QPair<AbstractController *, QString>> controllers;

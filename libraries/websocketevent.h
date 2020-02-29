@@ -1,6 +1,7 @@
 #ifndef WEBSOCKETEVENT_H
 #define WEBSOCKETEVENT_H
 
+#include <QFile>
 #include <QObject>
 #include <QSslError>
 #include <QWebSocketProtocol>
@@ -15,9 +16,11 @@ class WebSocketEvent : public QObject
     Q_OBJECT
 
 public:
-    explicit WebSocketEvent(quint16 port, QObject *parent = 0);
+    explicit WebSocketEvent(QObject *parent = 0);
     ~WebSocketEvent();
 
+    bool start(quint16 port);
+    void enableSsl(QFile &keyFile, QFile &certificateFile);
     void sendMessage(QString message);
 
 signals:

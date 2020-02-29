@@ -6,13 +6,12 @@
 #include <QSslKey>
 #include <QSslSocket>
 
-HttpServer::HttpServer(int port, QObject *parent) : QTcpServer(parent)
+HttpServer::HttpServer(QObject *parent) : QTcpServer(parent)
 {
-    this->port = (quint16) port;
     connect(this, &HttpServer::newConnection, this, &HttpServer::newClient);
 }
 
-bool HttpServer::start()
+bool HttpServer::start(quint16 port)
 {
     return listen(QHostAddress::Any, port);
 }
