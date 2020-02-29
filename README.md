@@ -134,6 +134,13 @@ LimitRequestFieldSize 1000000
 ```
 3. sudo service apache2 restart
 
+### Enable Let’s Encrypt (Certboot)
+```
+sudo apt-get install certbot
+sudo certbot certonly --webroot -w /home/pi/doxeo --agree-tos --no-eff-email -d doxeo.oxeo.fr --rsa-key-size 4096
+```
+More details [here](https://certbot.eff.org/lets-encrypt/debianstretch-other) and [here](https://howto.wared.fr/ubuntu-certificats-ssl-tls-certbot/).
+
 ### Install ddclient for DynHost OVH
 
 1. sudo apt-get install ddclient
