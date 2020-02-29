@@ -7,21 +7,33 @@ jQuery(document).ready(function () {
     setInterval(refreshCameras, 1000);
 });
 
-if (location.protocol !== 'https:') {
-    var socket = new WebSocket("ws://" + window.location.hostname + ":8081");
-    
-    socket.onopen = function (event) {
-        console.log("Websocket connected!");
+try {
+    //if (location.protocol !== 'https:') {
+        var socket = new WebSocket("wss://" + window.location.hostname + ":8081");
+        
+        socket.onopen = function (event) {
+            console.log("Websocket connected!");
 
-        this.onclose = function (event) {
-            console.log("Websocket closed!");
+            this.onclose = function (event) {
+                console.log("Websocket closed!");
+            };
+
+            this.onmessage = function (event) {
+                console.log("Message:", event.data);
+                update();
+            };
+            
+            
+        };
+        
+        socket.onerror = function(error) {
+            console.error(error);
         };
 
-        this.onmessage = function (event) {
-            console.log("Message:", event.data);
-            update();
-        };
-    };
+    //}
+} catch ( e ) {
+    console.warn(e);
+    alert("Websocket not connected");
 }
 
 function update() {

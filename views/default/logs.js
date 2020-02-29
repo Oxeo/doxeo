@@ -1,24 +1,36 @@
-var socket = new WebSocket("ws://" + window.location.hostname + ":8081");
 var stopWebsocket = false;
 var listCmd = [];
 var listCmdPosition = -1;
 var day = null;
 
-socket.onopen = function (event) {
-    console.log("Websocket connected!");
+try {
+    var socket = new WebSocket("wss://" + window.location.hostname + ":8081");
 
-    this.onclose = function (event) {
-        console.log("Websocket closed!");
+    socket.onopen = function (event) {
+        console.log("Websocket connected!");
+
+        this.onclose = function (event) {
+            console.log("Websocket closed!");
+        };
+
+        this.onmessage = function (event) {
+            if (!stopWebsocket && (day == null || moment().diff(day, 'days') == 0)) {
+                var date = moment().format('DD/MM/YYYY HH:mm:ss')
+                addLogMessage('', event.data.replace('debug:', ''), date);
+                applyFilter();
+            }
+        };
     };
 
-    this.onmessage = function (event) {
-        if (!stopWebsocket && (day == null || moment().diff(day, 'days') == 0)) {
-            var date = moment().format('DD/MM/YYYY HH:mm:ss')
-            addLogMessage('', event.data.replace('debug:', ''), date);
-            applyFilter();
-        }
+    socket.onerror = function(error) {
+        console.error(error);
+        alert("Websocket not connected");
     };
-};
+
+} catch ( e ) {
+    console.warn(e);
+    alert("Websocket not connected");
+}
 
 jQuery(document).ready(function () {
     $('#button_newer').hide();
