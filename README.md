@@ -139,6 +139,13 @@ LimitRequestFieldSize 1000000
 sudo apt-get install certbot
 sudo certbot certonly --webroot -w /home/pi/doxeo --agree-tos --no-eff-email -d doxeo.oxeo.fr --rsa-key-size 4096
 ```
+
+```
+chown -R pi /etc/letsencrypt/live/doxeo.oxeo.fr
+chown -R pi /etc/letsencrypt/archive/doxeo.oxeo.fr
+ln -s /etc/letsencrypt/live/doxeo.oxeo.fr/cert.pem /home/pi/doxeo/cert.pem
+ln -s /etc/letsencrypt/live/doxeo.oxeo.fr/privkey.pem /home/pi/doxeo/privkey.pem
+```
 More details [here](https://certbot.eff.org/lets-encrypt/debianstretch-other) and [here](https://howto.wared.fr/ubuntu-certificats-ssl-tls-certbot/).
 
 ### Install ddclient for DynHost OVH
