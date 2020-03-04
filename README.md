@@ -145,6 +145,7 @@ chown -R pi /etc/letsencrypt/live/doxeo.oxeo.fr
 chown -R pi /etc/letsencrypt/archive/doxeo.oxeo.fr
 ln -s /etc/letsencrypt/live/doxeo.oxeo.fr/cert.pem /home/pi/doxeo/cert.pem
 ln -s /etc/letsencrypt/live/doxeo.oxeo.fr/privkey.pem /home/pi/doxeo/privkey.pem
+ln -s /etc/letsencrypt/live/doxeo.oxeo.fr/privkey.pem /home/pi/doxeo/chain.pem
 ```
 More details [here](https://certbot.eff.org/lets-encrypt/debianstretch-other) and [here](https://howto.wared.fr/ubuntu-certificats-ssl-tls-certbot/).
 
