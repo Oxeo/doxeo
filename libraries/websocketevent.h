@@ -20,7 +20,7 @@ public:
     ~WebSocketEvent();
 
     bool start(quint16 port);
-    void enableSsl(QFile &keyFile, QFile &certificateFile);
+    void enableSsl(QFile &keyFile, QFile &certificateFile, QFile &chainFile);
     void sendMessage(QString message);
 
 signals:

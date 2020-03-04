@@ -37,7 +37,7 @@ bool WebSocketEvent::start(quint16 port)
     return server->listen(QHostAddress::Any, port);
 }
 
-void WebSocketEvent::enableSsl(QFile &keyFile, QFile &certificateFile)
+void WebSocketEvent::enableSsl(QFile &keyFile, QFile &certificateFile, QFile &chainFile)
 {
     if (!QSslSocket::supportsSsl()) {
         qCritical() << "SSL not supported: WebSocketEvent cannot be used!";
@@ -57,8 +57,16 @@ void WebSocketEvent::enableSsl(QFile &keyFile, QFile &certificateFile)
     QSslKey sslKey(&keyFile, QSsl::Rsa, QSsl::Pem, QSsl::PrivateKey, "server");
     keyFile.close();
 
+    // Chain
+    QList<QSslCertificate> chains;
+    chainFile.open(QIODevice::ReadOnly);
+    chains.append(certificate);
+    chains.append(QSslCertificate(&chainFile, QSsl::Pem));
+    chainFile.close();
+
     sslConfiguration.setPeerVerifyMode(QSslSocket::VerifyNone);
     sslConfiguration.setLocalCertificate(certificate);
+    sslConfiguration.setLocalCertificateChain(chains);
     sslConfiguration.setPrivateKey(sslKey);
     sslConfiguration.setProtocol(QSsl::TlsV1_2);
     server->setSslConfiguration(sslConfiguration);
