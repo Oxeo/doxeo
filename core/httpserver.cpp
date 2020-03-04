@@ -16,17 +16,23 @@ bool HttpServer::start(quint16 port)
     return listen(QHostAddress::Any, port);
 }
 
-void HttpServer::enableSsl(QFile &keyFile, QFile &certificateFile)
+void HttpServer::enableSsl(QFile &key, QFile &certificate, QFile &chain)
 {
-    // add Ssl key
-    keyFile.open(QIODevice::ReadOnly);
-    key = QSslKey(&keyFile, QSsl::Rsa, QSsl::Pem, QSsl::PrivateKey, "server");
-    keyFile.close();
+    // add key
+    key.open(QIODevice::ReadOnly);
+    this->key = QSslKey(&key, QSsl::Rsa, QSsl::Pem, QSsl::PrivateKey, "server");
+    key.close();
 
-    // add Ssl certificate
-    certificateFile.open(QIODevice::ReadOnly);
-    certificate = QSslCertificate(&certificateFile, QSsl::Pem);
-    certificateFile.close();
+    // add certificate
+    certificate.open(QIODevice::ReadOnly);
+    this->certificate = QSslCertificate(&certificate, QSsl::Pem);
+    certificate.close();
+
+    // add chains
+    chain.open(QIODevice::ReadOnly);
+    this->chains.append(this->certificate);
+    this->chains.append(QSslCertificate(&chain, QSsl::Pem));
+    chain.close();
 
     sslEnable = true;
 }
@@ -50,6 +56,7 @@ void HttpServer::incomingConnection(qintptr socketDescriptor)
 
             socket->setProtocol(QSsl::TlsV1_2);
             socket->setLocalCertificate(certificate);
+            socket->setLocalCertificateChain(chains);
             socket->setPrivateKey(key);
             socket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
             socket->setPeerVerifyMode(QSslSocket::QueryPeer);

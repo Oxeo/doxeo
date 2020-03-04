@@ -16,3 +16,4 @@ object_script.*
 /.well-known/*
 /cert.pem
 /privkey.pem
+/chain.pem

@@ -15,7 +15,7 @@ class HttpServer : public QTcpServer
 
 public:
     HttpServer(QObject *parent = 0);
-    void enableSsl(QFile &keyFile, QFile &certificateFile);
+    void enableSsl(QFile &key, QFile &certificate, QFile &chain);
     void addController(AbstractController *controller, QString params);
     QHash<QString, AbstractController*> getControllers();
     bool start(quint16 port);
@@ -34,6 +34,7 @@ private:
     bool sslEnable = false;
     QSslKey key;
     QSslCertificate certificate;
+    QList<QSslCertificate> chains;
     QHash<QString, AbstractController *> controllers;
 };
 

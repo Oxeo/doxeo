@@ -77,6 +77,7 @@ int DoxeoMonitor::start()
     // get certificate files for SSL
     QFile keyFile(QDir::currentPath() + "/privkey.pem");
     QFile certFile(QDir::currentPath() + "/cert.pem");
+    QFile chainFile(QDir::currentPath() + "/chain.pem");
 
     // Start Http server
     httpServer = new HttpServer(this);
@@ -87,7 +88,7 @@ int DoxeoMonitor::start()
 
     // Start Https server
     HttpServer *httpsServer = new HttpServer(this);
-    httpsServer->enableSsl(keyFile, certFile);
+    httpsServer->enableSsl(keyFile, certFile, chainFile);
     if (!httpsServer->start(8085)) {
         qWarning() << "Https server not started";
     }
