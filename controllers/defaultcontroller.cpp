@@ -210,6 +210,13 @@ void DefaultController::jsonSystem()
     result.insert("success", true);
     result.insert("time", QTime::currentTime().toString("HH:mm"));
     result.insert("device_connected", Device::Instance()->isConnected());
+
+    if (Switch::isIdValid("alarm") && Switch::get("alarm")->getStatus() == "on") {
+        result.insert("alarm", "on");
+    } else {
+        result.insert("alarm", "off");
+    }
+
     loadJsonView(result);
 }
 
