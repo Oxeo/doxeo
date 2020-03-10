@@ -23,6 +23,7 @@ public slots:
     void jsonLogs();
     void jsonClearLogs();
     void jsonSystem();
+    void jsonAlarm();
     void jsonSms();
     void jsonFcm();
     void jsonMySensors();

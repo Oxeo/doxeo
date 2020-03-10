@@ -1,7 +1,7 @@
 #include "defaultcontroller.h"
 #include "libraries/authentification.h"
-#include "libraries/messagelogger.h"
 #include "libraries/device.h"
+#include "libraries/messagelogger.h"
 #include "models/sensor.h"
 #include "models/switch.h"
 
@@ -30,6 +30,7 @@ DefaultController::DefaultController(MySensors *mySensors, FirebaseCloudMessagin
     router.insert("logs.js", "jsonLogs");
     router.insert("clear_logs.js", "jsonClearLogs");
     router.insert("system.js", "jsonSystem");
+    router.insert("alarm.js", "jsonAlarm");
     router.insert("sms.js", "jsonSms");
     router.insert("fcm.js", "jsonFcm");
     router.insert("mysensors.js", "jsonMySensors");
@@ -211,10 +212,61 @@ void DefaultController::jsonSystem()
     result.insert("time", QTime::currentTime().toString("HH:mm"));
     result.insert("device_connected", Device::Instance()->isConnected());
 
-    if (Switch::isIdValid("alarm") && Switch::get("alarm")->getStatus() == "on") {
-        result.insert("alarm", "on");
+    QString alarmStatus = "UNKNOWN";
+    if (Switch::isIdValid("alarm") && Switch::isIdValid("watchdog")) {
+        if (Switch::get("alarm")->getStatus() == "pending") {
+            alarmStatus = "PENDING";
+        } else if (Switch::get("alarm")->getStatus() == "on") {
+            alarmStatus = "ARM_AWAY";
+        } else if (Switch::get("watchdog")->getStatus() == "on") {
+            alarmStatus = "ARM_STAY";
+        } else {
+            alarmStatus = "DISARMED";
+        }
+    }
+
+    result.insert("alarm", alarmStatus);
+
+    loadJsonView(result);
+}
+
+void DefaultController::jsonAlarm()
+{
+    QJsonObject result;
+
+    if (!Authentification::auth().isConnected(header, cookie)) {
+        result.insert("msg", "You are not logged.");
+        result.insert("success", false);
+    } else if (!Switch::isIdValid("alarm") || !Switch::isIdValid("watchdog")) {
+        result.insert("msg", "Alarm not set");
+        result.insert("success", false);
+    } else if (query->getItem("status") == "DISARMED") {
+        if (Switch::get("alarm")->getStatus() != "off") {
+            Switch::get("alarm")->powerOff();
+        }
+        if (Switch::get("watchdog")->getStatus() != "off") {
+            Switch::get("watchdog")->powerOff();
+        }
+        result.insert("success", true);
+    } else if (query->getItem("status") == "ARM_STAY") {
+        if (Switch::get("alarm")->getStatus() != "off") {
+            Switch::get("alarm")->powerOff();
+        }
+        if (Switch::get("watchdog")->getStatus() != "on") {
+            Switch::get("watchdog")->powerOn();
+        }
+        result.insert("success", true);
+    } else if (query->getItem("status") == "ARM_AWAY") {
+        if (Switch::get("watchdog")->getStatus() != "off") {
+            Switch::get("watchdog")->powerOff();
+        }
+        if (Switch::get("alarm")->getStatus() != "on") {
+            Switch::get("alarm")->powerOn();
+        }
+        result.insert("success", true);
     } else {
-        result.insert("alarm", "off");
+        result.insert("msg", "Unknown status");
+        result.insert("success", false);
     }
 
     loadJsonView(result);
