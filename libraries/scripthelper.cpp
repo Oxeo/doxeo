@@ -1,8 +1,8 @@
 #include "scripthelper.h"
 #include "device.h"
+#include "libraries/settings.h"
 #include "messagelogger.h"
 #include "models/script.h"
-#include "models/setting.h"
 
 #include <QDate>
 #include <QTime>
@@ -137,17 +137,19 @@ void ScriptHelper::setAlert(QString alert)
 
 void ScriptHelper::setSetting(QString id, QString value)
 {
-    Setting *setting = Setting::get(id);
+    Settings *s = new Settings("", this);
 
-    if (setting != NULL) {
-        if (setting->getValue() != value) {
-            setting->setValue(value);
-            setting->flush();
-            qDebug() << qPrintable("setting " + id + " set to " + value);
-        }
-    } else {
-        qWarning("id setting not valid in script helper (setSetting)");
+    if (s->value(id, "") != value) {
+        s->setValue(id, value);
+        qDebug() << qPrintable("setting " + id + " set to " + value);
     }
+}
+
+QString ScriptHelper::getSetting(QString id)
+{
+    Settings *s = new Settings("", this);
+
+    return s->value(id, "");
 }
 
 QString ScriptHelper::value(QString key)

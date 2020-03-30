@@ -8,10 +8,11 @@ Settings::Settings(QString group, QObject *parent) : QObject(parent)
 
 void Settings::setValue(QString key, QString value)
 {
-    Setting *s = Setting::get(group + "_" + key);
+    QString id = group.isEmpty() ? key : group + "_" + key;
+    Setting *s = Setting::get(id);
 
     if (s == NULL) {
-        s = new Setting(group + "_" + key);
+        s = new Setting(id);
     }
 
     s->setGroup(group);
@@ -21,7 +22,8 @@ void Settings::setValue(QString key, QString value)
 
 QString Settings::value(QString key, QString defaultValue)
 {
-    Setting *s = Setting::get(group + "_" + key);
+    QString id = group.isEmpty() ? key : group + "_" + key;
+    Setting *s = Setting::get(id);
 
     if (s == NULL) {
         setValue(key, defaultValue);
@@ -35,7 +37,8 @@ QString Settings::value(QString key, QString defaultValue)
 
 bool Settings::contains(QString key)
 {
-    Setting *s = Setting::get(group + "_" + key);
+    QString id = group.isEmpty() ? key : group + "_" + key;
+    Setting *s = Setting::get(id);
 
     if (s == NULL) {
         return false;
@@ -46,7 +49,8 @@ bool Settings::contains(QString key)
 
 void Settings::remove(QString key)
 {
-    Setting *s = Setting::get(group + "_" + key);
+    QString id = group.isEmpty() ? key : group + "_" + key;
+    Setting *s = Setting::get(id);
 
     if (s != NULL) {
         s->remove();
