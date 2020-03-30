@@ -54,6 +54,26 @@
           <td class="text-left" id="board_status"></td>
         </tr>
         <tr>
+          <td class="text-right" style="width: 50%">Alarm</td>
+          <td class="text-left">
+            <div class="dropdown">
+              <button class="btn btn-xs dropdown-toggle" type="button"
+                style="border: 0px; padding:0px 5px 1px 5px; font-size:11px;" id="alarm_status_active"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span></span> <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="dropdownMenuMode">
+                <li><a href="javascript:void(0)" class="change_alarm_status" data-status="DISARMED">Disarm</a>
+                </li>
+                <li><a href="javascript:void(0)" class="change_alarm_status" data-status="ARM_STAY">Arm Stay</a>
+                </li>
+                <li><a href="javascript:void(0)" class="change_alarm_status" data-status="ARM_AWAY">Arm Away</a>
+                </li>
+              </ul>
+            </div>
+          </td>
+        </tr>
+        <tr>
           <td class="text-right" style="width: 50%">Thermostat</td>
           <td class="text-left">
             <div class="dropdown">

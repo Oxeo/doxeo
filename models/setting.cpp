@@ -6,6 +6,7 @@
 #include <QSqlError>
 
 QMap<QString, Setting*> Setting::settingList;
+Event Setting::event;
 
 Setting::Setting()
 {
@@ -87,6 +88,7 @@ void Setting::update()
     }
 
     Database::release();
+    emit Setting::event.dataChanged();
 }
 
 Setting *Setting::get(QString id)
@@ -127,6 +129,11 @@ QMap<QString, Setting *> Setting::getSettingList()
     return settingList;
 }
 
+Event *Setting::getEvent()
+{
+    return &event;
+}
+
 QString Setting::getValue() const
 {
     return value;
@@ -135,6 +142,7 @@ QString Setting::getValue() const
 void Setting::setValue(const QString &value)
 {
     this->value = value;
+    emit Setting::event.valueUpdated(this->id, "set_value", this->value);
 }
 
 QString Setting::getId() const

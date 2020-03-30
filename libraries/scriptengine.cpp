@@ -1,10 +1,11 @@
 #include "scriptengine.h"
-#include "scripthelper.h"
-#include "models/sensor.h"
-#include "models/switch.h"
-#include "models/heater.h"
 #include "libraries/device.h"
 #include "libraries/scripttimeevent.h"
+#include "models/heater.h"
+#include "models/sensor.h"
+#include "models/setting.h"
+#include "models/switch.h"
+#include "scripthelper.h"
 
 #include <QDebug>
 #include <QTime>
@@ -34,10 +35,27 @@ void ScriptEngine::init()
     connect(Sensor::getEvent(), SIGNAL(dataChanged()), this, SLOT(updateSensors()), Qt::QueuedConnection);
     connect(Sensor::getEvent(), SIGNAL(valueUpdated(QString,QString,QString)), this, SLOT(sensorValueUpdated(QString, QString, QString)), Qt::QueuedConnection);
     connect(Switch::getEvent(), SIGNAL(dataChanged()), this, SLOT(updateSwitches()), Qt::QueuedConnection);
-    connect(Switch::getEvent(), SIGNAL(valueUpdated(QString,QString,QString)), this, SLOT(switchValueUpdated(QString,QString, QString)), Qt::QueuedConnection);
-    connect(Heater::getEvent(), SIGNAL(valueUpdated(QString,QString,QString)), this, SLOT(heaterValueUpdated(QString,QString, QString)), Qt::QueuedConnection);
+    connect(Switch::getEvent(),
+            SIGNAL(valueUpdated(QString, QString, QString)),
+            this,
+            SLOT(switchValueUpdated(QString, QString, QString)),
+            Qt::QueuedConnection);
+    connect(Heater::getEvent(),
+            SIGNAL(valueUpdated(QString, QString, QString)),
+            this,
+            SLOT(heaterValueUpdated(QString, QString, QString)),
+            Qt::QueuedConnection);
+    connect(Setting::getEvent(),
+            SIGNAL(valueUpdated(QString, QString, QString)),
+            this,
+            SLOT(settingValueUpdated(QString, QString, QString)),
+            Qt::QueuedConnection);
 
-    connect(gsm, SIGNAL(newSMS(QString,QString)), this, SLOT(newSMS(QString,QString)), Qt::QueuedConnection);
+    connect(gsm,
+            SIGNAL(newSMS(QString, QString)),
+            this,
+            SLOT(newSMS(QString, QString)),
+            Qt::QueuedConnection);
     connect(timeEvent, SIGNAL(eventTimeout(QString)), this, SLOT(eventTimeout(QString)), Qt::QueuedConnection);
 
     timer = new QTimer(this);
@@ -125,6 +143,12 @@ void ScriptEngine::newSMS(QString numbers, QString msg)
     engine.globalObject().setProperty("sms_numbers", numbers);
     engine.globalObject().setProperty("sms_message", msg);
     run("new_sms");
+}
+
+void ScriptEngine::settingValueUpdated(QString id, QString type, QString value)
+{
+    Q_UNUSED(type);
+    run("setting_" + id + ";" + value);
 }
 
 void ScriptEngine::eventTimeout(QString name)

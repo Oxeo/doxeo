@@ -1,13 +1,17 @@
 #ifndef SETTING_H
 #define SETTING_H
 
+#include "core/event.h"
+
+#include <QJsonObject>
 #include <QList>
 #include <QMap>
+#include <QObject>
 #include <QString>
-#include <QJsonObject>
 
-class Setting
+class Setting : public QObject
 {
+    Q_OBJECT
 
 public:
     Setting();
@@ -21,6 +25,7 @@ public:
     static Setting* get(QString id);
     static QList<Setting*> getFromGroup(QString groupName);
     static QMap<QString, Setting*> getSettingList();
+    static Event *getEvent();
 
     QString getValue() const;
     void setValue(const QString &value);
@@ -32,12 +37,12 @@ public:
     void setGroup(const QString &value);
 
 protected:
-
     QString id;
     QString group;
     QString value;
 
     static QMap<QString, Setting*> settingList;
+    static Event event;
 };
 
 #endif // SETTING_H

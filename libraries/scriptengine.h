@@ -31,6 +31,7 @@ protected slots:
     void sensorValueUpdated(QString id, QString type, QString value);
     void heaterValueUpdated(QString id, QString type, QString value);
     void newSMS(QString numbers, QString msg);
+    void settingValueUpdated(QString id, QString type, QString value);
     void eventTimeout(QString name);
 
 protected:

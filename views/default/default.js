@@ -49,6 +49,24 @@ function update() {
             } else {
                 $('#board_status').html('<span class="label label-danger">Disconnected</span>');
             }
+
+            if (result.alarm === 'ARM_AWAY') {
+                $('#alarm_status_active').find('span').first().text("Arm Away");
+                $('#alarm_status_active').removeClass('btn-secondary btn-primary btn-warning btn-danger').addClass('btn-danger');
+            } else if (result.alarm === 'ARM_STAY') {
+                $('#alarm_status_active').find('span').first().text("Arm Stay");
+                $('#alarm_status_active').removeClass('btn-secondary btn-primary btn-warning btn-danger').addClass('btn-warning');
+            } else if (result.alarm === 'PENDING') {
+                $('#alarm_status_active').find('span').first().text("Pending...");
+                $('#alarm_status_active').removeClass('btn-secondary btn-primary btn-warning btn-danger').addClass('btn-warning');
+            } else if (result.alarm === 'DISARMED') {
+                $('#alarm_status_active').find('span').first().text("Off");
+                $('#alarm_status_active').removeClass('btn-secondary btn-primary btn-warning btn-danger').addClass('btn-secondary');
+            } else {
+                $('#alarm_status_active').find('span').first().text("Unknown");
+                $('#alarm_status_active').removeClass('btn-secondary btn-primary btn-warning btn-danger').addClass('btn-primary');
+            }
+
         } else {
             updateError = true;
             alert_error(result.msg);
@@ -441,6 +459,21 @@ $('.container').on('click', '.change_heater_mode', function () {
     };
 
     $.getJSON('thermostat/set_mode', param)
+        .done(function (result) {
+            if (result.success) {
+                update();
+            } else {
+                alert_error(result.msg);
+            }
+        }).fail(function (jqxhr, textStatus, error) {
+            alert_error("Request Failed: " + error);
+        });
+});
+
+$('.container').on('click', '.change_alarm_status', function () {
+    var data = $(this).data();
+
+    $.getJSON('alarm.js', data)
         .done(function (result) {
             if (result.success) {
                 update();
