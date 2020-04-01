@@ -5,10 +5,10 @@
 #include "models/script.h"
 
 #include <QDate>
-#include <QTime>
-#include <QProcess>
 #include <QDebug>
 #include <QDir>
+#include <QProcess>
+#include <QTime>
 
 QHash<QString, QString> ScriptHelper::data;
 FirebaseCloudMessaging *ScriptHelper::fcm = nullptr;
@@ -104,20 +104,19 @@ void ScriptHelper::sendCmd(QString cmd, QString comment)
     Device::Instance()->send(cmd, comment);
 }
 
-QString ScriptHelper::execute(QString cmd)
+void ScriptHelper::execute(QString cmd)
 {
     QProcess process;
 
+    connect(&process,
+            QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+            [=](int exitCode, QProcess::ExitStatus exitStatus) {
+                qDebug() << "process finished (exit code: " + QString::number(exitCode)
+                                + " status: " + exitStatus + ")";
+            });
+
     process.setWorkingDirectory(QDir::currentPath());
     process.start(cmd);
-    process.waitForFinished(5000);
-
-    if (process.exitCode() != 0) {
-        qCritical() << "Unable to execute cmd: " << process.readAll() << process.readAllStandardError();
-        return process.readAll() + process.readAllStandardError();
-    } else {
-        return process.readAll();
-    }
 }
 
 void ScriptHelper::setLog(QString log)
