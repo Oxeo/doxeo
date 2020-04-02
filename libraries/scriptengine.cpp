@@ -73,23 +73,24 @@ void ScriptEngine::init()
 
 QString ScriptEngine::runCmd(QString cmd)
 {
-    QJSValue result = engine.evaluate(cmd);
-    
+    QJSValue result = engine.evaluate(getLibraries() + cmd);
+
     return result.toString();
 }
 
 void ScriptEngine::run(QString event)
 {
     engine.globalObject().setProperty("event", event);
-    engine.globalObject().setProperty("event_date", QDateTime::currentDateTime().toTime_t() - eventList.value(event, 0));
+    engine.globalObject().setProperty("event_date",
+                                      QDateTime::currentDateTime().toTime_t()
+                                          - eventList.value(event, 0));
 
     foreach (const Script *script, Script::getScriptList()) {
-
         if (script->getStatus().compare("off", Qt::CaseInsensitive) == 0) {
             continue;
         }
 
-        QJSValue result = engine.evaluate(script->getContent());
+        QJSValue result = engine.evaluate(getLibraries() + script->getContent());
 
         if (result.isError()) {
             int line = result.property("lineNumber").toInt();
@@ -178,4 +179,13 @@ void ScriptEngine::newMessageFromMessageLogger(QString type, QString message)
 void ScriptEngine::eventTimeout(QString name)
 {
     run("event_builder;" + name);
+}
+
+QString ScriptEngine::getLibraries()
+{
+    if (Script::isIdValid(1)) {
+        return Script::get(1)->getContent();
+    } else {
+        return "";
+    }
 }

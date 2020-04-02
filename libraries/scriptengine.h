@@ -36,6 +36,8 @@ protected slots:
     void eventTimeout(QString name);
 
 protected:
+    QString getLibraries();
+
     QJSEngine engine;
     QTimer *timer;
     QHash<QString, uint> eventList;
