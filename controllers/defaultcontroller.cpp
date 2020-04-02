@@ -13,11 +13,14 @@
 #include <QTime>
 #include <QTimer>
 
-DefaultController::DefaultController(MySensors *mySensors, FirebaseCloudMessaging *fcm, Gsm *gsm, WebSocketEvent *webSocketEvent, QObject *parent) : AbstractController(parent)
+DefaultController::DefaultController(MySensors *mySensors,
+                                     Gsm *gsm,
+                                     WebSocketEvent *webSocketEvent,
+                                     QObject *parent)
+    : AbstractController(parent)
 {
     this->mySensors = mySensors;
     this->gsm = gsm;
-    this->fcm = fcm;
     this->webSocketEvent = webSocketEvent;
 
     connect(&MessageLogger::logger(),
@@ -33,7 +36,6 @@ DefaultController::DefaultController(MySensors *mySensors, FirebaseCloudMessagin
     router.insert("system.js", "jsonSystem");
     router.insert("alarm.js", "jsonAlarm");
     router.insert("sms.js", "jsonSms");
-    router.insert("fcm.js", "jsonFcm");
     router.insert("mysensors.js", "jsonMySensors");
     router.insert(".well-known", "wellKnown"); // used for Let’s Encrypt
 }
@@ -264,26 +266,6 @@ void DefaultController::jsonSms()
     loadJsonView(result);
 }
 
-void DefaultController::jsonFcm()
-{
-    QJsonObject result;
-
-    if (Authentification::auth().isConnected(header, cookie) ||
-        socket->peerAddress().toString().contains("127.0.0.1"))
-    {
-        FirebaseCloudMessaging::Message msg = {query->getItem("type"), query->getItem("title"), query->getItem("message")};
-        fcm->send(msg);
-        result.insert("success", true);
-    }
-    else
-    {
-        result.insert("msg", "You are not logged.");
-        result.insert("success", false);
-    }
-
-    loadJsonView(result);
-}
-
 void DefaultController::jsonMySensors()
 {
     QJsonObject result;
@@ -333,29 +315,5 @@ void DefaultController::newMessageFromMessageLogger(QString type, QString messag
     if (webSocketEvent != nullptr)
     {
         webSocketEvent->sendMessage(type + ": " + message);
-    }
-
-    // send to FirebaseCloudMessaging
-    if (fcm != nullptr)
-    {
-        if (type == "warning" || type == "critical")
-        {
-            bool alreadySameType = false;
-
-            foreach (const MessageLogger::Log &log, MessageLogger::logger().getMessages())
-            {
-                if (log.type == type)
-                {
-                    alreadySameType = true;
-                    break;
-                }
-            }
-
-            if (alreadySameType == false)
-            {
-                FirebaseCloudMessaging::Message msg = {"WARNING", "Doxeo", message};
-                fcm->send(msg);
-            }
-        }
     }
 }

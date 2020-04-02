@@ -1,5 +1,6 @@
 #include "scriptengine.h"
 #include "libraries/device.h"
+#include "libraries/messagelogger.h"
 #include "libraries/scripttimeevent.h"
 #include "models/heater.h"
 #include "models/sensor.h"
@@ -50,11 +51,15 @@ void ScriptEngine::init()
             this,
             SLOT(settingValueUpdated(QString, QString, QString)),
             Qt::QueuedConnection);
-
     connect(gsm,
             SIGNAL(newSMS(QString, QString)),
             this,
             SLOT(newSMS(QString, QString)),
+            Qt::QueuedConnection);
+    connect(&MessageLogger::logger(),
+            SIGNAL(newMessage(QString, QString)),
+            this,
+            SLOT(newMessageFromMessageLogger(QString, QString)),
             Qt::QueuedConnection);
     connect(timeEvent, SIGNAL(eventTimeout(QString)), this, SLOT(eventTimeout(QString)), Qt::QueuedConnection);
 
@@ -149,6 +154,25 @@ void ScriptEngine::settingValueUpdated(QString id, QString type, QString value)
 {
     Q_UNUSED(type);
     run("setting_" + id + ";" + value);
+}
+
+void ScriptEngine::newMessageFromMessageLogger(QString type, QString message)
+{
+    if (type == "warning" || type == "critical") {
+        bool alreadySameType = false;
+
+        foreach (const MessageLogger::Log &log, MessageLogger::logger().getMessages()) {
+            if (log.type == type) {
+                alreadySameType = true;
+                break;
+            }
+        }
+
+        if (alreadySameType == false) {
+            engine.globalObject().setProperty("system_error_message", message);
+            run("system_error");
+        }
+    }
 }
 
 void ScriptEngine::eventTimeout(QString name)

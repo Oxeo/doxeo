@@ -32,6 +32,7 @@ protected slots:
     void heaterValueUpdated(QString id, QString type, QString value);
     void newSMS(QString numbers, QString msg);
     void settingValueUpdated(QString id, QString type, QString value);
+    void newMessageFromMessageLogger(QString type, QString message);
     void eventTimeout(QString name);
 
 protected:

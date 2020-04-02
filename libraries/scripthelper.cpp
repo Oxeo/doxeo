@@ -111,6 +111,7 @@ void ScriptHelper::execute(QString cmd, QStringList arguments)
     connect(process,
             QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
             [=](int exitCode, QProcess::ExitStatus exitStatus) {
+                Q_UNUSED(exitCode);
                 if (exitStatus == QProcess::NormalExit) {                
                     qDebug() << qPrintable(cmd + ": " + process->readAll());
                 } else {

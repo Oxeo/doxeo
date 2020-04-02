@@ -154,8 +154,8 @@ int DoxeoMonitor::start()
 
     // Add controllers
     QList<QPair<AbstractController *, QString>> controllers;
-    controllers.append(qMakePair(new DefaultController(mySensors, fcm, gsm, webSocketEvent, this),
-                                 QString("default")));
+    controllers.append(
+        qMakePair(new DefaultController(mySensors, gsm, webSocketEvent, this), QString("default")));
     controllers.append(qMakePair(new AssetController(), QString("assets")));
     controllers.append(qMakePair(new SwitchController(mySensors, this), QString("switch")));
     controllers.append(qMakePair(new SensorController(mySensors, this), QString("sensor")));
