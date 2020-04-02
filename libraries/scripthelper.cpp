@@ -104,19 +104,31 @@ void ScriptHelper::sendCmd(QString cmd, QString comment)
     Device::Instance()->send(cmd, comment);
 }
 
-void ScriptHelper::execute(QString cmd)
+void ScriptHelper::execute(QString cmd, QStringList arguments)
 {
-    QProcess process;
+    QProcess *process = new QProcess(this);
 
-    connect(&process,
+    connect(process,
             QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
             [=](int exitCode, QProcess::ExitStatus exitStatus) {
-                qDebug() << "process finished (exit code: " + QString::number(exitCode)
-                                + " status: " + exitStatus + ")";
+                if (exitStatus == QProcess::NormalExit) {                
+                    qDebug() << qPrintable(cmd + ": " + process->readAll());
+                } else {
+                    qWarning() << qPrintable(cmd + ": Process crashed!");
+                }
+                process->deleteLater();
             });
 
-    process.setWorkingDirectory(QDir::currentPath());
-    process.start(cmd);
+    connect(process,
+            QOverload<QProcess::ProcessError>::of(&QProcess::errorOccurred),
+            [=](QProcess::ProcessError error) {
+                qWarning() << qPrintable(cmd + ": error ") << error;
+                process->deleteLater();
+            });
+
+
+    process->setWorkingDirectory(QDir::currentPath() + "/scripts/");
+    process->start(cmd, arguments);
 }
 
 void ScriptHelper::setLog(QString log)

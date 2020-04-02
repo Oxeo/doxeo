@@ -6,6 +6,7 @@
 #include <QObject>
 #include <QString>
 #include <QHash>
+#include <QStringList>
 
 class ScriptHelper : public QObject
 {
@@ -28,7 +29,7 @@ signals:
 
 public slots:
     void sendCmd(QString cmd, QString comment = "");
-    void execute(QString cmd);
+    void execute(QString cmd, QStringList arguments);
     void setLog(QString log);
     void setWarning(QString warning);
     QString getWarning(int number);
