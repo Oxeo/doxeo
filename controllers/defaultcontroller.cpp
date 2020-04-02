@@ -203,8 +203,7 @@ void DefaultController::jsonSystem()
 {
     QJsonObject result;
 
-    if (!Authentification::auth().isConnected(header, cookie))
-    {
+    if (!Authentification::auth().isConnected(header, cookie)) {
         result.insert("Result", "ERROR");
         result.insert("Message", "You are not logged.");
         loadJsonView(result);

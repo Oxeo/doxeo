@@ -12,6 +12,9 @@ class SettingController : public AbstractCrudController
 public:
     SettingController(QObject *parent = 0);
 
+public slots:
+    void jsonSetting();
+
 protected:
     QJsonArray getList();
     QJsonObject updateElement(bool createNewObject);
