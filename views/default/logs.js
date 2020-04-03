@@ -22,12 +22,12 @@ try {
         };
     };
 
-    socket.onerror = function(error) {
+    socket.onerror = function (error) {
         console.error(error);
         alert("Websocket not connected");
     };
 
-} catch ( e ) {
+} catch (e) {
     console.warn(e);
     alert("Websocket not connected");
 }
@@ -156,17 +156,23 @@ $('#button_cmds').click(function (event) {
 
 var _cmdRemoved = false;
 $('#cmds_modal .modal-body').click(function (event) {
-    var value = $(event.target).attr("value");
+    var element = $(event.target);
+    var value = element.attr("value");
 
+    if (value == undefined) {
+        element = element.parent();
+        value = element.attr("value");
+    }
     if (value == 'show') {
         var cmd = $(event.target).html();
         $('#sendContent').val(cmd);
         $('#cmds_modal').modal('hide');
     } else if (value == 'delete') {
-        var cmd = $(event.target).parent().parent().find('button:first-child').html();
+        var cmd = element.parent().parent().find('button:first-child').html();
+        cmd = cmd.replace(/&amp;/g, '&');
 
         removeCmd(cmd, function () {
-            $(event.target).parent().parent().hide();
+            element.parent().parent().hide();
             _cmdRemoved = true;
         });
     }
