@@ -7,12 +7,12 @@ from firebase_admin import messaging
 
 class Fcm:
     def __init__(self):
-        cred = credentials.Certificate("/home/pi/dd.json")
+        cred = credentials.Certificate("/home/pi/firebase_admin.json")
         firebase_admin.initialize_app(cred)
         self.title = "Title"
         self.body = "Body"
         self.channel = "channel_info"
-        self.topic = "INFO"
+        self.topic = "System"
 
     def send(self):
         message = messaging.Message(
@@ -37,4 +37,3 @@ if __name__ == '__main__':
     fcm.body = sys.argv[4]
     response = fcm.send()
     print(response)
-
