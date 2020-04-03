@@ -163,6 +163,17 @@ dyn.nomdedomaine.net
 ```
 3. sudo service ddclient restart
 
+### Install Firebase Admin
+1. Enable python 3.5 (details [here](https://learn.sparkfun.com/tutorials/python-programming-tutorial-getting-started-with-the-raspberry-pi/configure-your-pi))
+2. Add the Firebase Admin SDK to Your Server (more details [here](https://firebase.google.com/docs/admin/setup/))
+```
+sudo pip3 install firebase-admin
+```
+3. Update urllib3 version
+```
+pip3 install urllib3
+```
+
 ### Enable ServerName for Apache2
 
 1. do: sudo apt-get install mod_proxy
