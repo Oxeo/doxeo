@@ -11,7 +11,6 @@
 #include <QTime>
 
 QHash<QString, QString> ScriptHelper::data;
-FirebaseCloudMessaging *ScriptHelper::fcm = nullptr;
 
 ScriptHelper::ScriptHelper(QObject *parent) : QObject(parent)
 {
@@ -172,18 +171,4 @@ QString ScriptHelper::value(QString key)
 void ScriptHelper::setValue(QString key, QString value)
 {
     data.insert(key, value);
-}
-
-void ScriptHelper::setFirebaseCloudMessaging(FirebaseCloudMessaging *firebaseCloudMessaging)
-{
-    fcm = firebaseCloudMessaging;
-}
-
-void ScriptHelper::sendFCM(QString type, QString name, QString body)
-{
-    FirebaseCloudMessaging::Message msg = {type.toUpper(), name, body};
-
-    if (fcm != nullptr) {
-        fcm->send(msg);
-    }
 }

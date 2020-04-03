@@ -1,8 +1,6 @@
 #ifndef SCRIPTHELPER_H
 #define SCRIPTHELPER_H
 
-#include "firebasecloudmessaging.h"
-
 #include <QObject>
 #include <QString>
 #include <QHash>
@@ -36,17 +34,14 @@ public slots:
     void setAlert(QString alert);
     void setSetting(QString id, QString value);
     QString getSetting(QString id);
-    void sendFCM(QString type, QString name, QString body);
     QString getScriptStatus(int id);
     void setScriptStatus(int id, QString status);
 
     static QString value(QString key);
     static void setValue(QString key, QString value);
-    static void setFirebaseCloudMessaging(FirebaseCloudMessaging *firebaseCloudMessaging);
 
 protected:
     static QHash<QString, QString> data;
-    static FirebaseCloudMessaging *fcm;
 };
 
 #endif // SCRIPTHELPER_H

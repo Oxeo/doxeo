@@ -121,11 +121,8 @@ int DoxeoMonitor::start()
     Settings mySettings("general");
 
     // Initialize Firebase Cloud Messaging
-    FirebaseCloudMessaging *fcm = new FirebaseCloudMessaging(mySettings.value("fcm_projectname", "doxeo"), this);
-    fcm->setServerKey(mySettings.value("fcm_serverkey", ""));
-
-    // Initialise ScriptHelper
-    ScriptHelper::setFirebaseCloudMessaging(fcm);
+    //FirebaseCloudMessaging *fcm = new FirebaseCloudMessaging(mySettings.value("fcm_projectname", "doxeo"), this);
+    //fcm->setServerKey(mySettings.value("fcm_serverkey", ""));
 
     // Initialise SIM900 GSM module
     Gsm *gsm = new Gsm(Gsm::M590, this);
