@@ -160,16 +160,15 @@ void ScriptEngine::settingValueUpdated(QString id, QString type, QString value)
 void ScriptEngine::newMessageFromMessageLogger(QString type, QString message)
 {
     if (type == "warning" || type == "critical") {
-        bool alreadySameType = false;
+        int cpt = 0;
 
         foreach (const MessageLogger::Log &log, MessageLogger::logger().getMessages()) {
             if (log.type == type) {
-                alreadySameType = true;
-                break;
+                cpt++;
             }
         }
 
-        if (alreadySameType == false) {
+        if (cpt == 1) {
             engine.globalObject().setProperty("system_error_message", message);
             run("system_error");
         }

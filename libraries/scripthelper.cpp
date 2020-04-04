@@ -128,6 +128,8 @@ void ScriptHelper::execute(QString cmd, QStringList arguments)
 
 
     process->setWorkingDirectory(QDir::currentPath() + "/scripts/");
+    
+    qDebug() << qPrintable(cmd + ":") << arguments;
     process->start(cmd, arguments);
 }
 
