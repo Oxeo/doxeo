@@ -94,8 +94,8 @@ int DoxeoMonitor::start()
     }
 
     // Start WebSocket
-    WebSocketEvent *webSocketEvent = new WebSocketEvent(this);
-    webSocketEvent->enableSsl(keyFile, certFile, chainFile);
+    WebSocketEvent *webSocketEvent = new WebSocketEvent(false, this);
+    //webSocketEvent->enableSsl(keyFile, certFile, chainFile);
     if (!webSocketEvent->start(8081)) {
         qWarning() << "Websocket not started";
     }

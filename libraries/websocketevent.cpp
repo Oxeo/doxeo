@@ -15,10 +15,10 @@ static QString getIdentifier(QWebSocket *peer)
                                        QString::number(peer->peerPort()));
 }
 
-WebSocketEvent::WebSocketEvent(QObject *parent)
+WebSocketEvent::WebSocketEvent(bool secureMode, QObject *parent)
     : QObject(parent),
       server(
-          new QWebSocketServer(QStringLiteral("Doxeo Server"), QWebSocketServer::SecureMode, this))
+          new QWebSocketServer(QStringLiteral("Doxeo Server"), secureMode ? QWebSocketServer::SecureMode : QWebSocketServer::NonSecureMode, this))
 {
     connect(server, &QWebSocketServer::newConnection, this, &WebSocketEvent::onNewConnection);
     connect(server, &QWebSocketServer::serverError, this, &WebSocketEvent::onError);

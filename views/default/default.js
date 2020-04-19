@@ -9,7 +9,8 @@ jQuery(document).ready(function () {
 
 try {
     //if (location.protocol !== 'https:') {
-        var socket = new WebSocket("wss://" + window.location.hostname + ":8081");
+        //var socket = new WebSocket("wss://" + window.location.hostname + ":8081");
+        var socket = new WebSocket("ws://" + window.location.hostname + ":8081");
         
         socket.onopen = function (event) {
             console.log("Websocket connected!");

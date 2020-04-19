@@ -16,7 +16,7 @@ class WebSocketEvent : public QObject
     Q_OBJECT
 
 public:
-    explicit WebSocketEvent(QObject *parent = 0);
+    explicit WebSocketEvent(bool secureMode, QObject *parent = 0);
     ~WebSocketEvent();
 
     bool start(quint16 port);
