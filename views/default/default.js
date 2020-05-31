@@ -245,7 +245,7 @@ function update() {
 
                     if (val.category === 'door' || val.category === 'window' || val.category === 'doormat' || val.category === 'pir' || val.category === 'doorknob') {
                         target = '#sensor_pan_security';
-                    } else if (val.category === 'temperature') {
+                    } else if (val.category === 'temperature' || val.category === 'humidity') {
                         target = '#sensor_pan_energy'
                     } else if (val.category === 'heartbeat') {
                         target = '#sensor_pan_mon'
