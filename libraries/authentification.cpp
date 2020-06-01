@@ -53,9 +53,15 @@ bool Authentification::connection(QString &login, QString &password, QString &co
 
         insertRememberCode(id, remember);
 
-        cookie = "Set-Cookie: doxeomonitor_id=" + id + "; Path=/; Expires=Wed, 01 Jun 2020 10:10:10 GMT\r\n";
-        cookie += "Set-Cookie: doxeomonitor_login=" + remember.login + "; Path=/; Expires=Wed, 01 Jun 2020 10:10:10 GMT\r\n";
-        cookie += "Set-Cookie: doxeomonitor_remember_code=" + remember.code + "; Path=/; Expires=Wed, 01 Jun 2020 10:10:10 GMT\r\n";
+        QDate date = QDate::currentDate().addMonths(4);
+        QString dateStr = date.toString("dd MMM yyyy");
+
+        cookie = "Set-Cookie: doxeomonitor_id=" + id + "; Path=/; Expires=Wed, " + dateStr
+                 + " 10:10:10 GMT\r\n";
+        cookie += "Set-Cookie: doxeomonitor_login=" + remember.login + "; Path=/; Expires=Wed, "
+                  + dateStr + " 10:10:10 GMT\r\n";
+        cookie += "Set-Cookie: doxeomonitor_remember_code=" + remember.code
+                  + "; Path=/; Expires=Wed, " + dateStr + " 10:10:10 GMT\r\n";
 
         return true;
 
