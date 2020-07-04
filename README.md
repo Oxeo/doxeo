@@ -172,6 +172,7 @@ sudo pip3 install firebase-admin
 3. Update urllib3 version
 ```
 pip3 install urllib3
+pip3 install --upgrade urllib3
 ```
 
 ### Enable ServerName for Apache2
