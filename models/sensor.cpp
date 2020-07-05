@@ -96,9 +96,9 @@ QList<Sensor *> Sensor::getSortedSensorList(OrderBy orderBy)
     QList<Sensor *> result = sensorList.values();
 
     if (orderBy == orderById) {
-        qSort(result.begin(), result.end(), Sensor::compareById);
+        std::sort(result.begin(), result.end(), Sensor::compareById);
     } else {
-        qSort(result.begin(), result.end(), Sensor::compareByOrder);
+        std::sort(result.begin(), result.end(), Sensor::compareByOrder);
     }
 
     return result;

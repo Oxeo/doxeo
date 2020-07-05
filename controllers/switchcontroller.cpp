@@ -24,11 +24,11 @@ SwitchController::SwitchController(MySensors *mySensors, QObject *parent) : Abst
 QJsonArray SwitchController::getList()
 {
     QJsonArray result;
-    
-    foreach (const Switch *sw, Switch::getSwitchList()) {
+
+    foreach (const Switch *sw, Switch::getSortedSwitchList()) {
         result.push_back(sw->toJson());
     }
-    
+
     return result;
 }
 

@@ -209,6 +209,15 @@ QHash<QString, Switch *> &Switch::getSwitchList()
     return switchList;
 }
 
+QList<Switch *> Switch::getSortedSwitchList()
+{
+    QList<Switch *> result = switchList.values();
+
+    std::sort(result.begin(), result.end(), Switch::compareByOrder);
+
+    return result;
+}
+
 Event *Switch::getEvent()
 {
     return &event;
@@ -300,6 +309,16 @@ void Switch::updateValue(QString id, QString value)
         setStatus("off");
     }
 }
+
+bool Switch::compareByOrder(Switch *s1, Switch *s2)
+{
+    if (s1->order == s2->order) {
+        return s1->id < s2->id;
+    } else {
+        return s1->order < s2->order;
+    }
+}
+
 bool Switch::getIsVisible() const
 {
     return isVisible;

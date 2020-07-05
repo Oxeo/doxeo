@@ -50,6 +50,7 @@ public:
     static bool isIdValid(QString id);
     static Switch *get(QString id);
     static QHash<QString, Switch *> &getSwitchList();
+    static QList<Switch *> getSortedSwitchList();
     static Event* getEvent();
     static void setJeedom(Jeedom *jeedom);
     static void setMySensors(MySensors *value);
@@ -65,6 +66,8 @@ protected slots:
     void updateValue(QString cmd, QString value);
 
 protected:
+    static bool compareByOrder(Switch *s1, Switch *s2);
+
     QString id;
     QString name;
     QString category;
