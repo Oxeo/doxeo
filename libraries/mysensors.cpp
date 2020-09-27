@@ -97,7 +97,8 @@ void MySensors::retryHandler()
 
         if (retryMsg->lastSendTime.addMSecs(800) < QDateTime::currentDateTime()) {
             if (retryMsg->retryNumber == 0) {
-                qWarning() << "mysensors: no ack reveived for the message" << qPrintable(retryMsg->msg);
+                qWarning() << "mysensors: no ack reveived from "
+                           << qPrintable(retryMsg->sensorId + " (" + retryMsg->msg + ")");
                 i.remove();
             } else {
                 retryMsg->lastSendTime = QDateTime::currentDateTime();
@@ -156,16 +157,17 @@ void MySensors::send(QString msg, bool checkAck, QString comment) {
 void MySensors::sendToSerial(Msg msg)
 {
     if (serial->isOpen()) {
+        QString sensorId = getSensorId(msg.msg);
+
         if (settings->value("log", "default") == "default"
             || settings->value("log", "default") == "info"
             || settings->value("log", "default") == "debug") {
-
-            QStringList datas = msg.msg.split(";");
             QString log = "mySensors TX:";
 
-            if (datas.size() > 1 && sensorIdMap.contains(datas.at(0) + ";" + datas.at(1))) {
-                log += " [" + sensorIdMap.value(datas.at(0) + ";" + datas.at(1)) + "]";
+            if (sensorId != "") {
+                log += " [" + sensorId + "]";
 
+                QStringList datas = msg.msg.split(";");
                 if (datas.size() > 5) {
                     log += " " + datas.at(5);
                 }
@@ -190,6 +192,7 @@ void MySensors::sendToSerial(Msg msg)
             retryMsg.msg = msg.msg;
             retryMsg.retryNumber = 5;
             retryMsg.lastSendTime = QDateTime::currentDateTime();
+            retryMsg.sensorId = sensorId;
             retryList.append(retryMsg);
 
             if (!retryTimer.isActive()) {
@@ -199,6 +202,18 @@ void MySensors::sendToSerial(Msg msg)
     } else {
         qCritical() << "mySensors: not connected to send the message" << qPrintable(msg.msg);
     }
+}
+
+QString MySensors::getSensorId(QString msg)
+{
+    QString sensorId = "";
+    QStringList datas = msg.split(";");
+
+    if (datas.size() > 1 && sensorIdMap.contains(datas.at(0) + ";" + datas.at(1))) {
+        sensorId = sensorIdMap.value(datas.at(0) + ";" + datas.at(1));
+    }
+
+    return sensorId;
 }
 
 bool MySensors::isConnected()

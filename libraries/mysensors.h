@@ -75,6 +75,7 @@ protected:
       QString msg;
       int retryNumber;
       QDateTime lastSendTime;
+      QString sensorId;
     };
 
     void readData();
@@ -86,6 +87,7 @@ protected:
     void appendData(QString str);
     void rfReceived(QString data);
     void removeRetryMsg(QString msg);
+    QString getSensorId(QString msg);
 
     QString appendedString;
     QSerialPort *serial;
