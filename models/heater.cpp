@@ -15,6 +15,7 @@
 
 QHash<int, Heater*> *Heater::heaterList = NULL;
 Event Heater::event;
+MySensors *Heater::mySensors;
 
 Heater::Heater(QObject *parent) : QObject(parent)
 {
@@ -60,17 +61,19 @@ Heater *Heater::get(int id)
 
 void Heater::sendCommand()
 {
-    QString statusCmd;
-
     if (status == On) {
-        statusCmd = "on";
-        Device::Instance()->send(powerOnCmd, "Heater " + name + " set to ON");
+        if (powerOnCmd.startsWith("ms;") && powerOnCmd.split(";").size() > 1) {
+            mySensors->send(powerOnCmd.section(";", 1), true, "Heater " + name + " set to ON");
+        } else {
+            Device::Instance()->send(powerOnCmd, "Heater " + name + " set to ON");
+        }
     } else {
-        statusCmd = "off";
-        Device::Instance()->send(powerOffCmd, "Heater " + name + " set to OFF");
+        if (powerOffCmd.startsWith("ms;") && powerOffCmd.split(";").size() > 1) {
+            mySensors->send(powerOffCmd.section(";", 1), true, "Heater " + name + " set to OFF");
+        } else {
+            Device::Instance()->send(powerOffCmd, "Heater " + name + " set to OFF");
+        }
     }
-    
-    //qDebug() << "Heater command send: " << this->name << statusCmd;
 
     repeat--;
     if (repeat == 0) {
@@ -405,4 +408,9 @@ void Heater::setName(const QString &value)
 Event *Heater::getEvent()
 {
     return &event;
+}
+
+void Heater::setMySensors(MySensors *value)
+{
+    mySensors = value;
 }

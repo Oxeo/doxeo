@@ -2,6 +2,7 @@
 #define HEATER_H
 
 #include "core/event.h"
+#include "libraries/mysensors.h"
 #include "models/heaterindicator.h"
 
 #include <QObject>
@@ -64,6 +65,7 @@ public:
     static QHash<int, Heater*>* heaters();
     static Heater* get(int id);
     static Event* getEvent();
+    static void setMySensors(MySensors *value);
 
     QString getSensor() const;
     void setSensor(const QString &value);
@@ -100,7 +102,7 @@ protected:
 
     static QHash<int, Heater*> *heaterList;
     static Event event;
-
+    static MySensors *mySensors;
 };
 
 #endif // HEATER_H

@@ -145,6 +145,7 @@ int DoxeoMonitor::start()
 
     // Initialise Thermostat
     Thermostat *thermostat = new Thermostat(this);
+    Heater::setMySensors(mySensors);
 
     // Initialise Script Engine
     ScriptEngine *scriptEngine = new ScriptEngine(thermostat, jeedom, gsm, mySensors, this);
