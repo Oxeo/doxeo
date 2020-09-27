@@ -252,7 +252,7 @@ void Heater::setHeatSetpoint(float value)
 void Heater::changeStatus(Heater::Status status)
 {
     this->status = status;
-    this->repeat = 30;
+    this->repeat = 1;
 
     if (status == Heater::On) {
         if (this->indicatorList.isEmpty() || this->indicatorList.last().isValide()) {
