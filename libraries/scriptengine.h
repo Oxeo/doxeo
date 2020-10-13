@@ -27,6 +27,7 @@ public slots:
 protected slots:
     void updateSensors();
     void updateSwitches();
+    void updateHeaters();
     void switchValueUpdated(QString id, QString type, QString value);
     void sensorValueUpdated(QString id, QString type, QString value);
     void heaterValueUpdated(QString id, QString type, QString value);

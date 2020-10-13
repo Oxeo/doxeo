@@ -110,6 +110,17 @@ void Heater::fillFromBdd()
 
     Database::release();
 }
+
+float Heater::getHeatSetpoint() const
+{
+    return heatSetpoint;
+}
+
+float Heater::getCoolSetpoint() const
+{
+    return coolSetpoint;
+}
+
 QString Heater::getPowerOffCmd() const
 {
     return powerOffCmd;

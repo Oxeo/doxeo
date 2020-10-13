@@ -46,8 +46,6 @@ public:
     void setName(const QString &value);
     void setMode(Mode mode);
     void setMode(QString modeStr);
-    void setCoolSetpoint(float value);
-    void setHeatSetpoint(float value);
     void setActiveSetpoint(Setpoint setpoint);
 
     QList<HeaterIndicator>& getIndicators();
@@ -77,6 +75,12 @@ public:
     void setPowerOffCmd(const QString &value);
 
 public slots:
+    void setCoolSetpoint(float value);
+    void setHeatSetpoint(float value);
+    float getCoolSetpoint() const;
+    float getHeatSetpoint() const;
+
+protected slots:
     void sendCommand();
 
 protected:

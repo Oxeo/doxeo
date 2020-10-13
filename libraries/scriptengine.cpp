@@ -32,6 +32,7 @@ void ScriptEngine::init()
 
     updateSensors();
     updateSwitches();
+    updateHeaters();
 
     connect(Sensor::getEvent(), SIGNAL(dataChanged()), this, SLOT(updateSensors()), Qt::QueuedConnection);
     connect(Sensor::getEvent(), SIGNAL(valueUpdated(QString,QString,QString)), this, SLOT(sensorValueUpdated(QString, QString, QString)), Qt::QueuedConnection);
@@ -118,6 +119,14 @@ void ScriptEngine::updateSwitches()
 {
     foreach (Switch* s, Switch::getSwitchList()) {
         engine.globalObject().setProperty("switch_" + s->getId(), engine.newQObject(s));
+    }
+}
+
+void ScriptEngine::updateHeaters()
+{
+    foreach (Heater *h, Heater::heaters()->values()) {
+        engine.globalObject().setProperty("heater_" + QString::number(h->getId()),
+                                          engine.newQObject(h));
     }
 }
 
