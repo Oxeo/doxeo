@@ -4,7 +4,13 @@ var listCmdPosition = -1;
 var day = null;
 
 try {
-    var socket = new WebSocket("ws://" + window.location.hostname + ":8081");
+    var address = 'ws://' + window.location.hostname + ':8081';
+    
+    if (window.location.protocol === 'https:') {
+        address = 'wss://' + window.location.hostname + '/myws';
+    }
+    
+    var socket = new WebSocket(address);
 
     socket.onopen = function (event) {
         console.log("Websocket connected!");

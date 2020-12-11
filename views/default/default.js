@@ -8,30 +8,32 @@ jQuery(document).ready(function () {
 });
 
 try {
-    //if (location.protocol !== 'https:') {
-        //var socket = new WebSocket("wss://" + window.location.hostname + ":8081");
-        var socket = new WebSocket("ws://" + window.location.hostname + ":8081");
-        
-        socket.onopen = function (event) {
-            console.log("Websocket connected!");
+    var address = 'ws://' + window.location.hostname + ':8081';
+    
+    if (window.location.protocol === 'https:') {
+        address = 'wss://' + window.location.hostname + '/myws';
+    }
+    
+    var socket = new WebSocket(address);
+    
+    socket.onopen = function (event) {
+        console.log("Websocket connected!");
 
-            this.onclose = function (event) {
-                console.log("Websocket closed!");
-            };
-
-            this.onmessage = function (event) {
-                console.log("Message:", event.data);
-                update();
-            };
-            
-            
-        };
-        
-        socket.onerror = function(error) {
-            console.error(error);
+        this.onclose = function (event) {
+            console.log("Websocket closed!");
         };
 
-    //}
+        this.onmessage = function (event) {
+            console.log("Message:", event.data);
+            update();
+        };
+        
+        
+    };
+    
+    socket.onerror = function(error) {
+        console.error(error);
+    };
 } catch ( e ) {
     console.warn(e);
     alert("Websocket not connected");
