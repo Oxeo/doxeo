@@ -137,15 +137,15 @@ LimitRequestFieldSize 1000000
 ### Enable Let’s Encrypt (Certboot)
 ```
 sudo apt-get install certbot
-sudo certbot certonly --webroot -w /home/pi/doxeo --agree-tos --no-eff-email -d doxeo.oxeo.fr --rsa-key-size 4096
+sudo certbot certonly --webroot -w /home/pi/doxeo --agree-tos --no-eff-email -d mysitedoxeo.fr --rsa-key-size 4096
 ```
 
 ```
-chown -R pi /etc/letsencrypt/live/doxeo.oxeo.fr
-chown -R pi /etc/letsencrypt/archive/doxeo.oxeo.fr
-ln -s /etc/letsencrypt/live/doxeo.oxeo.fr/cert.pem /home/pi/doxeo/cert.pem
-ln -s /etc/letsencrypt/live/doxeo.oxeo.fr/privkey.pem /home/pi/doxeo/privkey.pem
-ln -s /etc/letsencrypt/live/doxeo.oxeo.fr/privkey.pem /home/pi/doxeo/chain.pem
+chown -R pi /etc/letsencrypt/live/mysitedoxeo.fr
+chown -R pi /etc/letsencrypt/archive/mysitedoxeo.fr
+ln -s /etc/letsencrypt/live/mysitedoxeo.fr/cert.pem /home/pi/doxeo/cert.pem
+ln -s /etc/letsencrypt/live/mysitedoxeo.fr/privkey.pem /home/pi/doxeo/privkey.pem
+ln -s /etc/letsencrypt/live/mysitedoxeo.fr/privkey.pem /home/pi/doxeo/chain.pem
 ```
 More details [here](https://certbot.eff.org/lets-encrypt/debianstretch-other) and [here](https://howto.wared.fr/ubuntu-certificats-ssl-tls-certbot/).
 
@@ -181,8 +181,6 @@ pip3 install --upgrade urllib3
 2. do: sudo a2enmod proxy_http
 3. edit the file /etc/apache2/sites-enabled/000-default.conf like
 ```
-NameVirtualHost *:80
-
 <VirtualHost *:80>
     ServerAdmin webmaster@localhost
     ServerName mysite1.fr
@@ -197,8 +195,37 @@ NameVirtualHost *:80
     ProxyPassReverse / http://localhost:8080/
     ProxyPreserveHost On
 </VirtualHost>
+
+<VirtualHost *:443>
+    ServerAdmin webmaster@localhost
+    ServerName mysitedoxeo.fr
+
+    <Proxy *>
+        Order deny,allow
+        Allow from all
+    </Proxy>
+
+    ProxyRequests Off
+    ProxyPreserveHost On
+
+    ProxyPass /myws ws://localhost:8081
+    ProxyPassReverse /myws ws://localhost:8081
+
+    ProxyPass / http://localhost:8080/
+    ProxyPassReverse / http://localhost:8080/
+
+    SSLEngine on
+    SSLCertificateFile /etc/letsencrypt/live/mysitedoxeo.fr/cert.pem
+    SSLCertificateKeyFile /etc/letsencrypt/live/mysitedoxeo.fr/privkey.pem
+    SSLCertificateChainFile /etc/letsencrypt/live/mysitedoxeo.fr/chain.pem
+</VirtualHost>
 ```
-4. do: sudo /etc/init.d/apache2 restart
+4. install ssl and some Apache2 modules
+```
+sudo a2enmod ssl
+sudo a2enmod proxy proxy_wstunnel proxy_http rewrite
+```
+5. do: sudo /etc/init.d/apache2 restart
 
 ### Disable GSM PIN code
  
