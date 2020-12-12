@@ -191,9 +191,10 @@ pip3 install --upgrade urllib3
 <VirtualHost *:80>
     ServerAdmin webmaster@localhost
     ServerName mysitedoxeo.fr
-    ProxyPass / http://localhost:8080/
-    ProxyPassReverse / http://localhost:8080/
-    ProxyPreserveHost On
+    #ProxyPass / http://localhost:8080/
+    #ProxyPassReverse / http://localhost:8080/
+    #ProxyPreserveHost On
+    Redirect permanent / https://mysitedoxeo.fr
 </VirtualHost>
 
 <VirtualHost *:443>
