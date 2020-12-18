@@ -9,13 +9,13 @@ jQuery(document).ready(function () {
 
 try {
     var address = 'ws://' + window.location.hostname + ':8081';
-    
+
     if (window.location.protocol === 'https:') {
         address = 'wss://' + window.location.hostname + '/myws';
     }
-    
+
     var socket = new WebSocket(address);
-    
+
     socket.onopen = function (event) {
         console.log("Websocket connected!");
 
@@ -27,14 +27,14 @@ try {
             console.log("Message:", event.data);
             update();
         };
-        
-        
+
+
     };
-    
-    socket.onerror = function(error) {
+
+    socket.onerror = function (error) {
         console.error(error);
     };
-} catch ( e ) {
+} catch (e) {
     console.warn(e);
     alert("Websocket not connected");
 }
@@ -238,6 +238,7 @@ function update() {
                     return 0;
                 }
             })
+            var batteryStatusList = [];
             $.each(result.Records, function (key, val) {
                 // update sensor panel
                 if (val.visibility != "hide") {
@@ -260,9 +261,15 @@ function update() {
                     batteryNames.push(val.full_name);
                     date = new Date(val.battery_update * 1000);
                     lastUpdate = date.toLocaleTimeString() + ' ' + date.toLocaleDateString();
-                    $('#batteryList').append('<tr><td class="text-right" style="width: 50%">' + val.full_name + '</td><td class="text-left"><span data-toggle="tooltip" data-placement="right" title="' + lastUpdate + '">' + val.battery + '%</span></td></tr>');
+
+                    batteryStatusList.push({
+                        name: val.full_name,
+                        lastUpdate: lastUpdate,
+                        battery: val.battery
+                    });
                 }
             });
+            updateBatteryPanel(batteryStatusList);
             $('[data-toggle="tooltip"]').tooltip();
         } else {
             $('#sensorList').html('<tr><td></td></tr>');
@@ -304,6 +311,16 @@ function update() {
         updateError = true;
         alert_error("Request Failed: " + error);
     });
+}
+
+function updateBatteryPanel(list) {
+    list.sort(function (a, b) {
+        return a.battery - b.battery;
+    });
+
+    for (battery of list.slice(0, 8)) {
+        $('#batteryList').append('<tr><td class="text-right" style="width: 50%">' + battery.name + '</td><td class="text-left"><span data-toggle="tooltip" data-placement="right" title="' + battery.lastUpdate + '">' + battery.battery + '%</span></td></tr>');
+    }
 }
 
 function updateCameraPanel() {
