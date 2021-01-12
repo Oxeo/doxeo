@@ -16,6 +16,7 @@ public:
 
 public slots:
     void jsonSetValue();
+    void jsonMsgActivities();
 
 protected slots:
     void mySensorsDataReceived(QString messagetype, int sender, int sensor, int type, QString payload);

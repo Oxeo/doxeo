@@ -19,6 +19,7 @@ MySensors::MySensors(QObject *parent) : QObject(parent)
     waitRegisterMsgTimer.setSingleShot(true);
     sendTimer.setSingleShot(true);
     retryTimer.setSingleShot(true);
+    cptMessageReceivedTimer.setInterval(5 * 60000);
 
     connect(serial, &QSerialPort::readyRead, this, &MySensors::readData);
     connect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this,
@@ -27,6 +28,10 @@ MySensors::MySensors(QObject *parent) : QObject(parent)
     connect(&waitRegisterMsgTimer, SIGNAL(timeout()), this, SLOT(connection()), Qt::QueuedConnection);
     connect(&sendTimer, SIGNAL(timeout()), this, SLOT(sendHandler()), Qt::QueuedConnection);
     connect(&retryTimer, SIGNAL(timeout()), this, SLOT(retryHandler()), Qt::QueuedConnection);
+    connect(&cptMessageReceivedTimer, SIGNAL(timeout()), this, SLOT(cptMessageReceivedTimeout()));
+
+    cptMessageReceived = 0;
+    cptMessageReceivedTimer.start();
 }
 
 void MySensors::start()
@@ -111,6 +116,18 @@ void MySensors::retryHandler()
     if (!retryList.isEmpty()) {
         retryTimer.start(50);
     }
+}
+
+void MySensors::cptMessageReceivedTimeout()
+{
+    MySensors::MsgActivities msg = {cptMessageReceived, QDateTime::currentDateTime()};
+    msgActivitiesList.append(msg);
+
+    if (msgActivitiesList.size() > 150) {
+        msgActivitiesList.removeFirst();
+    }
+
+    cptMessageReceived = 0;
 }
 
 void MySensors::readData()
@@ -298,6 +315,8 @@ void MySensors::appendData(QString str) {
 }
 
 void MySensors::rfReceived(QString data) {
+    cptMessageReceived++;
+
     if (data != "" && data.split(";").length() > 4) {
         removeRetryMsg(data);
 
@@ -437,4 +456,9 @@ void MySensors::removeRetryMsg(QString msg)
 void MySensors::addSensorName(int nodeId, int sensorId, QString name)
 {
     sensorIdMap.insert(QString::number(nodeId) + ";" + QString::number(sensorId), name);
+}
+
+QList<MySensors::MsgActivities> MySensors::getMsgActivities()
+{
+    return msgActivitiesList;
 }

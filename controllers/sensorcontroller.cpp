@@ -17,6 +17,7 @@ SensorController::SensorController(MySensors *mySensors, QObject *parent) : Abst
             Qt::QueuedConnection);
  
     router.insert("set_value.js", "jsonSetValue");
+    router.insert("msg_activities.js", "jsonMsgActivities");
     Sensor::update();
 }
 
@@ -85,6 +86,29 @@ void SensorController::jsonSetValue()
     } else {
        result.insert("msg", "Sensor Id invalid");
        result.insert("success", false);
+    }
+
+    loadJsonView(result);
+}
+
+void SensorController::jsonMsgActivities()
+{
+    QJsonObject result;
+    QJsonArray array;
+
+    if (!Authentification::auth().isConnected(header, cookie)) {
+        result.insert("msg", "You are not logged.");
+        result.insert("success", false);
+    } else {
+        foreach (const MySensors::MsgActivities &msg, mySensors->getMsgActivities()) {
+            QJsonObject row;
+            row.insert("date", msg.date.toString("yyyy-MM-dd HH:mm:ss"));
+            row.insert("number", msg.receivedNumber);
+            array.append(row);
+        }
+
+        result.insert("data", array);
+        result.insert("success", true);
     }
 
     loadJsonView(result);

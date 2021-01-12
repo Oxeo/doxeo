@@ -45,11 +45,18 @@ class MySensors : public QObject
 {
     Q_OBJECT
 
-public:   
+public:
+    struct MsgActivities
+    {
+        int receivedNumber;
+        QDateTime date;
+    };
+
     explicit MySensors(QObject *parent = 0);
     void start();
     bool isConnected();
     void addSensorName(int nodeId, int sensorId, QString name);
+    QList<MsgActivities> getMsgActivities();
 
 public slots:
     void send(QString msg, bool checkAck = true, QString comment = "");
@@ -62,6 +69,7 @@ protected slots:
     void handleError(QSerialPort::SerialPortError error);
     void sendHandler();
     void retryHandler();
+    void cptMessageReceivedTimeout();
 
 protected:
 
@@ -94,6 +102,7 @@ protected:
     QTimer connectionTimer;
     QTimer waitRegisterMsgTimer;
     QTimer sendTimer;
+    QTimer cptMessageReceivedTimer;
     QString currentPortTested;
     bool systemInError;
     QTimer retryTimer;
@@ -101,6 +110,8 @@ protected:
     QList<RetryMsg> retryList;
     Settings *settings;
     QMap<QString, QString> sensorIdMap;
+    int cptMessageReceived;
+    QList<MsgActivities> msgActivitiesList;
 };
 
 #endif // MYSENSORS_H
