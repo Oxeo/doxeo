@@ -6,40 +6,31 @@ $(function () {
         }
     });
 
-    $.getJSON('sensor/msg_activities.js', function (result) {
+    $.getJSON('/sensor/msg_activities.js', function (result) {
         var sData = [];
-        
+
         // Parse data
-        $.each(result.records, function(key, val) {
+        $.each(result.data, function (key, val) {
             sData.push([val.date, val.number]);
         });
-    
+
         // Create the chart
-        $('#graph_container').highcharts('column', {
-            xAxis: {
-                type: 'category',
-                labels: {
-                    rotation: -45,
-                    style: {
-                        fontSize: '13px',
-                        fontFamily: 'Verdana, sans-serif'
-                    }
-                }
+        $('#graph_container').highcharts('StockChart', {
+            chart: {
+                type: 'column'
             },
-            yAxis: {
-                min: 0,
-                title: {
-                    text: 'Population (millions)'
-                }
+            rangeSelector: {
+                enabled: false,
+                inputEnabled: false
             },
             legend: {
                 enabled: false
             },
             tooltip: {
-                pointFormat: 'Population in 2017: <b>{point.y:.1f} millions</b>'
+                pointFormat: '<b>{point.y} messages</b>'
             },
 
-            series : [{
+            series: [{
                 name: 'Messages',
                 data: sData,
                 dataLabels: {
@@ -47,7 +38,7 @@ $(function () {
                     rotation: -90,
                     color: '#FFFFFF',
                     align: 'right',
-                    format: '{point.y:.1f}', // one decimal
+                    format: '{point.y}',
                     y: 10, // 10 pixels down from the top
                     style: {
                         fontSize: '13px',
@@ -56,7 +47,7 @@ $(function () {
                 }
             }]
         });
-    }).fail(function(jqxhr, textStatus, error) {
+    }).fail(function (jqxhr, textStatus, error) {
         alert("Request Failed: " + error);
     });
 
