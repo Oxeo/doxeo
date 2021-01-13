@@ -15,6 +15,7 @@ public:
     SensorController(MySensors *mySensors, QObject *parent);
 
 public slots:
+    void activities();
     void jsonSetValue();
     void jsonMsgActivities();
 

@@ -18,7 +18,22 @@ SensorController::SensorController(MySensors *mySensors, QObject *parent) : Abst
  
     router.insert("set_value.js", "jsonSetValue");
     router.insert("msg_activities.js", "jsonMsgActivities");
+    router.insert("activities", "activities");
     Sensor::update();
+}
+
+void SensorController::activities()
+{
+    if (!Authentification::auth().isConnected(header, cookie)) {
+        redirect("/auth");
+        return;
+    }
+
+    QHash<QString, QByteArray> view;
+    view["content"] = loadHtmlView("views/sensor/activities.body.html", NULL, false);
+    view["bottom"] = loadHtmlView("views/sensor/activities.footer.html", NULL, false)
+                     + loadScript("views/sensor/activities.js");
+    loadHtmlView("views/template.html", &view);
 }
 
 QJsonArray SensorController::getList()
