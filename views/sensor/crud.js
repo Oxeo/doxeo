@@ -2,7 +2,7 @@
 <script src="../assets/jtable/jquery.jtable.js" type="text/javascript"></script>
 
 <script>
-$(document).ready(function () {
+        $(document).ready(function () {
 
     $('#crudContainer').jtable({
         title: 'Sensor',
@@ -38,7 +38,9 @@ $(document).ready(function () {
             },
             value: {
                 title: 'Value',
-                edit: true
+                edit: true,
+                list: false,
+                create: false
             },
             category: {
                 title: 'Category',
@@ -53,7 +55,26 @@ $(document).ready(function () {
             },
             invert_binary: {
                 title: 'Invert',
-                options: { 'false': 'No', 'true': 'Yes'}
+                options: { 'false': 'No', 'true': 'Yes'},
+                list: false
+            },
+            type: {
+                title: 'Type',
+                edit: true,
+                list: false,
+                create: false
+            },
+            version: {
+                title: 'Version',
+                edit: true,
+                list: false,
+                create: false
+            },
+            battery: {
+                title: 'Battery level',
+                edit: true,
+                list: false,
+                create: false
             }
         }
     });
