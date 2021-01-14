@@ -133,16 +133,32 @@ void SensorController::mySensorsDataReceived(QString messagetype, int sender, in
 {
     if (messagetype == "saveValue") {
         QString cmd = "ms;" + QString::number(sender) + ";" + QString::number(sensor) + ";" + QString::number(type);
-        Sensor::updateValueByCommand(cmd, payload);
+        Sensor *sensor = Sensor::getSensorByCommand(cmd);
+
+        if (sensor != NULL) {
+            sensor->updateValue(payload);
+        }
     } else if (messagetype == "saveBatteryLevel") {
         bool ok;
         int batteryLevel = payload.toInt(&ok);
+
         if (ok) {
             foreach (Sensor *s, Sensor::getSensorList().values()) {
                 if (s->getCmd().startsWith("ms;" + QString::number(sender))) {
                     s->updateBatteryLevel(batteryLevel);
-                    break;
                 }
+            }
+        }
+    } else if (messagetype == "saveSketchName") {
+        foreach (Sensor *s, Sensor::getSensorList().values()) {
+            if (s->getCmd().startsWith("ms;" + QString::number(sender))) {
+                s->setType(payload);
+            }
+        }
+    } else if (messagetype == "saveSketchVersion") {
+        foreach (Sensor *s, Sensor::getSensorList().values()) {
+            if (s->getCmd().startsWith("ms;" + QString::number(sender))) {
+                s->setVersion(payload);
             }
         }
     } else if (messagetype == "getValue") {
@@ -158,7 +174,6 @@ void SensorController::mySensorsDataReceived(QString messagetype, int sender, in
             mySensors->send(msgToSend, false, "Answer of the request " + key);
         }
     }
-
 }
 
 void SensorController::sensorsDataHasChanged()

@@ -23,6 +23,8 @@ Sensor::Sensor(QString id, QObject *parent) : QObject(parent)
     batteryLevel = 0;
     batteryLevelUpdate = QDateTime::currentDateTime().addMonths(-6);
     invertBinary = false;
+    type = "";
+    version = "";
 
     for (int i=0; i<5; i++) {
         lastUpdate.append(QDateTime::currentDateTime().addMonths(-6));
@@ -48,6 +50,8 @@ QJsonObject Sensor::toJson() const
     result.insert("battery", batteryLevel);
     result.insert("battery_update", QString::number(batteryLevelUpdate.toTime_t()));
     result.insert("invert_binary", invertBinary ? "true" : "false");
+    result.insert("type", type);
+    result.insert("version", version);
 
     return result;
 }
@@ -150,14 +154,18 @@ Event *Sensor::getEvent()
     return &event;
 }
 
-void Sensor::updateValueByCommand(QString cmd, QString value)
+Sensor *Sensor::getSensorByCommand(QString cmd)
 {
+    Sensor *result = NULL;
+
     foreach (Sensor *s, sensorList.values()) {
         if (s->cmd == cmd) {
-            s->updateValue(value);
+            result = s;
             break;
         }
     }
+
+    return result;
 }
 
 bool Sensor::flush()
@@ -264,6 +272,26 @@ bool Sensor::compareByOrder(Sensor *s1, Sensor *s2)
     } else {
         return s1->order < s2->order;
     }
+}
+
+QString Sensor::getType() const
+{
+    return type;
+}
+
+void Sensor::setType(const QString &value)
+{
+    type = value;
+}
+
+QString Sensor::getVersion() const
+{
+    return version;
+}
+
+void Sensor::setVersion(const QString &value)
+{
+    version = value;
 }
 QString Sensor::getVisibility() const
 {

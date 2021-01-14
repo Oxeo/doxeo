@@ -57,7 +57,13 @@ public:
 
     bool getInvertBinary() const;
     void setInvertBinary(bool value);
-    
+
+    QString getVersion() const;
+    void setVersion(const QString &value);
+
+    QString getType() const;
+    void setType(const QString &value);
+
     int getBatteryLevel() const;
     void updateBatteryLevel(int level);
 
@@ -73,7 +79,7 @@ public:
     static Sensor *get(QString id);
     static void update();
     static Event* getEvent();
-    static void updateValueByCommand(QString cmd, QString value);
+    static Sensor *getSensorByCommand(QString cmd);
 
 public slots:
     int getLastUpdate(int index = 0) const;
@@ -99,6 +105,8 @@ protected:
     int batteryLevel;
     QDateTime batteryLevelUpdate;
     bool invertBinary;
+    QString version;
+    QString type;
 
     static Event event;
     static QHash<QString, Sensor*> sensorList;
