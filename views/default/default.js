@@ -194,15 +194,19 @@ function update() {
             $('#errorModalTable').html("");
             $('#warningModalTable').html("");
 
-            $.each(result.messages, function (key, val) {
-                if (val.type === "critical") {
-                    cptCritical++;
-                    $('#errorModalTable').append('<tr><td>' + val.date + '</td><td>' + val.message + '</td></tr>')
-                } else if (val.type === "warning") {
-                    cptWarning++;
-                    $('#warningModalTable').append('<tr><td>' + val.date + '</td><td>' + val.message + '</td></tr>')
-                }
+            result.messages.sort(function (a, b) {
+                return b.date.localeCompare(a.date);
             });
+
+            for (msg of result.messages) {
+                if (msg.type === "critical") {
+                    cptCritical++;
+                    $('#errorModalTable').append('<tr><td>' + msg.date + '</td><td>' + msg.message + '</td></tr>')
+                } else if (msg.type === "warning") {
+                    cptWarning++;
+                    $('#warningModalTable').append('<tr><td>' + msg.date + '</td><td>' + msg.message + '</td></tr>')
+                }
+            }
 
             if (cptCritical > 0) {
                 $('#critical_error').html('<button type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#errorModal">' + cptCritical + '</button>');

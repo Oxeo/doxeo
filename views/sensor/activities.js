@@ -11,7 +11,7 @@ $(function () {
 
         // Parse data
         $.each(result.data, function (key, val) {
-            sData.push([val.date, val.number]);
+            sData.push([moment(val.date).valueOf(), val.number]);
         });
 
         // Create the chart
@@ -50,5 +50,4 @@ $(function () {
     }).fail(function (jqxhr, textStatus, error) {
         alert("Request Failed: " + error);
     });
-
 });
