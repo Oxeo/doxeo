@@ -121,7 +121,8 @@ Sensor *Sensor::get(QString id)
 void Sensor::update()
 {
     QSqlQuery query = Database::getQuery();
-    query.prepare("SELECT id, cmd, name, full_name, category, order_by, visibility, invert_binary, battery_level FROM sensor");
+    query.prepare("SELECT id, cmd, name, full_name, category, order_by, visibility, invert_binary, "
+                  "battery_level, version, type FROM sensor");
 
     if(Database::exec(query))
     {
@@ -139,6 +140,8 @@ void Sensor::update()
             s->visibility = query.value(6).toString();
             s->invertBinary = query.value(7).toBool();
             s->batteryLevel = query.value(8).toInt();
+            s->version = query.value(9).toString();
+            s->type = query.value(10).toString();
             s->value = "";
 
             sensorList.insert(s->getId(), s);
@@ -173,10 +176,13 @@ bool Sensor::flush()
     QSqlQuery query = Database::getQuery();
 
     if (sensorList.contains(id)) {
-        query.prepare("UPDATE sensor SET cmd=?, name=?, full_name=?, category=?, order_by=?, visibility=?, invert_binary=?, battery_level=? WHERE id=?");
+        query.prepare(
+            "UPDATE sensor SET cmd=?, name=?, full_name=?, category=?, order_by=?, visibility=?, "
+            "invert_binary=?, battery_level=?, version=?, type=? WHERE id=?");
     } else {
-        query.prepare("INSERT INTO sensor (cmd, name, full_name, category, order_by, visibility, invert_binary, battery_level, id) "
-                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        query.prepare("INSERT INTO sensor (cmd, name, full_name, category, order_by, visibility, "
+                      "invert_binary, battery_level, version, type, id) "
+                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     }
 
     query.addBindValue(cmd);
@@ -187,6 +193,8 @@ bool Sensor::flush()
     query.addBindValue(visibility);
     query.addBindValue(invertBinary);
     query.addBindValue(batteryLevel);
+    query.addBindValue(version);
+    query.addBindValue(type);
     query.addBindValue(id);
 
     if (Database::exec(query)) {
