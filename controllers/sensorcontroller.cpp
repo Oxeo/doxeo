@@ -12,6 +12,11 @@ SensorController::SensorController(MySensors *mySensors, QObject *parent) : Abst
     this->mySensors = mySensors;
     
     connect(Sensor::getEvent(), SIGNAL(dataChanged()), this, SLOT(sensorsDataHasChanged()), Qt::QueuedConnection);
+    connect(Sensor::getEvent(),
+            SIGNAL(sendCmd(QString, QString)),
+            this,
+            SLOT(sendCmdEvent(QString, QString)),
+            Qt::QueuedConnection);
     connect(mySensors, SIGNAL(dataReceived(QString, int, int, int, QString)),
             this, SLOT(mySensorsDataReceived(QString, int, int, int, QString)),
             Qt::QueuedConnection);
@@ -188,6 +193,20 @@ void SensorController::sensorsDataHasChanged()
         
         if (args.size() > 1 && (args.at(0) == "rf" || args.at(0) == "dio")) {
             Device::Instance()->addSensorName(args.at(0) + ";" + args.at(1), s->getFullName());
+        }
+    }
+}
+
+void SensorController::sendCmdEvent(QString msg, QString comment)
+{
+    Sensor *sensor = qobject_cast<Sensor *>(sender());
+
+    if (sensor->getCmd().startsWith("ms")) {
+        QStringList args = sensor->getCmd().split(";");
+
+        if (args.size() > 3) {
+            QString cmd = args.at(1) + ";" + args.at(2) + ";1;1;" + args.at(3) + ";" + msg;
+            mySensors->send(cmd, true, comment);
         }
     }
 }

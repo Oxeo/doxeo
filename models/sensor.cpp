@@ -352,6 +352,11 @@ int Sensor::getLastEvent() const
     return (QDateTime::currentDateTime().toTime_t() - lastEvent.toTime_t()) / 60;
 }
 
+void Sensor::send(QString msg, QString comment)
+{
+    emit Sensor::event.sendCmd(msg, comment);
+}
+
 unsigned int Sensor::getLastEventUtc() const
 {
     return lastEvent.toTime_t();

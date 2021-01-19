@@ -22,6 +22,7 @@ public slots:
 protected slots:
     void mySensorsDataReceived(QString messagetype, int sender, int sensor, int type, QString payload);
     void sensorsDataHasChanged();
+    void sendCmdEvent(QString msg, QString comment);
 
 protected:
     QJsonArray getList();

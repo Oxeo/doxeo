@@ -12,6 +12,7 @@ public:
 signals:
     void valueUpdated(QString id, QString type, QString value);
     void dataChanged();
+    void sendCmd(QString msg, QString comment);
 };
 
 #endif // EVENT_H

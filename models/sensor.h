@@ -84,6 +84,7 @@ public:
 public slots:
     int getLastUpdate(int index = 0) const;
     int getLastEvent() const;
+    void send(QString msg, QString comment = "");
 
 protected slots:
     void updateValue(QString cmd, QString value);
