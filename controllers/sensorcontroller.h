@@ -4,6 +4,7 @@
 #include "core/abstractcrudcontroller.h"
 #include "libraries/device.h"
 #include "libraries/mysensors.h"
+#include "models/sensor.h"
 
 #include <QJsonArray>
 
@@ -22,7 +23,7 @@ public slots:
 protected slots:
     void mySensorsDataReceived(QString messagetype, int sender, int sensor, int type, QString payload);
     void sensorsDataHasChanged();
-    void sendCmdEvent(QString msg, QString comment);
+    void sendCmdEvent(Sensor *sensor, QString msg, QString comment);
 
 protected:
     QJsonArray getList();

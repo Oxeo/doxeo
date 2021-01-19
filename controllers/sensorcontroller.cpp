@@ -1,5 +1,4 @@
 #include "sensorcontroller.h"
-#include "models/sensor.h"
 #include "libraries/authentification.h"
 #include "libraries/settings.h"
 #include "libraries/device.h"
@@ -13,9 +12,9 @@ SensorController::SensorController(MySensors *mySensors, QObject *parent) : Abst
     
     connect(Sensor::getEvent(), SIGNAL(dataChanged()), this, SLOT(sensorsDataHasChanged()), Qt::QueuedConnection);
     connect(Sensor::getEvent(),
-            SIGNAL(sendCmd(QString, QString)),
+            SIGNAL(sendCmd(Sensor *, QString, QString)),
             this,
-            SLOT(sendCmdEvent(QString, QString)),
+            SLOT(sendCmdEvent(Sensor *, QString, QString)),
             Qt::QueuedConnection);
     connect(mySensors, SIGNAL(dataReceived(QString, int, int, int, QString)),
             this, SLOT(mySensorsDataReceived(QString, int, int, int, QString)),
@@ -197,10 +196,8 @@ void SensorController::sensorsDataHasChanged()
     }
 }
 
-void SensorController::sendCmdEvent(QString msg, QString comment)
+void SensorController::sendCmdEvent(Sensor *sensor, QString msg, QString comment)
 {
-    Sensor *sensor = qobject_cast<Sensor *>(sender());
-
     if (sensor->getCmd().startsWith("ms")) {
         QStringList args = sensor->getCmd().split(";");
 

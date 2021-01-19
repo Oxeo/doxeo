@@ -354,7 +354,7 @@ int Sensor::getLastEvent() const
 
 void Sensor::send(QString msg, QString comment)
 {
-    emit Sensor::event.sendCmd(msg, comment);
+    emit Sensor::event.sendCmd(this, msg, comment);
 }
 
 unsigned int Sensor::getLastEventUtc() const
