@@ -196,8 +196,10 @@ void SensorController::sensorsDataHasChanged()
     }
 }
 
-void SensorController::sendCmdEvent(Sensor *sensor, QString msg, QString comment)
+void SensorController::sendCmdEvent(QObject *emitter, QString msg, QString comment)
 {
+    Sensor *sensor = (Sensor *) emitter;
+
     if (sensor->getCmd().startsWith("ms")) {
         QStringList args = sensor->getCmd().split(";");
 
