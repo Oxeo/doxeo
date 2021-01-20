@@ -12,9 +12,9 @@ SensorController::SensorController(MySensors *mySensors, QObject *parent) : Abst
     
     connect(Sensor::getEvent(), SIGNAL(dataChanged()), this, SLOT(sensorsDataHasChanged()), Qt::QueuedConnection);
     connect(Sensor::getEvent(),
-            SIGNAL(sendCmd(Sensor *, QString, QString)),
+            SIGNAL(sendCmd(QObject *, QString, QString)),
             this,
-            SLOT(sendCmdEvent(Sensor *, QString, QString)),
+            SLOT(sendCmdEvent(QObject *, QString, QString)),
             Qt::QueuedConnection);
     connect(mySensors, SIGNAL(dataReceived(QString, int, int, int, QString)),
             this, SLOT(mySensorsDataReceived(QString, int, int, int, QString)),
