@@ -397,6 +397,7 @@ void MySensors::rfReceived(QString data) {
                         break;
                     case I_ID_REQUEST:
                         emit dataReceived("getNextSensorId", sender, sensor, type, payload);
+                        idRequested();
                         break;
                     case I_ID_RESPONSE:
                         break;
@@ -449,6 +450,17 @@ void MySensors::removeRetryMsg(QString msg)
     while (i.hasNext()) {
         if (i.next().msg == msg) {
             i.remove();
+        }
+    }
+}
+
+void MySensors::idRequested()
+{
+    if (settings->value("inclusion_mode", "false") == "true") {
+        QString id = settings->value("id_response").trimmed();
+
+        if (id != "") {
+            send("255;255;3;0;4;" + id, false, "ID RESPONSE");
         }
     }
 }

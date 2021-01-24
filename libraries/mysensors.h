@@ -96,6 +96,7 @@ protected:
     void rfReceived(QString data);
     void removeRetryMsg(QString msg);
     QString getSensorId(QString msg);
+    void idRequested();
 
     QString appendedString;
     QSerialPort *serial;
