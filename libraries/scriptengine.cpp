@@ -169,15 +169,15 @@ void ScriptEngine::settingValueUpdated(QString id, QString type, QString value)
 void ScriptEngine::newMessageFromMessageLogger(QString type, QString message)
 {
     if (type == "warning" || type == "critical") {
-        int cpt = 0;
+        bool oldMessagePresent = false;
 
         foreach (const MessageLogger::Log &log, MessageLogger::logger().getMessages()) {
-            if (log.type == type) {
-                cpt++;
+            if (log.type == type && log.date.addSecs(3) < QDateTime::currentDateTime()) {
+                oldMessagePresent = true;
             }
         }
 
-        if (cpt == 1) {
+        if (oldMessagePresent == false) {
             engine.globalObject().setProperty("system_error_message", message);
             run("system_error");
         }
