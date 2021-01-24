@@ -38,6 +38,7 @@ const int I_CHILDREN            = 10;
 const int I_SKETCH_NAME         = 11;
 const int I_SKETCH_VERSION      = 12;
 const int I_REBOOT              = 13;
+const int I_DISCOVER_RESPONSE = 21;
 const int I_HEARTBEAT_RESPONSE  = 22;
 const int I_PONG                = 25;
 
@@ -57,6 +58,7 @@ public:
     bool isConnected();
     void addSensorName(int nodeId, int sensorId, QString name);
     QList<MsgActivities> getMsgActivities();
+    QMap<int, int> getRouting() const;
 
 public slots:
     void send(QString msg, bool checkAck = true, QString comment = "");
@@ -97,6 +99,7 @@ protected:
     void removeRetryMsg(QString msg);
     QString getSensorId(QString msg);
     void idRequested();
+    void discoverResponse(int sender, QString payload);
 
     QString appendedString;
     QSerialPort *serial;
@@ -113,6 +116,7 @@ protected:
     QMap<QString, QString> sensorIdMap;
     int cptMessageReceived;
     QList<MsgActivities> msgActivitiesList;
+    QMap<int, int> routing;
 };
 
 #endif // MYSENSORS_H

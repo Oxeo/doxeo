@@ -2,8 +2,8 @@
 #include "libraries/settings.h"
 
 #include <QDateTime>
-#include <QtDebug>
 #include <QSerialPortInfo>
+#include <QtDebug>
 
 MySensors::MySensors(QObject *parent) : QObject(parent)
 {
@@ -422,6 +422,9 @@ void MySensors::rfReceived(QString data) {
                         break;
                     case I_REBOOT:
                         break;
+                    case I_DISCOVER_RESPONSE:
+                        discoverResponse(sender, payload);
+                        break;
                     case I_HEARTBEAT_RESPONSE:
                         emit dataReceived("saveValue", sender, sensor, type, payload);
                         break;
@@ -460,9 +463,24 @@ void MySensors::idRequested()
         QString id = settings->value("id_response").trimmed();
 
         if (id != "") {
-            send("255;255;3;0;4;" + id, false, "ID RESPONSE");
+            send("0;255;3;0;4;" + id, false, "ID RESPONSE");
         }
     }
+}
+
+void MySensors::discoverResponse(int sender, QString payload)
+{
+    bool valid;
+    int parent = payload.toInt(&valid);
+
+    if (valid && routing.value(sender, -1) != parent) {
+        routing.insert(sender, parent);
+    }
+}
+
+QMap<int, int> MySensors::getRouting() const
+{
+    return routing;
 }
 
 void MySensors::addSensorName(int nodeId, int sensorId, QString name)

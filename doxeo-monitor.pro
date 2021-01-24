@@ -12,6 +12,7 @@ TARGET = doxeo-monitor
 TEMPLATE = app
 
 SOURCES += main.cpp\
+    controllers/mysensorscontroller.cpp \
     controllers/switchcontroller.cpp \
     core/abstractcontroller.cpp \
     core/abstractcrudcontroller.cpp \
@@ -63,6 +64,7 @@ SOURCES += main.cpp\
     libraries/websocketevent.cpp
 
 HEADERS  += \
+    controllers/mysensorscontroller.h \
     controllers/switchcontroller.h \
     core/abstractcontroller.h \
     core/abstractcrudcontroller.h \

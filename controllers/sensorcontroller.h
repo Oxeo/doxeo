@@ -2,9 +2,7 @@
 #define SENSORCONTROLLER_H
 
 #include "core/abstractcrudcontroller.h"
-#include "libraries/device.h"
 #include "libraries/mysensors.h"
-#include "models/sensor.h"
 
 #include <QJsonArray>
 
@@ -16,12 +14,9 @@ public:
     SensorController(MySensors *mySensors, QObject *parent);
 
 public slots:
-    void activities();
     void jsonSetValue();
-    void jsonMsgActivities();
 
 protected slots:
-    void mySensorsDataReceived(QString messagetype, int sender, int sensor, int type, QString payload);
     void sensorsDataHasChanged();
     void sendCmdEvent(QObject *emitter, QString msg, QString comment);
 
