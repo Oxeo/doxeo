@@ -19,6 +19,10 @@ MySensorsController::MySensorsController(MySensors *mySensors, QObject *parent)
     router.insert("routing", "routing");
 }
 
+void MySensorsController::defaultAction() {}
+
+void MySensorsController::stop() {}
+
 void MySensorsController::activities()
 {
     if (!Authentification::auth().isConnected(header, cookie)) {

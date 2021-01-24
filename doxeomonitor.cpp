@@ -6,6 +6,7 @@
 #include "controllers/defaultcontroller.h"
 #include "controllers/heatercontroller.h"
 #include "controllers/jeedomcontroller.h"
+#include "controllers/mysensorscontroller.h"
 #include "controllers/scenariocontroller.h"
 #include "controllers/scriptcontroller.h"
 #include "controllers/sensorcontroller.h"
@@ -157,6 +158,7 @@ int DoxeoMonitor::start()
     controllers.append(qMakePair(new AssetController(), QString("assets")));
     controllers.append(qMakePair(new SwitchController(mySensors, this), QString("switch")));
     controllers.append(qMakePair(new SensorController(mySensors, this), QString("sensor")));
+    controllers.append(qMakePair(new MySensorsController(mySensors, this), QString("mysensors")));
     controllers.append(qMakePair(new AuthController(this), QString("auth")));
     controllers.append(qMakePair(new ThermostatController(thermostat, this), QString("thermostat")));
     controllers.append(

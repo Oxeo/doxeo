@@ -10,6 +10,8 @@ class MySensorsController : public AbstractController
 
 public:
     MySensorsController(MySensors *mySensors, QObject *parent);
+    void defaultAction();
+    void stop();
 
 public slots:
     void activities();
