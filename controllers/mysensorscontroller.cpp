@@ -11,10 +11,12 @@ MySensorsController::MySensorsController(MySensors *mySensors, QObject *parent)
 {
     this->mySensors = mySensors;
 
-    connect(mySensors, SIGNAL(dataReceived(QString, int, int, int, QString)),
-            this, SLOT(mySensorsDataReceived(QString, int, int, int, QString)),
+    connect(mySensors,
+            SIGNAL(dataReceived(QString, int, int, int, QString)),
+            this,
+            SLOT(mySensorsDataReceived(QString, int, int, int, QString)),
             Qt::QueuedConnection);
- 
+
     router.insert("msg_activities.js", "jsonMsgActivities");
     router.insert("routing.js", "jsonRouting");
     router.insert("activities", "activities");
@@ -81,6 +83,7 @@ void MySensorsController::jsonRouting()
     QJsonObject result;
     QJsonArray array;
     QMapIterator<int, int> i(mySensors->getRouting());
+    QMap<QString, QString> map = mySensors->getSensorIdMap();
 
     if (!Authentification::auth().isConnected(header, cookie)) {
         result.insert("msg", "You are not logged.");
@@ -89,8 +92,13 @@ void MySensorsController::jsonRouting()
         while (i.hasNext()) {
             i.next();
             QJsonObject row;
-            row.insert("node", QString::number(i.key()));
-            row.insert("parent", QString::number(i.value()));
+
+            QString node = map.value(QString::number(i.key()) + ";255", QString::number(i.key()));
+            QString parent = map.value(QString::number(i.value()) + ";255",
+                                       QString::number(i.value()));
+
+            row.insert("node", node);
+            row.insert("parent", parent);
             array.append(row);
         }
 

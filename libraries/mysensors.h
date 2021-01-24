@@ -59,6 +59,7 @@ public:
     void addSensorName(int nodeId, int sensorId, QString name);
     QList<MsgActivities> getMsgActivities();
     QMap<int, int> getRouting() const;
+    QMap<QString, QString> getSensorIdMap() const;
 
 public slots:
     void send(QString msg, bool checkAck = true, QString comment = "");

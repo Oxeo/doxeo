@@ -478,6 +478,11 @@ void MySensors::discoverResponse(int sender, QString payload)
     }
 }
 
+QMap<QString, QString> MySensors::getSensorIdMap() const
+{
+    return sensorIdMap;
+}
+
 QMap<int, int> MySensors::getRouting() const
 {
     return routing;
