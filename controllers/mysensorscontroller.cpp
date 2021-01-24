@@ -9,6 +9,8 @@
 MySensorsController::MySensorsController(MySensors *mySensors, QObject *parent)
     : AbstractController(parent)
 {
+    this->mySensors = mySensors;
+
     connect(mySensors, SIGNAL(dataReceived(QString, int, int, int, QString)),
             this, SLOT(mySensorsDataReceived(QString, int, int, int, QString)),
             Qt::QueuedConnection);
