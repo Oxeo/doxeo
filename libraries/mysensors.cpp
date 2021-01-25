@@ -406,9 +406,10 @@ void MySensors::rfReceived(QString data) {
                     case I_CONFIG:
                         sendConfig(sender);
                         break;
-                    case I_PING:
+                    case I_FIND_PARENT:
+                        qWarning() << "mySensors: find parent requested for" << sender;
                         break;
-                    case I_PING_ACK:
+                    case I_FIND_PARENT_RESPONSE:
                         break;
                     case I_LOG_MESSAGE:
                         break;
@@ -476,8 +477,8 @@ void MySensors::discoverResponse(int sender, QString payload)
     if (valid) {
         if (routing.contains(sender)) {
             if (routing.value(sender) != parent) {
-                qWarning() << "routing changed for node" << sender << ":" << routing.value(sender)
-                           << "->" << parent;
+                qWarning() << "mySensors: routing changed for node" << sender << ":"
+                           << routing.value(sender) << "->" << parent;
                 routing[sender] = parent;
             }
         } else {
