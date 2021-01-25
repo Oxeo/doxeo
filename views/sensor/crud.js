@@ -35,11 +35,12 @@
             },
             full_name: {
                 title: 'Full name',
+                visibility: 'hidden'
             },
             value: {
                 title: 'Value',
+                visibility: 'hidden',
                 edit: true,
-                list: false,
                 create: false
             },
             category: {
@@ -48,6 +49,7 @@
             },
             order: {
                 title: 'Order',
+                visibility: 'hidden'
             },
             visibility: {
                 title: 'Visibility',
@@ -56,24 +58,24 @@
             invert_binary: {
                 title: 'Invert',
                 options: { 'false': 'No', 'true': 'Yes'},
-                list: false
+                visibility: 'hidden'
             },
             type: {
                 title: 'Type',
+                visibility: 'hidden',
                 edit: true,
-                list: false,
                 create: false
             },
             version: {
                 title: 'Version',
+                visibility: 'hidden',
                 edit: true,
-                list: false,
                 create: false
             },
             battery: {
                 title: 'Battery level',
+                visibility: 'hidden',
                 edit: true,
-                list: false,
                 create: false
             }
         }
