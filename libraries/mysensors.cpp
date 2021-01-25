@@ -473,8 +473,16 @@ void MySensors::discoverResponse(int sender, QString payload)
     bool valid;
     int parent = payload.toInt(&valid);
 
-    if (valid && routing.value(sender, -1) != parent) {
-        routing.insert(sender, parent);
+    if (valid) {
+        if (routing.contains(sender)) {
+            if (routing.value(sender) != parent) {
+                qWarning() << "routing changed for node" << sender << ":" << routing.value(sender)
+                           << "->" << parent;
+                routing[sender] = parent;
+            }
+        } else {
+            routing.insert(sender, parent);
+        }
     }
 }
 
