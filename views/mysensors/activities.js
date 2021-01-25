@@ -6,7 +6,7 @@ $(function () {
         }
     });
 
-    $.getJSON('/sensor/msg_activities.js', function (result) {
+    $.getJSON('/mysensors/msg_activities.js', function (result) {
         var sData = [];
 
         // Parse data
