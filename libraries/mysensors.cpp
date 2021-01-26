@@ -407,11 +407,11 @@ void MySensors::rfReceived(QString data) {
                         sendConfig(sender);
                         break;
                     case I_FIND_PARENT:
-                        qWarning() << "mySensors: find parent requested for" << sender;
                         break;
                     case I_FIND_PARENT_RESPONSE:
                         break;
                     case I_LOG_MESSAGE:
+                        emit dataReceived("log", sender, sensor, type, payload);
                         break;
                     case I_CHILDREN:
                         break;

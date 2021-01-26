@@ -5,6 +5,7 @@
 
 #include <QHostAddress>
 #include <QJsonArray>
+#include <QRegularExpression>
 
 MySensorsController::MySensorsController(MySensors *mySensors, QObject *parent)
     : AbstractController(parent)
@@ -153,6 +154,13 @@ void MySensorsController::mySensorsDataReceived(
             QString msgToSend = QString::number(sender) + ";" + QString::number(sensor)
                     + ";1;0;" + QString::number(type) + ";" + payload;
             mySensors->send(msgToSend, false, "Answer of the request " + key);
+        }
+    } else if (messagetype == "log") {
+        QRegularExpression rx("^\\d TSF:MSG:FPAR REQ,ID=(\\d)$");
+        QRegularExpressionMatch match = rx.match(payload);
+
+        if (match.hasMatch()) {
+            qWarning() << "mySensors: found parent requested by" << match.captured((1));
         }
     }
 }
