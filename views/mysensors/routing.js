@@ -15,9 +15,9 @@ Highcharts.addEvent(
     ) {
       e.options.data.forEach(function (link) {
 
-        if (link[0] === '0') {
-          nodes['0'] = {
-            id: '0',
+        if (link[0] === 'Gateway') {
+          nodes['Gateway'] = {
+            id: 'Gateway',
             marker: {
               radius: 20
             }
@@ -45,10 +45,10 @@ Highcharts.addEvent(
 );
 
 $.getJSON('/mysensors/routing.js', function (result) {
-
   var data = [];
+
   for (row of result.data) {
-    data.push([row.parent, row.node]);
+    data.push([rename(row.parent), rename(row.node)]);
   }
 
   Highcharts.chart('graph_container', {
@@ -71,7 +71,8 @@ $.getJSON('/mysensors/routing.js', function (result) {
     series: [{
       dataLabels: {
         enabled: true,
-        linkFormat: ''
+        linkFormat: '',
+        allowOverlap: true
       },
       id: 'lang-tree',
       data: data
@@ -80,3 +81,11 @@ $.getJSON('/mysensors/routing.js', function (result) {
 }).fail(function (jqxhr, textStatus, error) {
   alert("Request Failed: " + error);
 });
+
+function rename(name) {
+  if (name == "0") {
+    return 'Gateway';
+  } else {
+    return name;
+  }
+}

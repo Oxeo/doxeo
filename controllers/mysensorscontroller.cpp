@@ -156,7 +156,7 @@ void MySensorsController::mySensorsDataReceived(
             mySensors->send(msgToSend, false, "Answer of the request " + key);
         }
     } else if (messagetype == "log") {
-        QRegularExpression rx("^\\d TSF:MSG:FPAR REQ,ID=(\\d)$");
+        QRegularExpression rx("^\\d+ TSF:MSG:FPAR REQ,ID=(\\d+)$");
         QRegularExpressionMatch match = rx.match(payload);
 
         if (match.hasMatch()) {

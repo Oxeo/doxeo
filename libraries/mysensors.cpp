@@ -464,7 +464,7 @@ void MySensors::idRequested()
         QString id = settings->value("id_response").trimmed();
 
         if (id != "") {
-            send("0;255;3;0;4;" + id, false, "ID RESPONSE");
+            send("255;255;3;0;4;" + id, false, "ID RESPONSE");
         }
     }
 }
