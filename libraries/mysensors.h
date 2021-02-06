@@ -60,6 +60,7 @@ public:
     QList<MsgActivities> getMsgActivities();
     QMap<int, int> getRouting() const;
     QMap<QString, QString> getSensorIdMap() const;
+    QString getNodeName(int nodeId);
 
 public slots:
     void send(QString msg, bool checkAck = true, QString comment = "");
@@ -101,7 +102,6 @@ protected:
     QString getSensorId(QString msg);
     void idRequested();
     void discoverResponse(int sender, QString payload);
-    QString getNodeName(int nodeId);
 
     QString appendedString;
     QSerialPort *serial;

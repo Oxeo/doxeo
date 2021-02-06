@@ -160,7 +160,8 @@ void MySensorsController::mySensorsDataReceived(
         QRegularExpressionMatch match = rx.match(payload);
 
         if (match.hasMatch()) {
-            qWarning() << "mySensors: found parent requested by" << match.captured((1));
+            QString name = mySensors->getNodeName(match.captured(1).toInt());
+            qWarning() << "mySensors: found parent requested by" << name;
         }
     }
 }
