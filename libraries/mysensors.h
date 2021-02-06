@@ -101,6 +101,7 @@ protected:
     QString getSensorId(QString msg);
     void idRequested();
     void discoverResponse(int sender, QString payload);
+    QString getNodeName(int nodeId);
 
     QString appendedString;
     QSerialPort *serial;

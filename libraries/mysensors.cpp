@@ -262,8 +262,6 @@ bool MySensors::foundDevice(const QString port)
             }
         }
 
-        //qDebug() << "mySensors: try to connect on port" << qPrintable(info.portName());
-
         serial->setPort(info);
         if (serial->open(QIODevice::ReadWrite)) {
             currentPortTested = info.portName();
@@ -477,13 +475,27 @@ void MySensors::discoverResponse(int sender, QString payload)
     if (valid) {
         if (routing.contains(sender)) {
             if (routing.value(sender) != parent) {
-                qWarning() << "mySensors: routing changed for node" << sender << ":"
-                           << routing.value(sender) << "->" << parent;
+                qWarning() << "mySensors: routing changed for node" << getNodeName(sender) << ":"
+                           << getNodeName(routing.value(sender)) << "->" << getNodeName(parent);
                 routing[sender] = parent;
             }
         } else {
             routing.insert(sender, parent);
         }
+    }
+}
+
+QString MySensors::getNodeName(int nodeId)
+{
+    QString key1 = QString::number(nodeId) + ";255";
+    QString key2 = QString::number(nodeId) + ";0";
+
+    if (sensorIdMap.contains(key1)) {
+        return sensorIdMap.value(key1) + " (" + QString::number(nodeId) + ")";
+    } else if (sensorIdMap.contains(key2)) {
+        return sensorIdMap.value(key2) + " (" + QString::number(nodeId) + ")";
+    } else {
+        return QString::number(nodeId);
     }
 }
 
