@@ -36,6 +36,7 @@ public slots:
     QString getSetting(QString id);
     QString getScriptStatus(int id);
     void setScriptStatus(int id, QString status);
+    void writeToFile(QString fileName, QString txt);
 
     static QString value(QString key);
     static void setValue(QString key, QString value);

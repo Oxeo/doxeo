@@ -98,6 +98,16 @@ void ScriptHelper::setScriptStatus(int id, QString status)
     }
 }
 
+void ScriptHelper::writeToFile(QString fileName, QString txt)
+{
+    QFile file(QDir::currentPath() + "/perso/" + fileName);
+
+    if (file.open(QIODevice::WriteOnly | QIODevice::Append)) {
+        file.write(txt.toUtf8());
+        file.close();
+    }
+}
+
 void ScriptHelper::sendCmd(QString cmd, QString comment)
 {
     Device::Instance()->send(cmd, comment);
