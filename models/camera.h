@@ -28,11 +28,18 @@ public:
     QString getUrl() const;
     void setUrl(const QString &value);
 
-protected:
+    int getOrder() const;
+    void setOrder(int value);
 
+    QString getVisibility() const;
+    void setVisibility(const QString &value);
+
+protected:
     int id;
     QString name;
     QString url;
+    int order;
+    QString visibility;
 
     static QMap<int, Camera*> cameraList;
 };

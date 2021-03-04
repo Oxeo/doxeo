@@ -95,19 +95,21 @@ QJsonObject CameraController::updateElement(bool createNewObject)
 {
     Q_UNUSED(createNewObject);
     int id = query->getItem("id").toInt();
-    Camera *script;
+    Camera *camera;
 
     if (Camera::isIdValid(id)) {
-        script = Camera::get(id);
+        camera = Camera::get(id);
     } else {
-        script = new Camera(id);
+        camera = new Camera(id);
     }
 
-    script->setName(query->getItem("name"));
-    script->setUrl(query->getItem("url"));
-    script->flush();
-    
-    return script->toJson();
+    camera->setName(query->getItem("name"));
+    camera->setUrl(query->getItem("url"));
+    camera->setOrder(query->getItem("order").toInt());
+    camera->setVisibility(query->getItem("visibility"));
+    camera->flush();
+
+    return camera->toJson();
 }
 
 bool CameraController::deleteElement(QString id)

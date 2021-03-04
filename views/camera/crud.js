@@ -31,7 +31,15 @@ $(document).ready(function () {
             },
             url: {
                 title: 'URL',
-            }
+            },
+            order: {
+                title: 'Order',
+                visibility: 'hidden'
+            },
+            visibility: {
+                title: 'Visibility',
+                options: { 'hide': 'Hide', 'dashboard': 'Dashboard', 'mobile': 'Mobile' }
+            },
         }
     });
 

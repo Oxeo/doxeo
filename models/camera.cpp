@@ -25,19 +25,21 @@ int Camera::getId() const
 void Camera::update()
 {
     QSqlQuery query = Database::getQuery();
-    query.prepare("SELECT id, name, url FROM camera");
+    query.prepare("SELECT id, name, url, order_by, visibility FROM camera");
 
     if(Database::exec(query))
     {
         cameraList.clear();
         while(query.next())
         {
-            Camera *sw = new Camera(query.value(0).toInt());
+            Camera *c = new Camera(query.value(0).toInt());
 
-            sw->name = query.value(1).toString();
-            sw->url = query.value(2).toString();
+            c->name = query.value(1).toString();
+            c->url = query.value(2).toString();
+            c->order = query.value(3).toInt();
+            c->visibility = query.value(4).toString();
 
-            cameraList.insert(sw->id, sw);
+            cameraList.insert(c->id, c);
         }
     }
 
@@ -61,6 +63,8 @@ QJsonObject Camera::toJson() const
     result.insert("id", id);
     result.insert("name", name);
     result.insert("url", url);
+    result.insert("order", order);
+    result.insert("visibility", visibility);
 
     return result;
 }
@@ -88,18 +92,40 @@ void Camera::setUrl(const QString &value)
     url = value;
 }
 
+int Camera::getOrder() const
+{
+    return order;
+}
+
+void Camera::setOrder(int value)
+{
+    order = value;
+}
+
+QString Camera::getVisibility() const
+{
+    return visibility;
+}
+
+void Camera::setVisibility(const QString &value)
+{
+    visibility = value;
+}
+
 bool Camera::flush()
 {
     QSqlQuery query = Database::getQuery();
 
     if (cameraList.contains(id)) {
-        query.prepare("UPDATE camera SET name=?, url=? WHERE id=?");
+        query.prepare("UPDATE camera SET name=?, url=?, order_by=?, visibility=? WHERE id=?");
     } else {
-        query.prepare("INSERT INTO camera (name, url) "
-                      "VALUES (?, ?)");
+        query.prepare("INSERT INTO camera (name, url, order_by, visibility) "
+                      "VALUES (?, ?, ?, ?)");
     }
     query.addBindValue(name);
     query.addBindValue(url);
+    query.addBindValue(order);
+    query.addBindValue(visibility);
 
     if (cameraList.contains(id)) {
         query.addBindValue(id);
