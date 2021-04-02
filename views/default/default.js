@@ -3,8 +3,8 @@ var updateError = false;
 jQuery(document).ready(function () {
     update();
     updateScriptPanel();
-    updateCameraPanel();
-    setInterval(refreshCameras, 1000);
+    //updateCameraPanel();
+    //setInterval(refreshCameras, 1000);
 });
 
 try {
