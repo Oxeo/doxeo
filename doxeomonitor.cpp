@@ -148,8 +148,12 @@ int DoxeoMonitor::start()
     Thermostat *thermostat = new Thermostat(this);
     Heater::setMySensors(mySensors);
 
+    // Initialize Camera Controller
+    CameraController *cameraController = new CameraController(this);
+
     // Initialise Script Engine
-    ScriptEngine *scriptEngine = new ScriptEngine(thermostat, jeedom, gsm, mySensors, this);
+    ScriptEngine *scriptEngine
+        = new ScriptEngine(thermostat, jeedom, gsm, mySensors, cameraController, this);
 
     // Add controllers
     QList<QPair<AbstractController *, QString>> controllers;
@@ -167,7 +171,7 @@ int DoxeoMonitor::start()
     controllers.append(qMakePair(new JeedomController(jeedom, mySensors, this), QString("jeedom")));
     controllers.append(qMakePair(new SettingController(this), QString("setting")));
     controllers.append(qMakePair(new HeaterController(this), QString("heater")));
-    controllers.append(qMakePair(new CameraController(this), QString("camera")));
+    controllers.append(qMakePair(cameraController, QString("camera")));
 
     for (QPair<AbstractController *, QString> pair : controllers) {
         httpServer->addController(pair.first, pair.second);

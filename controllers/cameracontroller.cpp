@@ -1,6 +1,5 @@
 #include "cameracontroller.h"
 #include "libraries/authentification.h"
-#include "models/camera.h"
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonArray>
@@ -44,13 +43,23 @@ CameraController::~CameraController()
 
 void CameraController::image()
 {
+    int id = query->getItem("id").toInt();
+
     if (!Authentification::auth().isConnected(header, cookie)) {
         forbidden("You are not logged.");
-    } else if (!Camera::isIdValid(query->getItem("id").toInt())) {
+        return;
+    }
+
+    if (!Camera::isIdValid(id)) {
         forbidden("Camera Id invalid");
-    } else {
+        return;
+    }
+
+    Camera *camera = Camera::get(id);
+
+    if (camera->getUrl().startsWith("http")) {
         foreach (const Screenshoot &s, screenList) {
-            if (s.id == query->getItem("id").toInt()) {
+            if (s.id == id) {
                 networkManager->get(QNetworkRequest(QUrl(s.url)));
 
                 if (s.date > QDateTime::currentDateTime().addSecs(-10)) {
@@ -62,7 +71,30 @@ void CameraController::image()
                 break;
             }
         }
+    } else {
+        stream(camera);
     }
+}
+
+void CameraController::stream(Camera *camera)
+{
+    emit streamRequested(camera->getId());
+
+    QDir directory(camera->getUrl());
+    QFileInfoList images = directory.entryInfoList(QStringList() << "*.jpg"
+                                                                 << "*.JPG",
+                                                   QDir::Files,
+                                                   QDir::Time);
+
+    if (images.size() > 0) {
+        if (images.first().lastModified().addSecs(10) > QDateTime::currentDateTime()) {
+            QFile file(images.first().filePath());
+            loadFile(file);
+            return;
+        }
+    }
+
+    loadByteArray(imageNoVideo, "image/jpeg");
 }
 
 void CameraController::networkReply(QNetworkReply *reply)

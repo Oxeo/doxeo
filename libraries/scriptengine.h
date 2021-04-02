@@ -1,11 +1,12 @@
 #ifndef SCRIPTENGINE_H
 #define SCRIPTENGINE_H
 
-#include <models/script.h>
+#include "controllers/cameracontroller.h"
 #include <libraries/gsm.h>
 #include <libraries/jeedom.h>
 #include <libraries/mysensors.h>
 #include <libraries/thermostat.h>
+#include <models/script.h>
 
 #include <QObject>
 #include <QJSEngine>
@@ -17,7 +18,12 @@ class ScriptEngine : public QObject
     Q_OBJECT
 
 public:
-    explicit ScriptEngine(Thermostat *thermostat, Jeedom *jeedom, Gsm *gsm, MySensors *mySensors, QObject *parent = 0);
+    explicit ScriptEngine(Thermostat *thermostat,
+                          Jeedom *jeedom,
+                          Gsm *gsm,
+                          MySensors *mySensors,
+                          CameraController *cameraController,
+                          QObject *parent = 0);
     void init();
     QString runCmd(QString cmd);
 
@@ -35,6 +41,7 @@ protected slots:
     void settingValueUpdated(QString id, QString type, QString value);
     void newMessageFromMessageLogger(QString type, QString message);
     void eventTimeout(QString name);
+    void cameraStreamRequested(int id);
 
 protected:
     QString getLibraries();
@@ -46,6 +53,7 @@ protected:
     Jeedom *jeedom;
     MySensors *mySensors;
     Thermostat *thermostat;
+    CameraController *cameraController;
 };
 
 #endif // SCRIPTENGINE_H

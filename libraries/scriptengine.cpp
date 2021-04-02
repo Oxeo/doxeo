@@ -12,12 +12,19 @@
 #include <QTime>
 #include <QJsonObject>
 
-ScriptEngine::ScriptEngine(Thermostat *thermostat, Jeedom *jeedom, Gsm *gsm, MySensors *mySensors, QObject *parent) : QObject(parent)
+ScriptEngine::ScriptEngine(Thermostat *thermostat,
+                           Jeedom *jeedom,
+                           Gsm *gsm,
+                           MySensors *mySensors,
+                           CameraController *cameraController,
+                           QObject *parent)
+    : QObject(parent)
 {
     this->thermostat = thermostat;
     this->gsm = gsm;
     this->jeedom = jeedom;
     this->mySensors = mySensors;
+    this->cameraController = cameraController;
 }
 
 void ScriptEngine::init()
@@ -63,6 +70,11 @@ void ScriptEngine::init()
             SLOT(newMessageFromMessageLogger(QString, QString)),
             Qt::QueuedConnection);
     connect(timeEvent, SIGNAL(eventTimeout(QString)), this, SLOT(eventTimeout(QString)), Qt::QueuedConnection);
+    connect(cameraController,
+            SIGNAL(streamRequested(int)),
+            this,
+            SLOT(cameraStreamRequested(int)),
+            Qt::QueuedConnection);
 
     timer = new QTimer(this);
     timer->setSingleShot(true);
@@ -187,6 +199,11 @@ void ScriptEngine::newMessageFromMessageLogger(QString type, QString message)
 void ScriptEngine::eventTimeout(QString name)
 {
     run("event_builder;" + name);
+}
+
+void ScriptEngine::cameraStreamRequested(int id)
+{
+    run("camera_stream_requested;" + QString::number(id));
 }
 
 QString ScriptEngine::getLibraries()
