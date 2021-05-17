@@ -23,7 +23,7 @@ $(document).ready(function () {
                 title: 'Id',
                 key: true,
                 create: true,
-                edit: false,
+                edit: true,
                 list: true
             },
             name: {
