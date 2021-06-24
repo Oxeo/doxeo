@@ -11,6 +11,7 @@ MySensorsController::MySensorsController(MySensors *mySensors, QObject *parent)
     : AbstractController(parent)
 {
     this->mySensors = mySensors;
+    settings = new Settings("mysensors", this);
 
     connect(mySensors,
             SIGNAL(dataReceived(QString, int, int, int, QString)),
@@ -161,7 +162,12 @@ void MySensorsController::mySensorsDataReceived(
 
         if (match.hasMatch()) {
             QString name = mySensors->getNodeName(match.captured(1).toInt());
-            qWarning() << "mySensors: found parent requested by" << name;
+
+            if (settings->value("report_found_parent", "false") == "true") {
+                qWarning() << "mySensors: found parent requested by" << name;
+            } else {
+                qDebug() << "mySensors: found parent requested by" << name;
+            }
         }
     }
 }

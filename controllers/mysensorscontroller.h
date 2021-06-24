@@ -3,6 +3,7 @@
 
 #include "core/abstractcontroller.h"
 #include "libraries/mysensors.h"
+#include "libraries/settings.h"
 
 class MySensorsController : public AbstractController
 {
@@ -24,6 +25,7 @@ protected slots:
 
 protected:
     MySensors *mySensors;
+    Settings *settings;
 };
 
 #endif // MYSENSORSCONTROLLER_H
