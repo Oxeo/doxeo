@@ -57,6 +57,8 @@ void CameraController::image()
 
     Camera *camera = Camera::get(id);
 
+    emit streamRequested(camera->getId());
+
     if (camera->getUrl().startsWith("http")) {
         foreach (const Screenshoot &s, screenList) {
             if (s.id == id) {
@@ -78,8 +80,6 @@ void CameraController::image()
 
 void CameraController::stream(Camera *camera)
 {
-    emit streamRequested(camera->getId());
-
     QDir directory(camera->getUrl());
     QFileInfoList images = directory.entryInfoList(QStringList() << "*.jpg"
                                                                  << "*.JPG",
