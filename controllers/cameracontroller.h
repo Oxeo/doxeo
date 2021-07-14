@@ -26,6 +26,7 @@ public:
 
 public slots:
     void image();
+    void show();
     void networkReply(QNetworkReply*);
 
 signals:

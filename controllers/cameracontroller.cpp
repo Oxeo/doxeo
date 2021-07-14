@@ -20,6 +20,7 @@ CameraController::CameraController(QObject *parent) : AbstractCrudController(par
     connect(networkManager, SIGNAL(finished(QNetworkReply *)), this, SLOT(networkReply(QNetworkReply*)));
     
     router.insert("image", "image");
+    router.insert("show", "show");
 
     QFile file(QDir::currentPath() + "/views/camera/no_video.jpg");
     file.open(QIODevice::ReadOnly);
@@ -76,6 +77,19 @@ void CameraController::image()
     } else {
         stream(camera);
     }
+}
+
+void CameraController::show()
+{
+    if (!Authentification::auth().isConnected(header, cookie)) {
+        redirect("/auth");
+        return;
+    }
+
+    QHash<QString, QByteArray> view;
+    view["content"] = loadHtmlView("views/camera/show.body.html", NULL, false);
+    view["bottom"] = loadHtmlView("views/camera/show.js", NULL, false);
+    loadHtmlView("views/template.html", &view);
 }
 
 void CameraController::stream(Camera *camera)
