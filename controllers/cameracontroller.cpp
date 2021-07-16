@@ -88,7 +88,7 @@ void CameraController::show()
 
     QHash<QString, QByteArray> view;
     view["content"] = loadHtmlView("views/camera/show.body.html", NULL, false);
-    view["bottom"] = loadHtmlView("views/camera/show.js", NULL, false);
+    view["bottom"] = loadScript("views/camera/show.js");
     loadHtmlView("views/template.html", &view);
 }
 
