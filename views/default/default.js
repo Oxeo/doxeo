@@ -3,7 +3,7 @@ var updateError = false;
 jQuery(document).ready(function () {
     update();
     updateScriptPanel();
-    //updateCameraPanel();
+    updateCameraPanel();
     //setInterval(refreshCameras, 1000);
 });
 
@@ -332,7 +332,9 @@ function updateCameraPanel() {
         if (result.Result == "OK") {
             $('#cameraList').html('');
             $.each(result.Records, function (key, val) {
-                $('#cameraList').append('<tr><td class="camera"><a href="/camera/image/?id=' + val.id + '"><img src="/camera/image/?id=' + val.id + '&u=1" style="max-width:100%; min-width:50px; min-height:50px"></a></td></tr>');
+                if (val.visibility != 'hide') {
+                    $('#cameraList').append('<tr><td class="camera"><a href="/camera/show?id=' + val.id + '&refresh=1&duration=60">' + val.name + '</a></td></tr>');
+                }
             });
         } else {
             $('#cameraList').html('<tr><td></td></tr>');

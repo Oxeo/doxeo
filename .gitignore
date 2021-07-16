@@ -12,6 +12,7 @@ object_script.*
 *.log
 .qmake.stash
 .vscode/*
+perso/
 
 /.well-known/*
 /cert.pem
