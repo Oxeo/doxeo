@@ -99,8 +99,7 @@ protected:
     Status status;
     bool sensorErrorFlag;
 
-    QTimer timer;
-    int repeat;
+    QTimer sendTimer;
 
     QList<HeaterIndicator> indicatorList;
 

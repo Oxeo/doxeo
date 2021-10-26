@@ -31,8 +31,8 @@ Heater::Heater(QObject *parent) : QObject(parent)
     sensor = "";
     sensorErrorFlag = false;
 
-    connect(&timer, SIGNAL(timeout()), this, SLOT(sendCommand()));
-    timer.setInterval(30000);
+    connect(&sendTimer, SIGNAL(timeout()), this, SLOT(sendCommand()));
+    sendTimer.setInterval(3600000); // every hour
 }
 
 Heater::~Heater()
@@ -63,21 +63,18 @@ void Heater::sendCommand()
 {
     if (status == On) {
         if (powerOnCmd.startsWith("ms;") && powerOnCmd.split(";").size() > 1) {
-            mySensors->send(powerOnCmd.section(";", 1), true, "Heater " + name + " set to ON");
+            mySensors->send(powerOnCmd.section(";", 1), true, "Send ON command to " + name + " heater");
         } else {
             Device::Instance()->send(powerOnCmd, "Heater " + name + " set to ON");
         }
     } else {
         if (powerOffCmd.startsWith("ms;") && powerOffCmd.split(";").size() > 1) {
-            mySensors->send(powerOffCmd.section(";", 1), true, "Heater " + name + " set to OFF");
+            mySensors->send(powerOffCmd.section(";", 1), true, "Send OFF command to " + name + " heater");
         } else {
             Device::Instance()->send(powerOffCmd, "Heater " + name + " set to OFF");
         }
-    }
-
-    repeat--;
-    if (repeat == 0) {
-        timer.stop();
+        
+        sendTimer.stop();
     }
 }
 
@@ -266,7 +263,6 @@ void Heater::setHeatSetpoint(float value)
 void Heater::changeStatus(Heater::Status status)
 {
     this->status = status;
-    this->repeat = 1;
 
     if (status == Heater::On) {
         if (this->indicatorList.isEmpty() || this->indicatorList.last().isValide()) {
@@ -281,8 +277,8 @@ void Heater::changeStatus(Heater::Status status)
 
     emit Heater::event.valueUpdated(QString::number(this->id), "status", getStatusStr());
 
-    timer.start();
-    QMetaObject::invokeMethod(&timer, "timeout", Qt::QueuedConnection);
+    sendTimer.start();
+    QMetaObject::invokeMethod(&sendTimer, "timeout", Qt::QueuedConnection);
 }
 
 bool Heater::flush()
