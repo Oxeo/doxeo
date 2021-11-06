@@ -475,8 +475,11 @@ void MySensors::discoverResponse(int sender, QString payload)
     if (valid) {
         if (routing.contains(sender)) {
             if (routing.value(sender) != parent) {
-                qWarning() << "mySensors: routing changed for node" << getNodeName(sender) << ":"
-                           << getNodeName(routing.value(sender)) << "->" << getNodeName(parent);
+                if (settings->value("alert_routing_change", "false") == "true") {
+                    qWarning() << "mySensors: routing changed for node" << getNodeName(sender)
+                               << ":" << getNodeName(routing.value(sender)) << "->"
+                               << getNodeName(parent);
+                }
                 routing[sender] = parent;
             }
         } else {
